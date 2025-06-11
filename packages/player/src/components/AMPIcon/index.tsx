@@ -4,6 +4,7 @@ export { HomeIcon } from "./HomeIcon";
 export { MicroPhoneIcon } from "./MicroPhoneIcon";
 export { MusicNoteIcon } from "./MusicNoteIcon";
 export { MusicNoteListIcon } from "./MusicNoteListIcon";
+export { RadioWavesIcon } from "./RadioWavesIcon";
 export { SearchIcon } from "./SearchIcon";
 export { SquareGrid3x3Icon } from "./SquareGrid3x3Icon";
 export { SquareStackIcon } from "./SquareStackIcon";

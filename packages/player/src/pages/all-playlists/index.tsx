@@ -3,6 +3,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { type FC, useRef } from "react";
 import { Trans } from "react-i18next";
 import { ExtensionInjectPoint } from "../../components/ExtensionInjectPoint/index.tsx";
+import { NewPlaylistButton } from "../../components/NewPlaylistButton/index.tsx";
 import { PageContainer } from "../../components/PageContainer/index.tsx";
 import { PlaylistCard } from "../../components/PlaylistCard/index.tsx";
 import { db } from "../../dexie.ts";
@@ -14,8 +15,16 @@ export const Component: FC = () => {
 	return (
 		<PageContainer>
 			<Flex direction="column" height="100%">
-				<Flex direction="row" align="center" wrap="wrap" mt="5" />
-				<ExtensionInjectPoint injectPointName="page.main.top" />
+				<Flex direction="row" align="center" wrap="wrap" mt="5">
+					<Flex gap="1" wrap="wrap">
+						<div style={{ margin: "12px 28px" }}>
+							<ExtensionInjectPoint injectPointName="page.all-playlists.sidebar.before" />
+							<NewPlaylistButton />
+							<ExtensionInjectPoint injectPointName="page.all-playlists.sidebar.after" />
+						</div>
+					</Flex>
+				</Flex>
+				<ExtensionInjectPoint injectPointName="page.all-playlists.top" />
 				{playlists !== undefined ? (
 					playlists.length === 0 ? (
 						<Text mt="9" as="div" align="center">

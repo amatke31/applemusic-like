@@ -1,7 +1,6 @@
-import { ArrowLeftIcon, InfoCircledIcon } from "@radix-ui/react-icons";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 import {
 	Box,
-	Button,
 	Callout,
 	Card,
 	Container,
@@ -46,12 +45,7 @@ export const Component: FC = () => {
 			pt="env(safe-area-inset-top)"
 			mb="150px"
 		>
-			<Flex align="end" mt="7" gap="4">
-				<Button variant="soft" onClick={() => history.back()}>
-					<ArrowLeftIcon />
-					<Trans i18nKey="common.page.back">返回</Trans>
-				</Button>
-			</Flex>
+			<Flex align="end" mt="7" gap="4" />
 			<Card mt="2">
 				<Flex align="center">
 					<Box flexGrow="1">

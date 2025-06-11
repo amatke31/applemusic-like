@@ -25,7 +25,6 @@ import {
 import {
 	Box,
 	Button,
-	Card,
 	Flex,
 	Select,
 	Separator,
@@ -54,6 +53,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { branch, commit } from "virtual:git-metadata-plugin";
 import resources from "virtual:i18next-loader";
+import { Card, CardGroup } from "../../components/Card/index";
 import { router } from "../../router.tsx";
 import {
 	DarkMode,
@@ -78,7 +78,7 @@ const SettingEntry: FC<
 	}>
 > = ({ label, description, children }) => {
 	return (
-		<Card mt="2">
+		<Card>
 			<Flex direction="row" align="center" gap="4" wrap="wrap">
 				<Flex direction="column" flexGrow="1">
 					<Text as="div">{label}</Text>
@@ -592,142 +592,150 @@ export const PlayerSettingsTab: FC = () => {
 			<SubTitle>
 				<Trans i18nKey="page.settings.general.subtitle">常规</Trans>
 			</SubTitle>
-			<SelectSettings
-				label={t("page.settings.general.displayLanguage.label", "显示语言")}
-				menu={supportedLanguagesMenu}
-				configAtom={displayLanguageAtom}
-			/>
-			<SelectSettings
-				label={t("page.settings.general.theme.label", "界面主题")}
-				description={t(
-					"page.settings.general.theme.description",
-					"不太稳定，建议设置后重启以正确应用主题样式",
-				)}
-				menu={[
-					{
-						label: t("page.settings.general.theme.auto", "自动"),
-						value: DarkMode.Auto,
-					},
-					{
-						label: t("page.settings.general.theme.light", "浅色"),
-						value: DarkMode.Light,
-					},
-					{
-						label: t("page.settings.general.theme.dark", "深色"),
-						value: DarkMode.Dark,
-					},
-				]}
-				configAtom={darkModeAtom}
-			/>
+			<CardGroup>
+				<SelectSettings
+					label={t("page.settings.general.displayLanguage.label", "显示语言")}
+					menu={supportedLanguagesMenu}
+					configAtom={displayLanguageAtom}
+				/>
+				<SelectSettings
+					label={t("page.settings.general.theme.label", "界面主题")}
+					description={t(
+						"page.settings.general.theme.description",
+						"不太稳定，建议设置后重启以正确应用主题样式",
+					)}
+					menu={[
+						{
+							label: t("page.settings.general.theme.auto", "自动"),
+							value: DarkMode.Auto,
+						},
+						{
+							label: t("page.settings.general.theme.light", "浅色"),
+							value: DarkMode.Light,
+						},
+						{
+							label: t("page.settings.general.theme.dark", "深色"),
+							value: DarkMode.Dark,
+						},
+					]}
+					configAtom={darkModeAtom}
+				/>
+			</CardGroup>
+
 			<SubTitle>
 				<Trans i18nKey="page.settings.lyricContent.subtitle">歌词内容</Trans>
 			</SubTitle>
-			<SwitchSettings
-				label={t(
-					"page.settings.lyricContent.enableLyricTranslationLine",
-					"显示翻译歌词",
-				)}
-				configAtom={enableLyricTranslationLineAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.lyricContent.enableLyricRomanLine.label",
-					"显示音译歌词",
-				)}
-				configAtom={enableLyricRomanLineAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.lyricContent.enableLyricSwapTransRomanLine.label",
-					"启用音译歌词与翻译歌词互换",
-				)}
-				description={t(
-					"page.settings.lyricContent.enableLyricSwapTransRomanLine.description",
-					"仅上面两者启用后有效",
-				)}
-				configAtom={enableLyricSwapTransRomanLineAtom}
-			/>
+
+			<CardGroup>
+				<SwitchSettings
+					label={t(
+						"page.settings.lyricContent.enableLyricTranslationLine",
+						"显示翻译歌词",
+					)}
+					configAtom={enableLyricTranslationLineAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.lyricContent.enableLyricRomanLine.label",
+						"显示音译歌词",
+					)}
+					configAtom={enableLyricRomanLineAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.lyricContent.enableLyricSwapTransRomanLine.label",
+						"启用音译歌词与翻译歌词互换",
+					)}
+					description={t(
+						"page.settings.lyricContent.enableLyricSwapTransRomanLine.description",
+						"仅上面两者启用后有效",
+					)}
+					configAtom={enableLyricSwapTransRomanLineAtom}
+				/>
+			</CardGroup>
 
 			<SubTitle>
 				<Trans i18nKey="page.settings.lyricAppearance.subtitle">歌词样式</Trans>
 			</SubTitle>
 
-			<SelectSettings
-				label={t(
-					"page.settings.lyricAppearance.lyricPlayerImplementation.label",
-					"歌词播放器实现",
-				)}
-				description={t(
-					"page.settings.lyricAppearance.lyricPlayerImplementation.description",
-					"目前有两个歌词播放实现\n- DOM：使用 DOM 元素实现，目前效果最全，但性能开销大\n- Canvas：使用 Canvas 实现，仍在开发中，性能优异，但是部分细节效果不足",
-				)}
-				menu={lyricPlayerImplementationMenu}
-				configAtom={lyricPlayerImplementationAtom}
-			/>
+			<CardGroup>
+				<SelectSettings
+					label={t(
+						"page.settings.lyricAppearance.lyricPlayerImplementation.label",
+						"歌词播放器实现",
+					)}
+					description={t(
+						"page.settings.lyricAppearance.lyricPlayerImplementation.description",
+						"目前有两个歌词播放实现\n- DOM：使用 DOM 元素实现，目前效果最全，但性能开销大\n- Canvas：使用 Canvas 实现，仍在开发中，性能优异，但是部分细节效果不足",
+					)}
+					menu={lyricPlayerImplementationMenu}
+					configAtom={lyricPlayerImplementationAtom}
+				/>
 
-			<LyricFontSetting />
+				<LyricFontSetting />
 
-			<SwitchSettings
-				label={t(
-					"page.settings.lyricAppearance.enableLyricLineBlurEffect.label",
-					"启用歌词模糊效果",
-				)}
-				description={t(
-					"page.settings.lyricAppearance.enableLyricLineBlurEffect.description",
-					"对性能影响较高，如果遇到性能问题，可以尝试关闭此项。默认开启。",
-				)}
-				configAtom={enableLyricLineBlurEffectAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.lyricAppearance.enableLyricLineScaleEffect.label",
-					"启用歌词缩放效果",
-				)}
-				description={t(
-					"page.settings.lyricAppearance.enableLyricLineScaleEffect.description",
-					"对性能无影响，非当前播放歌词行会略微缩小。默认开启",
-				)}
-				configAtom={enableLyricLineScaleEffectAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.lyricAppearance.enableLyricLineSpringAnimation.label",
-					"启用歌词行弹簧动画效果",
-				)}
-				description={t(
-					"page.settings.lyricAppearance.enableLyricLineSpringAnimation.description",
-					"对性能影响较高，如果遇到性能问题，可以尝试关闭此项。默认开启。",
-				)}
-				configAtom={enableLyricLineSpringAnimationAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.lyricAppearance.advanceLyricDynamicLyricTime.label",
-					"提前歌词行时序",
-				)}
-				description={t(
-					"page.settings.lyricAppearance.advanceLyricDynamicLyricTime.description",
-					"即将原歌词行的初始时间时序提前，以便在歌词滚动结束后刚好开始播放（逐词）歌词效果。这个行为更加接近 Apple Music 的效果，但是大部分情况下会导致歌词行末尾的歌词尚未播放完成便被切换到下一行。",
-				)}
-				configAtom={advanceLyricDynamicLyricTimeAtom}
-			/>
+				<SwitchSettings
+					label={t(
+						"page.settings.lyricAppearance.enableLyricLineBlurEffect.label",
+						"启用歌词模糊效果",
+					)}
+					description={t(
+						"page.settings.lyricAppearance.enableLyricLineBlurEffect.description",
+						"对性能影响较高，如果遇到性能问题，可以尝试关闭此项。默认开启。",
+					)}
+					configAtom={enableLyricLineBlurEffectAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.lyricAppearance.enableLyricLineScaleEffect.label",
+						"启用歌词缩放效果",
+					)}
+					description={t(
+						"page.settings.lyricAppearance.enableLyricLineScaleEffect.description",
+						"对性能无影响，非当前播放歌词行会略微缩小。默认开启",
+					)}
+					configAtom={enableLyricLineScaleEffectAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.lyricAppearance.enableLyricLineSpringAnimation.label",
+						"启用歌词行弹簧动画效果",
+					)}
+					description={t(
+						"page.settings.lyricAppearance.enableLyricLineSpringAnimation.description",
+						"对性能影响较高，如果遇到性能问题，可以尝试关闭此项。默认开启。",
+					)}
+					configAtom={enableLyricLineSpringAnimationAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.lyricAppearance.advanceLyricDynamicLyricTime.label",
+						"提前歌词行时序",
+					)}
+					description={t(
+						"page.settings.lyricAppearance.advanceLyricDynamicLyricTime.description",
+						"即将原歌词行的初始时间时序提前，以便在歌词滚动结束后刚好开始播放（逐词）歌词效果。这个行为更加接近 Apple Music 的效果，但是大部分情况下会导致歌词行末尾的歌词尚未播放完成便被切换到下一行。",
+					)}
+					configAtom={advanceLyricDynamicLyricTimeAtom}
+				/>
 
-			<NumberSettings
-				placeholder="0.5"
-				type="number"
-				min="0"
-				max="10.0"
-				step="0.01"
-				label={t(
-					"page.settings.lyricAppearance.lyricWordFadeWidth.label",
-					"逐词渐变宽度",
-				)}
-				description={t(
-					"page.settings.lyricAppearance.lyricWordFadeWidth.description",
-					"调节逐词歌词时单词的渐变过渡宽度，单位为一个全角字的宽度，默认为 0.5。\n如果要模拟 Apple Music for Android 的效果，可以设置为 1。\n如果要模拟 Apple Music for iPad 的效果，可以设置为 0.5。\n如需关闭逐词歌词时单词的渐变过渡效果，可以设置为 0。",
-				)}
-				configAtom={lyricWordFadeWidthAtom}
-			/>
+				<NumberSettings
+					placeholder="0.5"
+					type="number"
+					min="0"
+					max="10.0"
+					step="0.01"
+					label={t(
+						"page.settings.lyricAppearance.lyricWordFadeWidth.label",
+						"逐词渐变宽度",
+					)}
+					description={t(
+						"page.settings.lyricAppearance.lyricWordFadeWidth.description",
+						"调节逐词歌词时单词的渐变过渡宽度，单位为一个全角字的宽度，默认为 0.5。\n如果要模拟 Apple Music for Android 的效果，可以设置为 1。\n如果要模拟 Apple Music for iPad 的效果，可以设置为 0.5。\n如需关闭逐词歌词时单词的渐变过渡效果，可以设置为 0。",
+					)}
+					configAtom={lyricWordFadeWidthAtom}
+				/>
+			</CardGroup>
 
 			<SubTitle>
 				<Trans i18nKey="page.settings.musicInfoAppearance.subtitle">
@@ -735,131 +743,143 @@ export const PlayerSettingsTab: FC = () => {
 				</Trans>
 			</SubTitle>
 
-			<SwitchSettings
-				label={t(
-					"page.settings.musicInfoAppearance.showMusicName.label",
-					"显示歌曲名称",
-				)}
-				configAtom={showMusicNameAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.musicInfoAppearance.showMusicArtists.label",
-					"显示歌曲作者",
-				)}
-				configAtom={showMusicArtistsAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.musicInfoAppearance.showMusicAlbum.label",
-					"显示歌曲专辑名称",
-				)}
-				description={t(
-					"page.settings.musicInfoAppearance.showMusicAlbum.description",
-					"如果同时启用三个，布局上可能不太好看，请酌情调节。",
-				)}
-				configAtom={showMusicAlbumAtom}
-			/>
+			<CardGroup>
+				<SwitchSettings
+					label={t(
+						"page.settings.musicInfoAppearance.showMusicName.label",
+						"显示歌曲名称",
+					)}
+					configAtom={showMusicNameAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.musicInfoAppearance.showMusicArtists.label",
+						"显示歌曲作者",
+					)}
+					configAtom={showMusicArtistsAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.musicInfoAppearance.showMusicAlbum.label",
+						"显示歌曲专辑名称",
+					)}
+					description={t(
+						"page.settings.musicInfoAppearance.showMusicAlbum.description",
+						"如果同时启用三个，布局上可能不太好看，请酌情调节。",
+					)}
+					configAtom={showMusicAlbumAtom}
+				/>
+			</CardGroup>
 
 			<Box height="1em" />
 
-			<SwitchSettings
-				label={t(
-					"page.settings.musicInfoAppearance.showVolumeControl.label",
-					"显示音量控制条",
-				)}
-				configAtom={showVolumeControlAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.musicInfoAppearance.showBottomControl.label",
-					"显示底部按钮组",
-				)}
-				description={t(
-					"page.settings.musicInfoAppearance.showBottomControl.description",
-					"在横向布局里是右下角的几个按钮，在竖向布局里是播放按钮下方的几个按钮",
-				)}
-				configAtom={showBottomControlAtom}
-			/>
+			<CardGroup>
+				<SwitchSettings
+					label={t(
+						"page.settings.musicInfoAppearance.showVolumeControl.label",
+						"显示音量控制条",
+					)}
+					configAtom={showVolumeControlAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.musicInfoAppearance.showBottomControl.label",
+						"显示底部按钮组",
+					)}
+					description={t(
+						"page.settings.musicInfoAppearance.showBottomControl.description",
+						"在横向布局里是右下角的几个按钮，在竖向布局里是播放按钮下方的几个按钮",
+					)}
+					configAtom={showBottomControlAtom}
+				/>
+			</CardGroup>
 
 			<Box height="1em" />
 
-			<SelectSettings
-				label={t(
-					"page.settings.musicInfoAppearance.playerControlsType.label",
-					"播放控制组件类型",
-				)}
-				description={t(
-					"page.settings.musicInfoAppearance.playerControlsType.description",
-					"即歌曲信息下方的组件",
-				)}
-				menu={playerControlsTypeMenu}
-				configAtom={playerControlsTypeAtom}
-			/>
+			<CardGroup>
+				<SelectSettings
+					label={t(
+						"page.settings.musicInfoAppearance.playerControlsType.label",
+						"播放控制组件类型",
+					)}
+					description={t(
+						"page.settings.musicInfoAppearance.playerControlsType.description",
+						"即歌曲信息下方的组件",
+					)}
+					menu={playerControlsTypeMenu}
+					configAtom={playerControlsTypeAtom}
+				/>
+			</CardGroup>
 
 			<Box height="1em" />
 
-			<SelectSettings
-				label={t(
-					"page.settings.musicInfoAppearance.verticalCoverLayout.label",
-					"垂直布局专辑图布局模式",
-				)}
-				description={t(
-					"page.settings.musicInfoAppearance.verticalCoverLayout.description",
-					"在隐藏歌词的情况下专辑图的布局方式：\n- 自动：根据专辑图是否为视频以使用沉浸布局\n- 强制默认布局：强制使用默认的专辑图布局\n- 强制沉浸布局：强制使用沉浸式的专辑图布局",
-				)}
-				menu={verticalCoverLayoutMenu}
-				configAtom={verticalCoverLayoutAtom}
-			/>
+			<CardGroup>
+				<SelectSettings
+					label={t(
+						"page.settings.musicInfoAppearance.verticalCoverLayout.label",
+						"垂直布局专辑图布局模式",
+					)}
+					description={t(
+						"page.settings.musicInfoAppearance.verticalCoverLayout.description",
+						"在隐藏歌词的情况下专辑图的布局方式：\n- 自动：根据专辑图是否为视频以使用沉浸布局\n- 强制默认布局：强制使用默认的专辑图布局\n- 强制沉浸布局：强制使用沉浸式的专辑图布局",
+					)}
+					menu={verticalCoverLayoutMenu}
+					configAtom={verticalCoverLayoutAtom}
+				/>
 
-			<SliderSettings
-				label={t(
-					"page.settings.musicInfoAppearance.fftDataRange.label",
-					"音频可视化频域范围",
-				)}
-				description={t(
-					"page.settings.musicInfoAppearance.fftDataRange.description",
-					"单位为赫兹（hz），此项会影响音频可视化和背景跳动效果的展示效果",
-				)}
-				configAtom={fftDataRangeAtom}
-				min={1}
-				max={22050}
-			>
-				<Text wrap="nowrap">
-					{fftDataRange[0]} Hz - {fftDataRange[1]} Hz
-				</Text>
-			</SliderSettings>
+				<SliderSettings
+					label={t(
+						"page.settings.musicInfoAppearance.fftDataRange.label",
+						"音频可视化频域范围",
+					)}
+					description={t(
+						"page.settings.musicInfoAppearance.fftDataRange.description",
+						"单位为赫兹（hz），此项会影响音频可视化和背景跳动效果的展示效果",
+					)}
+					configAtom={fftDataRangeAtom}
+					min={1}
+					max={22050}
+				>
+					<Text wrap="nowrap">
+						{fftDataRange[0]} Hz - {fftDataRange[1]} Hz
+					</Text>
+				</SliderSettings>
+			</CardGroup>
 
 			<SubTitle>
 				<Trans i18nKey="page.settings.lyricBackground.subtitle">歌词背景</Trans>
 			</SubTitle>
 
-			<SelectSettings
-				label={t(
-					"page.settings.lyricBackground.backgroundRenderer.label",
-					"背景渲染器",
-				)}
-				menu={backgroundRendererMenu}
-				configAtom={backgroundRendererAtom}
-			/>
+			<CardGroup>
+				<SelectSettings
+					label={t(
+						"page.settings.lyricBackground.backgroundRenderer.label",
+						"背景渲染器",
+					)}
+					menu={backgroundRendererMenu}
+					configAtom={backgroundRendererAtom}
+				/>
 
-			<CSSBasedSettings />
-			<RendererBasedSettings />
+				<CSSBasedSettings />
+				<RendererBasedSettings />
+			</CardGroup>
 
 			<SubTitle>
 				<Trans i18nKey="page.settings.others.subtitle">杂项</Trans>
 			</SubTitle>
-			<SwitchSettings
-				label={t(
-					"page.settings.others.showStatJSFrame.label",
-					"显示性能统计信息",
-				)}
-				description={t(
-					"page.settings.others.showStatJSFrame.description",
-					"可以看到帧率、帧时间、内存占用（仅 Chromuim 系）等信息，对性能影响较小。",
-				)}
-				configAtom={showStatJSFrameAtom}
-			/>
+			<CardGroup>
+				<SwitchSettings
+					label={t(
+						"page.settings.others.showStatJSFrame.label",
+						"显示性能统计信息",
+					)}
+					description={t(
+						"page.settings.others.showStatJSFrame.description",
+						"可以看到帧率、帧时间、内存占用（仅 Chromuim 系）等信息，对性能影响较小。",
+					)}
+					configAtom={showStatJSFrameAtom}
+				/>
+			</CardGroup>
 			<Button my="2" onClick={() => restartApp()}>
 				<Trans i18nKey="page.settings.others.restartProgram">重启程序</Trans>
 			</Button>

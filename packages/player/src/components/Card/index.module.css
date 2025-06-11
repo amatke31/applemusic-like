@@ -1,0 +1,15 @@
+.card {
+	padding: 16px;
+	background-color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+	.card {
+		background-color: rgb(44, 44, 46);
+	}
+}
+
+.card-group {
+	border-radius: 16px;
+	overflow: hidden;
+}

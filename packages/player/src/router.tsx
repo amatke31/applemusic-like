@@ -19,6 +19,11 @@ export const router = createBrowserRouter(
 				errorElement={<ErrorPage />}
 			/>
 			<Route
+				path="/all-playlists"
+				lazy={() => import("./pages/all-playlists/index.tsx")}
+				errorElement={<ErrorPage />}
+			/>
+			<Route
 				path="/settings"
 				lazy={() => import("./pages/settings/index.tsx")}
 				errorElement={<ErrorPage />}

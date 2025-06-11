@@ -119,6 +119,7 @@ export const NowPlaylistCard: FC<FlexProps> = (props) => {
 				width: "max(10vw, 50vh)",
 				backdropFilter: "blur(1em)",
 				backgroundColor: "var(--black-a8)",
+				zIndex: 99995,
 			}}
 			{...props}
 		>

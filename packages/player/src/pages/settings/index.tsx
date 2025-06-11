@@ -44,55 +44,59 @@ export const Component: FC = () => {
 	return (
 		<>
 			<PageContainer>
-				<Flex direction="row" gap="4" height="100%">
-					<Box mt="7">
-						<TabButton
-							content={t("settings.player.tab", "AMLL Player 设置")}
-							color={currentPage === "amll-player" ? "red" : "gray"}
-							onClick={() => setCurrentPage("amll-player")}
-						>
-							<AMLLPlayerSettingIcon />
-						</TabButton>
-						<TabButton
-							content={t("settings.extension.tab", "扩展程序管理")}
-							color={currentPage === "extension" ? "indigo" : "gray"}
-							onClick={() => setCurrentPage("extension")}
-						>
-							<ExtensionManageIcon />
-						</TabButton>
-						<Separator size="4" my="2" />
-						{loadedExtensions.map((extension) => {
-							const id = extension.extensionMeta.id;
-							return (
-								<TabButton
-									content={t("name", id, { ns: id })}
-									key={id}
-									color={currentPage === `extension.${id}` ? "indigo" : "gray"}
-									onClick={() => setCurrentPage(`extension.${id}`)}
-								>
-									<img src={String(extension.context.extensionMeta.icon)} />
-								</TabButton>
-							);
-						})}
-					</Box>
-					<Box flexGrow="1" minWidth="0" overflowY="auto" minHeight="0">
-						{currentPage === "amll-player" && <PlayerSettingsTab />}
-						{currentPage === "extension" && (
-							<Suspense>
-								<ExtensionTab />
-							</Suspense>
-						)}
-						{loadedExtensions.map((extension) => {
-							const id = extension.extensionMeta.id;
-							const ExtensionComponent =
-								extension.context.registeredInjectPointComponent.settings;
-							return (
-								currentPage === `extension.${id}` &&
-								ExtensionComponent && <ExtensionComponent key={id} />
-							);
-						})}
-					</Box>
-				</Flex>
+				<div className={styles.container}>
+					<Flex direction="row" gap="4" height="100%">
+						<Box mt="7">
+							<TabButton
+								content={t("settings.player.tab", "AMLL Player 设置")}
+								color={currentPage === "amll-player" ? "red" : "gray"}
+								onClick={() => setCurrentPage("amll-player")}
+							>
+								<AMLLPlayerSettingIcon />
+							</TabButton>
+							<TabButton
+								content={t("settings.extension.tab", "扩展程序管理")}
+								color={currentPage === "extension" ? "indigo" : "gray"}
+								onClick={() => setCurrentPage("extension")}
+							>
+								<ExtensionManageIcon />
+							</TabButton>
+							<Separator size="4" my="2" />
+							{loadedExtensions.map((extension) => {
+								const id = extension.extensionMeta.id;
+								return (
+									<TabButton
+										content={t("name", id, { ns: id })}
+										key={id}
+										color={
+											currentPage === `extension.${id}` ? "indigo" : "gray"
+										}
+										onClick={() => setCurrentPage(`extension.${id}`)}
+									>
+										<img src={String(extension.context.extensionMeta.icon)} />
+									</TabButton>
+								);
+							})}
+						</Box>
+						<Box flexGrow="1" minWidth="0" overflowY="auto" minHeight="0">
+							{currentPage === "amll-player" && <PlayerSettingsTab />}
+							{currentPage === "extension" && (
+								<Suspense>
+									<ExtensionTab />
+								</Suspense>
+							)}
+							{loadedExtensions.map((extension) => {
+								const id = extension.extensionMeta.id;
+								const ExtensionComponent =
+									extension.context.registeredInjectPointComponent.settings;
+								return (
+									currentPage === `extension.${id}` &&
+									ExtensionComponent && <ExtensionComponent key={id} />
+								);
+							})}
+						</Box>
+					</Flex>
+				</div>
 			</PageContainer>
 		</>
 	);

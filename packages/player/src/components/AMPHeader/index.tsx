@@ -8,6 +8,7 @@ import {
 	MicroPhoneIcon,
 	MusicNoteIcon,
 	MusicNoteListIcon,
+	RadioWavesIcon,
 	SearchIcon,
 	SquareGrid3x3Icon,
 	SquareStackIcon,
@@ -26,7 +27,19 @@ export const AMPHeader = forwardRef<
 		<div className="header svelte-rjjbqs" data-testid="header">
 			<nav data-testid="navigation" className="navigation svelte-13li0vp">
 				<div className="navigation__header svelte-13li0vp">
-					<div data-testid="logo" className="logo svelte-1o7dz8w" />
+					<div data-testid="logo" className="logo svelte-1o7dz8w">
+						<div
+							aria-label="AMPL Player"
+							className="svelte-1o7dz8w"
+							style={{
+								fontSize: "2rem",
+								fontWeight: "500",
+								paddingTop: "0.5rem",
+							}}
+						>
+							AMPL Player
+						</div>
+					</div>
 				</div>
 				<div
 					data-testid="navigation-content"
@@ -46,6 +59,11 @@ export const AMPHeader = forwardRef<
 								label="设置"
 								icon={<GearIcon />}
 								to="/settings"
+							/>
+							<AMPHeaderListItem
+								label="WS Protocal"
+								icon={<RadioWavesIcon />}
+								to="/ws/recv"
 							/>
 						</AMPHeaderList>
 						<AMPHeaderList label="资料库">
