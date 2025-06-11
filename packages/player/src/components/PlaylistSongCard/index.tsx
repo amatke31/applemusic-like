@@ -8,14 +8,16 @@ import { Link } from "react-router-dom";
 import { type Song, db } from "../../dexie";
 import { useSongCover } from "../../utils/use-song-cover";
 import AMPContextualMenuButton from "../AMPContextualMenuButton";
+import { StarIcon } from "../AMPIcon";
 
 export const PlaylistSongCard = forwardRef<
 	HTMLDivElement,
 	{
 		songId: string;
 		songIndex: number;
-		onPlayList: (songIndex: number) => void;
-		onDeleteSong: (songId: string) => void;
+		onPlayList?: (songIndex: number) => void;
+		onDeleteSong?: (songId: string) => void;
+		onStar?: (songId: string) => void;
 		selectedSongId: string;
 		onSelectedSongIdChange: (songId: string) => void;
 		style?: CSSProperties;
@@ -26,6 +28,7 @@ export const PlaylistSongCard = forwardRef<
 		songIndex,
 		onPlayList,
 		onDeleteSong,
+		onStar,
 		onSelectedSongIdChange,
 		selectedSongId,
 	}) => {
@@ -65,7 +68,6 @@ export const PlaylistSongCard = forwardRef<
 				className={`songs-list-row drop-reset svelte-t6plbb songs-list-row--artwork songs-list-row--two-lines songs-list-row--playlist songs-list-row--alt${
 					isSelected ? " songs-list-row--alt songs-list-row--selected" : ""
 				}`}
-				role="row"
 				tabindex="0"
 				data-row="0"
 				data-current-mouse-target="false"
@@ -79,14 +81,31 @@ export const PlaylistSongCard = forwardRef<
 						}))
 				}
 				data-drop-area=""
-				onClick={() => {
+				onKeyDown={() => {
+					onSelectedSongIdChange(songId);
+				}}
+				onMouseDown={() => {
 					onSelectedSongIdChange(songId);
 				}}
 			>
 				<div
 					className="songs-list__col songs-list__col--favorite-or-popular svelte-t6plbb"
 					data-testid="track-column-favorite-or-popular"
-				/>
+					style={{ display: onStar ? "table-cell" : "none" }}
+				>
+					<div className="favorite-or-popular svelte-1aus0qc">
+						<div className="favorite svelte-1aus0qc">
+							<button
+								className="favorite-button svelte-j6xj5e favorite-button--non-platter"
+								aria-label="个人收藏"
+								title="让我们进一步了解你喜欢的音乐类型。"
+								type="button"
+							>
+								<StarIcon />
+							</button>
+						</div>
+					</div>
+				</div>
 				<div
 					className="songs-list__col songs-list__col--song svelte-t6plbb"
 					data-testid="track-column-song"
@@ -118,7 +137,6 @@ export const PlaylistSongCard = forwardRef<
 													className="artwork-component__contents artwork-component__image svelte-10tj07c"
 													loading="lazy"
 													src={songImgUrl}
-													role="presentation"
 													decoding="async"
 													width="40"
 													height="40"
@@ -151,7 +169,9 @@ export const PlaylistSongCard = forwardRef<
 										className="play-button svelte-1tvdl0z play-button--standard"
 										data-testid="play-button"
 										type="button"
-										onClick={() => onPlayList(songIndex)}
+										onClick={() => {
+											if (onPlayList) onPlayList(songIndex);
+										}}
 									>
 										<svg
 											width="16"
@@ -161,7 +181,6 @@ export const PlaylistSongCard = forwardRef<
 											className="icon play-svg"
 											data-testid="play-icon"
 											aria-hidden="true"
-											iconState="play"
 										>
 											<path
 												fill="var(--nonPlatterIconFill, var(--keyColor, black))"
@@ -198,7 +217,6 @@ export const PlaylistSongCard = forwardRef<
 													))
 											}
 											tabindex="-1"
-											role="checkbox"
 											dir="auto"
 											data-testid="track-title"
 										>
@@ -317,7 +335,9 @@ export const PlaylistSongCard = forwardRef<
 									{[
 										{
 											label: "移除",
-											onClick: () => onDeleteSong(songId),
+											onClick: () => {
+												if (onDeleteSong) onDeleteSong(songId);
+											},
 										},
 									]}
 								</span>

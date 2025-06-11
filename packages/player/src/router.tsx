@@ -3,11 +3,16 @@ import {
 	createBrowserRouter,
 	createRoutesFromElements,
 } from "react-router-dom";
+import { AppContainer } from "./components/AppContainer/index.tsx";
+import { NowPlayingBar } from "./components/NowPlayingBar/index.tsx";
 import ErrorPage from "./pages/error/index.tsx";
 
 export const router = createBrowserRouter(
 	createRoutesFromElements(
-		<>
+		<Route
+			element={<AppContainer playbar={<NowPlayingBar />} />}
+			errorElement={<ErrorPage />}
+		>
 			<Route
 				path="/"
 				lazy={() => import("./pages/main/index.tsx")}
@@ -55,6 +60,6 @@ export const router = createBrowserRouter(
 					errorElement={<ErrorPage />}
 				/>
 			</Route>
-		</>,
+		</Route>,
 	),
 );

@@ -1,12 +1,10 @@
-import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import { Button, Flex } from "@radix-ui/themes";
 import { path } from "@tauri-apps/api";
 import { open } from "@tauri-apps/plugin-dialog";
 import { stat } from "@tauri-apps/plugin-fs";
 import { platform } from "@tauri-apps/plugin-os";
 import { useLiveQuery } from "dexie-react-hooks";
 import md5 from "md5";
-import { type FC, useCallback, useMemo, useState } from "react";
+import { type FC, useCallback, useEffect, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -33,10 +31,17 @@ export type Loadable<Value> =
 
 export const Component: FC = () => {
 	const param = useParams();
-	const playlist = useLiveQuery(() => db.playlists.get(Number(param.id)));
+	const playlist = useLiveQuery(
+		() => db.playlists.get(Number(param.id)),
+		[param.id],
+	);
 	const { t } = useTranslation();
 
 	const [selectedSongId, setSelectedSongId] = useState("");
+
+	useEffect(() => {
+		setSelectedSongId("");
+	}, [param.id]);
 
 	const onAddLocalMusics = useCallback(async () => {
 		let filters = [
@@ -235,12 +240,6 @@ export const Component: FC = () => {
 	return (
 		<div className="scrollable-page svelte-mt0bfj">
 			<PageContainer>
-				<Flex align="end" pt="4">
-					<Button variant="soft" onClick={() => history.back()}>
-						<ArrowLeftIcon />
-						<Trans i18nKey="common.page.back">返回</Trans>
-					</Button>
-				</Flex>
 				<div className="content-container svelte-9l1caf">
 					<div className="section svelte-qc4ih7">
 						<div className="section-content svelte-qc4ih7">
@@ -510,6 +509,7 @@ export const Component: FC = () => {
 											songIndex={index}
 											onPlayList={onPlayList}
 											onDeleteSong={onDeleteSong}
+											onStar={() => {}}
 											selectedSongId={selectedSongId}
 											onSelectedSongIdChange={(songId) => {
 												setSelectedSongId(songId);

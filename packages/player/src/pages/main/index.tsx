@@ -1,4 +1,4 @@
-import { HamburgerMenuIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import {
 	Badge,
 	Box,
@@ -53,11 +53,6 @@ export const Component: FC = () => {
 					</Box>
 					<Flex gap="1" wrap="wrap">
 						<ExtensionInjectPoint injectPointName="page.main.sidebar.before" />
-						<IconButton variant="soft" asChild>
-							<Link to="/search">
-								<MagnifyingGlassIcon />
-							</Link>
-						</IconButton>
 						<NewPlaylistButton />
 						<DropdownMenu.Root>
 							<DropdownMenu.Trigger>
@@ -110,7 +105,6 @@ export const Component: FC = () => {
 					) : (
 						<div
 							style={{
-								overflowY: "auto",
 								minHeight: "0",
 							}}
 							ref={viewportRef}

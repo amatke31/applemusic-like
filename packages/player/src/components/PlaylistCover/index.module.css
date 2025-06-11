@@ -27,3 +27,14 @@
 		transition: background-image 0.5s;
 	}
 }
+
+:root {
+	--icon: rgba(60, 60, 67, 0.18);
+	color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--icon: rgba(235, 235, 245, 0.16);
+	}
+}

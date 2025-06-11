@@ -1,4 +1,3 @@
-import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import {
 	Box,
 	Button,
@@ -47,13 +46,6 @@ export const Component: FC = () => {
 			<PageContainer>
 				<Flex direction="row" gap="4" height="100%">
 					<Box mt="7">
-						<TabButton
-							variant="soft"
-							content={t("common.page.back", "返回")}
-							onClick={() => history.back()}
-						>
-							<ArrowLeftIcon />
-						</TabButton>
 						<TabButton
 							content={t("settings.player.tab", "AMLL Player 设置")}
 							color={currentPage === "amll-player" ? "red" : "gray"}

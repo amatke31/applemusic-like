@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { useLiveQuery } from "dexie-react-hooks";
 import { type FC, type HTMLProps, useEffect, useState } from "react";
 import { db } from "../../dexie.ts";
+import { DefaultCover } from "./default.tsx";
 import styles from "./index.module.css";
 
 export const PlaylistCover: FC<
@@ -18,7 +19,7 @@ export const PlaylistCover: FC<
 
 	const firstFourSongs = useLiveQuery(async () => {
 		if (playlist && !playlist.playlistCover) {
-			const result = [];
+			let result = [];
 			for (const songId of playlist.songIds) {
 				const song = await db.songs.get(songId);
 				if (song?.cover.type.startsWith("image") && song.cover.size > 0) {
@@ -26,6 +27,7 @@ export const PlaylistCover: FC<
 					if (result.length === 4) break;
 				}
 			}
+			if (result.length > 0 && result.length < 4) result = [result[0]];
 			return result;
 		}
 		return [];
@@ -66,14 +68,18 @@ export const PlaylistCover: FC<
 			{...props}
 			style={{ width: "100%", height: "100%" }}
 		>
-			{playlistImgs.map((img) => (
-				<div
-					key={img}
-					style={{
-						backgroundImage: `url(${img})`,
-					}}
-				/>
-			))}
+			{playlistImgs.length !== 0 ? (
+				playlistImgs.map((img) => (
+					<div
+						key={img}
+						style={{
+							backgroundImage: `url(${img})`,
+						}}
+					/>
+				))
+			) : (
+				<DefaultCover />
+			)}
 		</div>
 	);
 };

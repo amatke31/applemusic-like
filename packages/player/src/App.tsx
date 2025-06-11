@@ -22,11 +22,9 @@ import { ToastContainer } from "react-toastify";
 import semverGt from "semver/functions/gt";
 import Stats from "stats.js";
 import styles from "./App.module.css";
-import { AppContainer } from "./components/AppContainer/index.tsx";
 import DarkThemeDetector from "./components/DarkThemeDetector/index.tsx";
 import { ExtensionInjectPoint } from "./components/ExtensionInjectPoint/index.tsx";
 import { LocalMusicContext } from "./components/LocalMusicContext/index.tsx";
-import { NowPlayingBar } from "./components/NowPlayingBar/index.tsx";
 import { ShotcutContext } from "./components/ShotcutContext/index.tsx";
 import { UpdateContext } from "./components/UpdateContext/index.tsx";
 import { WSProtocolMusicContext } from "./components/WSProtocolMusicContext/index.tsx";
@@ -132,6 +130,7 @@ function App() {
 			<StrictMode>
 				<Theme
 					appearance={isDarkTheme ? "dark" : "light"}
+					accentColor="red"
 					panelBackground="solid"
 					hasBackground={hasBackground}
 					className={styles.radixTheme}
@@ -142,9 +141,9 @@ function App() {
 							isLyricPageOpened && styles.amllOpened,
 						)}
 					>
-						<AppContainer playbar={<NowPlayingBar />}>
-							<RouterProvider router={router} />
-						</AppContainer>
+						{/* <AppContainer playbar={<NowPlayingBar />}> */}
+						<RouterProvider router={router} />
+						{/* </AppContainer> */}
 						{/* <Box className={styles.container}>
 							<RouterProvider router={router} />
 						</Box> */}

@@ -4769,11 +4769,11 @@ button:focus {
 	background-color: var(--navSidebarSelectedState);
 }
 
-@media (min-width: 484px) {
+/* @media (min-width: 484px) {
 	.navigation-item__search.svelte-1a5yt87 {
 		display: none;
 	}
-}
+} */
 
 .navigation-item__link.svelte-1a5yt87 {
 	border-radius: inherit;
@@ -5360,7 +5360,7 @@ dialog.svelte-1va2pd3 {
 	display: flex;
 	height: 267px;
 	justify-content: center;
-	overflow: auto;
+	overflow: overlay;
 	position: relative;
 }
 
@@ -9043,7 +9043,7 @@ amp-lyrics.svelte-1niz522 {
 	height: fit-content;
 	inset: 0;
 	margin: auto;
-	overflow: auto;
+	overflow: overlay;
 	padding: .25em;
 	position: fixed;
 	width: -moz-fit-content;

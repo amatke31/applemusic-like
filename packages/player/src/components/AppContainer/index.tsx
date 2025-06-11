@@ -7,6 +7,8 @@ import {
 	type ReactNode,
 	useState,
 } from "react";
+import { Outlet } from "react-router-dom";
+import { AMPHeader } from "../AMPHeader";
 import styles from "./index.module.css";
 
 const sidebarWidthAtom = atomWithStorage("sidebarWidth", 256);
@@ -36,27 +38,33 @@ export const AppContainer: FC<
 	};
 
 	return (
-		<div className={styles.appContainer}>
-			<div className={styles.sidebar} style={{ width: `${sidebarWidth}px` }}>
-				{sidebar}
+		<div className="app-container svelte-t3vj1e is-library-page is-not-focused">
+			<AMPHeader onPush={() => {}} />
+			<div className={styles.appContainer}>
+				<div className={styles.sidebar} style={{ width: `${sidebarWidth}px` }}>
+					{sidebar}
+				</div>
+				<div
+					className={classNames(
+						styles.sidebarDivider,
+						dragging && styles.dragging,
+					)}
+					style={{
+						cursor:
+							sidebarWidth === 192
+								? "e-resize"
+								: sidebarWidth === 512
+									? "w-resize"
+									: "ew-resize",
+					}}
+					onMouseDown={onSidebarDraggerMouseDown}
+				/>
+				<div className={styles.main}>
+					{children}
+					<Outlet />
+				</div>
+				<div className={styles.playbar}>{playbar}</div>
 			</div>
-			<div
-				className={classNames(
-					styles.sidebarDivider,
-					dragging && styles.dragging,
-				)}
-				style={{
-					cursor:
-						sidebarWidth === 192
-							? "e-resize"
-							: sidebarWidth === 512
-								? "w-resize"
-								: "ew-resize",
-				}}
-				onMouseDown={onSidebarDraggerMouseDown}
-			/>
-			<div className={styles.main}>{children}</div>
-			<div className={styles.playbar}>{playbar}</div>
 		</div>
 	);
 };
