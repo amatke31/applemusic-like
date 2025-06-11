@@ -65,7 +65,7 @@
         "label": "Thêm bài hát từ bộ nhớ"
       },
       "totalMusicLabel": "{count, plural, other {#}} bài hát",
-      "playAll": "Phát tất cả",
+      "playAll": "Phát",
       "shufflePlayAll": "Phát ngẫu nhiên"
     },
     "amll-dev": {

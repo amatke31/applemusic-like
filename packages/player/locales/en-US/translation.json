@@ -118,7 +118,7 @@
         "uploadCoverImage": "Upload your own cover art"
       },
       "totalMusicLabel": "{count, plural, other {#}} song(s)",
-      "playAll": "Play All",
+      "playAll": "Play",
       "shufflePlayAll": "Shuffle"
     },
     "amll-dev": {

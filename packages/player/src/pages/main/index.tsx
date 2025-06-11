@@ -14,7 +14,6 @@ import { useAtomValue } from "jotai";
 import { type FC, useRef } from "react";
 import { Trans } from "react-i18next";
 import { Link } from "react-router-dom";
-import { ViewportList } from "react-viewport-list";
 import { ExtensionInjectPoint } from "../../components/ExtensionInjectPoint/index.tsx";
 import { NewPlaylistButton } from "../../components/NewPlaylistButton/index.tsx";
 import { PageContainer } from "../../components/PageContainer/index.tsx";
@@ -34,7 +33,7 @@ export const Component: FC = () => {
 				<Flex direction="row" align="center" wrap="wrap" mt="5">
 					<Box asChild flexGrow="1">
 						<Heading wrap="nowrap" my="4">
-							AMLL Player
+							AMPL Player
 							{updateInfo && (
 								<Badge
 									onClick={() => router.navigate("/settings#updater")}
@@ -115,10 +114,11 @@ export const Component: FC = () => {
 								minHeight: "0",
 							}}
 							ref={viewportRef}
+							className="grid svelte-1a54yxp grid--flow-row"
 						>
-							<ViewportList items={playlists} viewportRef={viewportRef}>
-								{(v) => <PlaylistCard playlist={v} />}
-							</ViewportList>
+							{playlists.map((playlist) => (
+								<PlaylistCard key={playlist.id} playlist={playlist} />
+							))}
 						</div>
 					)
 				) : (

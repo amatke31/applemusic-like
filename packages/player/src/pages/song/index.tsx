@@ -9,7 +9,7 @@ import {
 	Text,
 } from "@radix-ui/themes";
 import { useLiveQuery } from "dexie-react-hooks";
-import { type FC, useContext } from "react";
+import { type FC, useContext, useEffect } from "react";
 import { Trans } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { ExtensionInjectPoint } from "../../components/ExtensionInjectPoint/index.tsx";
@@ -23,6 +23,10 @@ import { SongContext } from "./song-ctx.ts";
 const SongPageHeader: FC = () => {
 	const song = useContext(SongContext);
 	const songImgUrl = useSongCover(song);
+
+	useEffect(() => {
+		console.log("Song cover URL updated:", songImgUrl);
+	}, [songImgUrl]);
 
 	return (
 		<>

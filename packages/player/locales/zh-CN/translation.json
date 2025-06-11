@@ -122,7 +122,7 @@
         "uploadCoverImage": "上传封面图片"
       },
       "totalMusicLabel": "{count, plural, other {#}} 首歌曲",
-      "playAll": "播放全部",
+      "playAll": "播放",
       "shufflePlayAll": "随机播放"
     },
     "amll-dev": {

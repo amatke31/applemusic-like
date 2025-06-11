@@ -56,8 +56,15 @@ export const PlaylistCover: FC<
 
 	return (
 		<div
-			className={classNames(styles.playlistCover, "img-border", className)}
+			className={classNames(
+				styles.playlistCover,
+				"img-border",
+				className,
+				"svelte-10tj07c",
+				"collage-artwork svelte-8qnhe3 is-collage",
+			)}
 			{...props}
+			style={{ width: "100%", height: "100%" }}
 		>
 			{playlistImgs.map((img) => (
 				<div

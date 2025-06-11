@@ -1,0 +1,1149 @@
+@charset "UTF-8";
+:host {
+	--systemRed: #ff3b30;
+	--systemRed-vibrant: #f53126;
+	--systemRed-default_IC: #d70015;
+	--systemRed-vibrant_IC: #c20618;
+	--systemOrange: #ff9500;
+	--systemOrange-vibrant: #f58b00;
+	--systemOrange-default_IC: #c93400;
+	--systemOrange-vibrant_IC: #ad3a00;
+	--systemYellow: #ffcc00;
+	--systemYellow-vibrant: #f5c200;
+	--systemYellow-default_IC: #a05a00;
+	--systemYellow-vibrant_IC: #925100;
+	--systemGreen: #28cd41;
+	--systemGreen-vibrant: #1ec337;
+	--systemGreen-default_IC: #007d1b;
+	--systemGreen-vibrant_IC: #007018;
+	--systemMint: #00c7be;
+	--systemMint-vibrant: #00bdb4;
+	--systemMint-default_IC: #0c817b;
+	--systemMint-vibrant_IC: #0b7570;
+	--systemTeal: #59adc4;
+	--systemTeal-vibrant: #2ea7bd;
+	--systemTeal-default_IC: #008299;
+	--systemTeal-vibrant_IC: #00778c;
+	--systemCyan: #55bef0;
+	--systemCyan-vibrant: #41afdc;
+	--systemCyan-default_IC: #0071a4;
+	--systemCyan-vibrant_IC: #006796;
+	--systemBlue: #007aff;
+	--systemBlue-vibrant: #0070f5;
+	--systemBlue-default_IC: #0040dd;
+	--systemBlue-vibrant_IC: #0040dd;
+	--systemBlue-rollover: #0045b7;
+	--systemBlue-pressed: #005cd7;
+	--systemBlue-deepPressed: #0045b7;
+	--systemBlue-disabled: rgba(0, 122, 255, 0.35);
+	--systemIndigo: #5856d6;
+	--systemIndigo-vibrant: #5452cc;
+	--systemIndigo-default_IC: #3634a3;
+	--systemIndigo-vibrant_IC: #3634a3;
+	--systemPurple: #af52de;
+	--systemPurple-vibrant: #9f4bc9;
+	--systemPurple-default_IC: #ad44ab;
+	--systemPurple-vibrant_IC: #ad44ab;
+	--systemPink: #ff2d55;
+	--systemPink-vibrant: #f5234b;
+	--systemPink-default_IC: #d30f45;
+	--systemPink-vibrant_IC: #c11032;
+	--systemBrown: #a2845e;
+	--systemBrown-vibrant: #987a54;
+	--systemBrown-default_IC: #7f6545;
+	--systemBrown-vibrant_IC: #775d3b;
+	--systemGray: #8e8e93;
+	--systemGray-vibrant: #848489;
+	--systemGray-default_IC: #69696e;
+	--systemGray-vibrant_IC: #616165;
+	--systemPrimary: rgba(0, 0, 0, 0.85);
+	--systemPrimary-vibrant: #4c4c4c;
+	--systemPrimary-onLight: rgba(0, 0, 0, 0.85);
+	--systemPrimary-onDark: rgba(255, 255, 255, 0.85);
+	--systemPrimary-default_IC: black;
+	--systemPrimary-vibrant_IC: black;
+	--systemPrimary-onLight_IC: black;
+	--systemPrimary-onDark_IC: white;
+	--systemSecondary: rgba(0, 0, 0, 0.5);
+	--systemSecondary-vibrant: gray;
+	--systemSecondary-onLight: rgba(0, 0, 0, 0.5);
+	--systemSecondary-onDark: rgba(255, 255, 255, 0.55);
+	--systemSecondary-default_IC: rgba(0, 0, 0, 0.76);
+	--systemSecondary-vibrant_IC: rgba(0, 0, 0, 0.76);
+	--systemSecondary-onLight_IC: rgba(0, 0, 0, 0.76);
+	--systemSecondary-onDark_IC: rgba(255, 255, 255, 0.7);
+	--systemTertiary: rgba(0, 0, 0, 0.25);
+	--systemTertiary-vibrant: #bfbfbf;
+	--systemTertiary-onLight: rgba(0, 0, 0, 0.25);
+	--systemTertiary-onDark: rgba(255, 255, 255, 0.25);
+	--systemTertiary-default_IC: rgba(0, 0, 0, 0.56);
+	--systemTertiary-vibrant_IC: rgba(0, 0, 0, 0.56);
+	--systemTertiary-onLight_IC: rgba(0, 0, 0, 0.56);
+	--systemTertiary-onDark_IC: rgba(255, 255, 255, 0.5);
+	--systemQuaternary: rgba(0, 0, 0, 0.1);
+	--systemQuaternary-vibrant: #e6e6e6;
+	--systemQuaternary-onLight: rgba(0, 0, 0, 0.1);
+	--systemQuaternary-onDark: rgba(255, 255, 255, 0.1);
+	--systemQuaternary-default_IC: rgba(0, 0, 0, 0.35);
+	--systemQuaternary-vibrant_IC: rgba(0, 0, 0, 0.35);
+	--systemQuaternary-onLight_IC: rgba(0, 0, 0, 0.35);
+	--systemQuaternary-onDark_IC: rgba(255, 255, 255, 0.3);
+	--systemQuinary: rgba(0, 0, 0, 0.05);
+	--systemQuinary-vibrant: #f2f2f2;
+	--systemQuinary-onLight: rgba(0, 0, 0, 0.05);
+	--systemQuinary-onDark: rgba(255, 255, 255, 0.05);
+	--systemQuinary-default_IC: rgba(0, 0, 0, 0.1);
+	--systemQuinary-vibrant_IC: rgba(0, 0, 0, 0.1);
+	--systemQuinary-onLight_IC: rgba(0, 0, 0, 0.1);
+	--systemQuinary-onDark_IC: rgba(255, 255, 255, 0.1);
+	--systemGray2: #aeaeb2;
+	--systemGray2-onLight: #aeaeb2;
+	--systemGray2-onDark: #636366;
+	--systemGray2-default_IC: #8e8e93;
+	--systemGray2-onLight_IC: #8e8e93;
+	--systemGray2-onDark_IC: #7c7c80;
+	--systemGray3: #c7c7cc;
+	--systemGray3-onLight: #c7c7cc;
+	--systemGray3-onDark: #48484a;
+	--systemGray3-default_IC: #aeaeb2;
+	--systemGray3-onLight_IC: #aeaeb2;
+	--systemGray3-onDark_IC: #545456;
+	--systemGray4: #d1d1d6;
+	--systemGray4-onLight: #d1d1d6;
+	--systemGray4-onDark: #3a3a3c;
+	--systemGray4-default_IC: #bcbcc0;
+	--systemGray4-onLight_IC: #bcbcc0;
+	--systemGray4-onDark_IC: #444446;
+	--systemGray5: #e5e5ea;
+	--systemGray5-onLight: #e5e5ea;
+	--systemGray5-onDark: #2c2c2e;
+	--systemGray5-default_IC: #d8d8dc;
+	--systemGray5-onLight_IC: #d8d8dc;
+	--systemGray5-onDark_IC: #363638;
+	--systemGray6: #f2f2f7;
+	--systemGray6-onLight: #f2f2f7;
+	--systemGray6-onDark: #1c1c1e;
+	--systemGray6-default_IC: #ebebf0;
+	--systemGray6-onLight_IC: #ebebf0;
+	--systemGray6-onDark_IC: #242426;
+	--systemStandardUltrathinMaterialSover: rgba(246, 246, 246, 0.36);
+	--systemStandardUltrathinMaterialSover-inactive: #f0f0f0;
+	--systemStandardUltrathinMaterialSover-default_IC: #d2d2d2;
+	--systemStandardUltrathinMaterialSover-inactive_IC: #ececec;
+	--systemStandardThinMaterialSover: rgba(246, 246, 246, 0.48);
+	--systemStandardThinMaterialSover-inactive: #f0f0f0;
+	--systemStandardThinMaterialSover-default_IC: gainsboro;
+	--systemStandardThinMaterialSover-inactive_IC: #ececec;
+	--systemStandardMediumMaterialSover: rgba(246, 246, 246, 0.6);
+	--systemStandardMediumMaterialSover-inactive: #f0f0f0;
+	--systemStandardMediumMaterialSover-default_IC: #e6e6e6;
+	--systemStandardMediumMaterialSover-inactive_IC: #ececec;
+	--systemStandardThickMaterialSover: rgba(246, 246, 246, 0.72);
+	--systemStandardThickMaterialSover-inactive: #f0f0f0;
+	--systemStandardThickMaterialSover-default_IC: #f0f0f0;
+	--systemStandardThickMaterialSover-inactive_IC: #ececec;
+	--systemStandardUltrathickMaterialSover: rgba(246, 246, 246, 0.84);
+	--systemStandardUltrathickMaterialSover-inactive: #f0f0f0;
+	--systemStandardUltrathickMaterialSover-default_IC: #fafafa;
+	--systemStandardUltrathickMaterialSover-inactive_IC: #ececec;
+	--systemHeaderMaterialSover: rgba(255, 255, 255, 0.8);
+	--systemHeaderMaterialSover-default_IC: white;
+	--systemToolbarTitlebarMaterialSover: rgba(253, 253, 253, 0.8);
+	--systemToolbarTitlebarMaterialSover-inactive: #f0f0f0;
+	--systemToolbarTitlebarMaterialSover-default_IC: white;
+	--systemToolbarTitlebarMaterialSover-inactive_IC: #ececec;
+	--labelDivider: rgba(0, 0, 0, 0.15);
+	--vibrantDivider: rgba(60, 60, 67, 0.29);
+	--pageBG: white;
+	--shelfBG: rgba(0, 0, 0, 0.05);
+	--genericJoeColor: #ebebeb;
+	--fallbackMaterialBG: rgba(255, 255, 255, 0.97);
+	--liveBadgePlatterBG: #ff5066;
+	--pageBg: #f8f8fa;
+	--keyColor-focus-color: rgba(var(--keyColor-rgb), 0.6);
+	--shelfBg: rgba(0, 0, 0, 0.14);
+	--overlayBg: rgba(248, 248, 250, 0.9);
+	--overlayBgBlur: rgba(248, 248, 250, 0.7);
+	--borderRule: rgba(0, 0, 0, 0.07);
+	--podcastKeyColor: #7224d8;
+	--podcastPlatterBg: #f8f8fa;
+	--podcastPlatterBgTransparent: rgba(248, 248, 250, 0);
+	--podcastScrim: rgba(0, 0, 0, 0.5);
+	--progressElapsed: #a5aab2;
+	--progressRemaining: #e1e1e6;
+	--menuItemHoverBg: rgba(0, 0, 0, 0.05);
+	--tracklistGradientStart: rgba(0, 0, 0, 0.05);
+	--tracklistGradientEnd: rgba(0, 0, 0, 0);
+	--footerPlayerBg: #fff;
+	--emptyPlatterBg: rgba(60, 60, 67, 0.18);
+	--videoEmbedMenuBg: rgba(255, 255, 255, 0.97);
+	--videoEmbedMenuHoverBg: rgba(60, 60, 67, 0.03);
+	--lyricsBg: rgba(255, 255, 255, 0.8);
+	--musicKeyColor: #fa233b;
+	--musicKeyColor-default_IC: #d60017;
+	--chromeVolumeTrack: rgba(0, 0, 0, 0.15);
+	--chromeVolumeElapsed: rgba(0, 0, 0, 0.5);
+	--chromeVolumeThumb: white;
+	--chromeVolumeThumbShadow: rgba(0, 0, 0, 0.1);
+	--chromeVolumeThumbShadowInset: rgba(0, 0, 0, 0.5);
+	--chromeVolumeIcon: rgba(0, 0, 0, 0.4);
+	--chromebg: rgba(255, 255, 255, 0.88);
+	--playerBGFill: rgba(255, 255, 255, 0.88);
+	--playerLCDBGFill: white;
+	--playerScrubberThumb: #656565;
+	--playerScrubberTrack: rgba(0, 0, 0, 0.1);
+	--playerScrubberFill: rgba(0, 0, 0, 0.5);
+	--playerMissingArtworkIcon: gainsboro;
+	--playerMissingArtworkBg: #e9e9e9;
+	--chromeBg: rgba(255, 255, 255, 0.88);
+	--chromeBorderColor: rgba(0, 0, 0, 0.2);
+	--chromeVolumeIcons: rgba(0, 0, 0, 0.4);
+	--ctxmenuBgColor: rgba(255, 255, 255, 0.97);
+	--ctxmenuBgColorHover: rgba(60, 60, 67, 0.03);
+	--ctxmenuScrim: rgba(0, 0, 0, 0.45);
+	--frostedFallbackHover: rgba(142, 142, 147, 0.8);
+	--dialogShadowColor: rgba(0, 0, 0, 0.25);
+	--unifiedVolumeThumbShadow: rgba(0, 0, 0, 0.1);
+	--unifiedVolumeThumbShadowInset: rgba(0, 0, 0, 0.15);
+	--unifiedVolumeTrackFilled: rgba(246, 246, 246, 0.36);
+	--unifiedVolumeThumb: #d0d0d0;
+	--white80: rgba(255, 255, 255, 0.8);
+}
+@supports not (font: -apple-system-body) {
+	:host {
+		--systemPrimary: rgba(0, 0, 0, 0.88);
+		--systemPrimary-vibrant: #1d1d1f;
+		--systemPrimary-onLight: rgba(0, 0, 0, 0.88);
+		--systemPrimary-onDark: rgba(255, 255, 255, 0.92);
+		--systemSecondary: rgba(0, 0, 0, 0.56);
+		--systemSecondary-vibrant: rgba(0, 0, 0, 0.56);
+		--systemSecondary-onLight: rgba(0, 0, 0, 0.56);
+		--systemSecondary-onDark: rgba(255, 255, 255, 0.64);
+		--systemTertiary: rgba(0, 0, 0, 0.48);
+		--systemTertiary-vibrant: rgba(0, 0, 0, 0.48);
+		--systemTertiary-onLight: rgba(0, 0, 0, 0.48);
+		--systemTertiary-onDark: rgba(255, 255, 255, 0.4);
+		--musicKeyColor: #d60017;
+	}
+}
+:host .increase-contrast {
+	--systemRed: #d70015;
+	--systemRed-vibrant: #c20618;
+	--systemOrange: #c93400;
+	--systemOrange-vibrant: #ad3a00;
+	--systemYellow: #a05a00;
+	--systemYellow-vibrant: #925100;
+	--systemGreen: #007d1b;
+	--systemGreen-vibrant: #007018;
+	--systemMint: #0c817b;
+	--systemMint-vibrant: #0b7570;
+	--systemTeal: #008299;
+	--systemTeal-vibrant: #00778c;
+	--systemCyan: #0071a4;
+	--systemCyan-vibrant: #006796;
+	--systemBlue: #0040dd;
+	--systemBlue-vibrant: #0040dd;
+	--systemIndigo: #3634a3;
+	--systemIndigo-vibrant: #3634a3;
+	--systemPurple: #ad44ab;
+	--systemPurple-vibrant: #ad44ab;
+	--systemPink: #d30f45;
+	--systemPink-vibrant: #c11032;
+	--systemBrown: #7f6545;
+	--systemBrown-vibrant: #775d3b;
+	--systemGray: #69696e;
+	--systemGray-vibrant: #616165;
+	--systemPrimary: black;
+	--systemPrimary-vibrant: black;
+	--systemPrimary-onLight: black;
+	--systemPrimary-onDark: white;
+	--systemSecondary: rgba(0, 0, 0, 0.76);
+	--systemSecondary-vibrant: rgba(0, 0, 0, 0.76);
+	--systemSecondary-onLight: rgba(0, 0, 0, 0.76);
+	--systemSecondary-onDark: rgba(255, 255, 255, 0.7);
+	--systemTertiary: rgba(0, 0, 0, 0.56);
+	--systemTertiary-vibrant: rgba(0, 0, 0, 0.56);
+	--systemTertiary-onLight: rgba(0, 0, 0, 0.56);
+	--systemTertiary-onDark: rgba(255, 255, 255, 0.5);
+	--systemQuaternary: rgba(0, 0, 0, 0.35);
+	--systemQuaternary-vibrant: rgba(0, 0, 0, 0.35);
+	--systemQuaternary-onLight: rgba(0, 0, 0, 0.35);
+	--systemQuaternary-onDark: rgba(255, 255, 255, 0.3);
+	--systemQuinary: rgba(0, 0, 0, 0.1);
+	--systemQuinary-vibrant: rgba(0, 0, 0, 0.1);
+	--systemQuinary-onLight: rgba(0, 0, 0, 0.1);
+	--systemQuinary-onDark: rgba(255, 255, 255, 0.1);
+	--systemGray2: #8e8e93;
+	--systemGray2-onLight: #8e8e93;
+	--systemGray2-onDark: #7c7c80;
+	--systemGray3: #aeaeb2;
+	--systemGray3-onLight: #aeaeb2;
+	--systemGray3-onDark: #545456;
+	--systemGray4: #bcbcc0;
+	--systemGray4-onLight: #bcbcc0;
+	--systemGray4-onDark: #444446;
+	--systemGray5: #d8d8dc;
+	--systemGray5-onLight: #d8d8dc;
+	--systemGray5-onDark: #363638;
+	--systemGray6: #ebebf0;
+	--systemGray6-onLight: #ebebf0;
+	--systemGray6-onDark: #242426;
+	--systemStandardUltrathinMaterialSover: #d2d2d2;
+	--systemStandardUltrathinMaterialSover-inactive: #ececec;
+	--systemStandardThinMaterialSover: gainsboro;
+	--systemStandardThinMaterialSover-inactive: #ececec;
+	--systemStandardMediumMaterialSover: #e6e6e6;
+	--systemStandardMediumMaterialSover-inactive: #ececec;
+	--systemStandardThickMaterialSover: #f0f0f0;
+	--systemStandardThickMaterialSover-inactive: #ececec;
+	--systemStandardUltrathickMaterialSover: #fafafa;
+	--systemStandardUltrathickMaterialSover-inactive: #ececec;
+	--systemHeaderMaterialSover: white;
+	--systemToolbarTitlebarMaterialSover: white;
+	--systemToolbarTitlebarMaterialSover-inactive: #ececec;
+	--musicKeyColor: #d60017;
+}
+@media (prefers-contrast: more) {
+	:host {
+		--systemRed: #d70015;
+		--systemRed-vibrant: #c20618;
+		--systemOrange: #c93400;
+		--systemOrange-vibrant: #ad3a00;
+		--systemYellow: #a05a00;
+		--systemYellow-vibrant: #925100;
+		--systemGreen: #007d1b;
+		--systemGreen-vibrant: #007018;
+		--systemMint: #0c817b;
+		--systemMint-vibrant: #0b7570;
+		--systemTeal: #008299;
+		--systemTeal-vibrant: #00778c;
+		--systemCyan: #0071a4;
+		--systemCyan-vibrant: #006796;
+		--systemBlue: #0040dd;
+		--systemBlue-vibrant: #0040dd;
+		--systemIndigo: #3634a3;
+		--systemIndigo-vibrant: #3634a3;
+		--systemPurple: #ad44ab;
+		--systemPurple-vibrant: #ad44ab;
+		--systemPink: #d30f45;
+		--systemPink-vibrant: #c11032;
+		--systemBrown: #7f6545;
+		--systemBrown-vibrant: #775d3b;
+		--systemGray: #69696e;
+		--systemGray-vibrant: #616165;
+		--systemPrimary: black;
+		--systemPrimary-vibrant: black;
+		--systemPrimary-onLight: black;
+		--systemPrimary-onDark: white;
+		--systemSecondary: rgba(0, 0, 0, 0.76);
+		--systemSecondary-vibrant: rgba(0, 0, 0, 0.76);
+		--systemSecondary-onLight: rgba(0, 0, 0, 0.76);
+		--systemSecondary-onDark: rgba(255, 255, 255, 0.7);
+		--systemTertiary: rgba(0, 0, 0, 0.56);
+		--systemTertiary-vibrant: rgba(0, 0, 0, 0.56);
+		--systemTertiary-onLight: rgba(0, 0, 0, 0.56);
+		--systemTertiary-onDark: rgba(255, 255, 255, 0.5);
+		--systemQuaternary: rgba(0, 0, 0, 0.35);
+		--systemQuaternary-vibrant: rgba(0, 0, 0, 0.35);
+		--systemQuaternary-onLight: rgba(0, 0, 0, 0.35);
+		--systemQuaternary-onDark: rgba(255, 255, 255, 0.3);
+		--systemQuinary: rgba(0, 0, 0, 0.1);
+		--systemQuinary-vibrant: rgba(0, 0, 0, 0.1);
+		--systemQuinary-onLight: rgba(0, 0, 0, 0.1);
+		--systemQuinary-onDark: rgba(255, 255, 255, 0.1);
+		--systemGray2: #8e8e93;
+		--systemGray2-onLight: #8e8e93;
+		--systemGray2-onDark: #7c7c80;
+		--systemGray3: #aeaeb2;
+		--systemGray3-onLight: #aeaeb2;
+		--systemGray3-onDark: #545456;
+		--systemGray4: #bcbcc0;
+		--systemGray4-onLight: #bcbcc0;
+		--systemGray4-onDark: #444446;
+		--systemGray5: #d8d8dc;
+		--systemGray5-onLight: #d8d8dc;
+		--systemGray5-onDark: #363638;
+		--systemGray6: #ebebf0;
+		--systemGray6-onLight: #ebebf0;
+		--systemGray6-onDark: #242426;
+		--systemStandardUltrathinMaterialSover: #d2d2d2;
+		--systemStandardUltrathinMaterialSover-inactive: #ececec;
+		--systemStandardThinMaterialSover: gainsboro;
+		--systemStandardThinMaterialSover-inactive: #ececec;
+		--systemStandardMediumMaterialSover: #e6e6e6;
+		--systemStandardMediumMaterialSover-inactive: #ececec;
+		--systemStandardThickMaterialSover: #f0f0f0;
+		--systemStandardThickMaterialSover-inactive: #ececec;
+		--systemStandardUltrathickMaterialSover: #fafafa;
+		--systemStandardUltrathickMaterialSover-inactive: #ececec;
+		--systemHeaderMaterialSover: white;
+		--systemToolbarTitlebarMaterialSover: white;
+		--systemToolbarTitlebarMaterialSover-inactive: #ececec;
+		--musicKeyColor: #d60017;
+	}
+}
+@media (prefers-color-scheme: dark) {
+	:host {
+		--systemRed: #ff453a;
+		--systemRed-vibrant: #ff4f44;
+		--systemRed-default_IC: #ff6961;
+		--systemRed-vibrant_IC: #ff4136;
+		--systemOrange: #ff9f0a;
+		--systemOrange-vibrant: #ffa914;
+		--systemOrange-default_IC: #ffb340;
+		--systemOrange-vibrant_IC: #ffb340;
+		--systemYellow: #ffd60a;
+		--systemYellow-vibrant: #ffe014;
+		--systemYellow-default_IC: #ffd426;
+		--systemYellow-vibrant_IC: #ffd426;
+		--systemGreen: #32d74b;
+		--systemGreen-vibrant: #3ce155;
+		--systemGreen-default_IC: #31de4b;
+		--systemGreen-vibrant_IC: #31de4b;
+		--systemMint: #63e6e2;
+		--systemMint-vibrant: #6ce0db;
+		--systemMint-default_IC: #63e6e2;
+		--systemMint-vibrant_IC: #63e6e2;
+		--systemTeal: #6ac4dc;
+		--systemTeal-vibrant: #44d4ed;
+		--systemTeal-default_IC: #5de6ff;
+		--systemTeal-vibrant_IC: #5de6ff;
+		--systemCyan: #5ac8f5;
+		--systemCyan-vibrant: #5acdfa;
+		--systemCyan-default_IC: #70d7ff;
+		--systemCyan-vibrant_IC: #70d7ff;
+		--systemBlue: #0a84ff;
+		--systemBlue-vibrant: #148eff;
+		--systemBlue-default_IC: #409cff;
+		--systemBlue-vibrant_IC: #409cff;
+		--systemBlue-rollover: #47c1ff;
+		--systemBlue-pressed: #38b2ff;
+		--systemBlue-deepPressed: #47c1ff;
+		--systemBlue-disabled: rgba(10, 132, 255, 0.5);
+		--systemIndigo: #5e5ce6;
+		--systemIndigo-vibrant: #6361f2;
+		--systemIndigo-default_IC: #7d7aff;
+		--systemIndigo-vibrant_IC: #7d7aff;
+		--systemPurple: #bf5af2;
+		--systemPurple-vibrant: #cc65ff;
+		--systemPurple-default_IC: #da8fff;
+		--systemPurple-vibrant_IC: #da8fff;
+		--systemPink: #ff375f;
+		--systemPink-vibrant: #ff4169;
+		--systemPink-default_IC: #ff6482;
+		--systemPink-vibrant_IC: #ff3a5f;
+		--systemBrown: #ac8e68;
+		--systemBrown-vibrant: #b69872;
+		--systemBrown-default_IC: #b59469;
+		--systemBrown-vibrant_IC: #b59469;
+		--systemGray: #98989d;
+		--systemGray-vibrant: #a2a2a7;
+		--systemGray-default_IC: #98989d;
+		--systemGray-vibrant_IC: #98989d;
+		--systemPrimary: rgba(255, 255, 255, 0.85);
+		--systemPrimary-vibrant: #e5e5e5;
+		--systemPrimary-onLight: rgba(0, 0, 0, 0.85);
+		--systemPrimary-onDark: rgba(255, 255, 255, 0.85);
+		--systemPrimary-default_IC: white;
+		--systemPrimary-vibrant_IC: white;
+		--systemPrimary-onLight_IC: black;
+		--systemPrimary-onDark_IC: white;
+		--systemSecondary: rgba(255, 255, 255, 0.55);
+		--systemSecondary-vibrant: #7c7c7c;
+		--systemSecondary-onLight: rgba(0, 0, 0, 0.5);
+		--systemSecondary-onDark: rgba(255, 255, 255, 0.55);
+		--systemSecondary-default_IC: rgba(255, 255, 255, 0.7);
+		--systemSecondary-vibrant_IC: rgba(255, 255, 255, 0.7);
+		--systemSecondary-onLight_IC: rgba(0, 0, 0, 0.76);
+		--systemSecondary-onDark_IC: rgba(255, 255, 255, 0.7);
+		--systemTertiary: rgba(255, 255, 255, 0.25);
+		--systemTertiary-vibrant: #414141;
+		--systemTertiary-onLight: rgba(0, 0, 0, 0.25);
+		--systemTertiary-onDark: rgba(255, 255, 255, 0.25);
+		--systemTertiary-default_IC: rgba(255, 255, 255, 0.5);
+		--systemTertiary-vibrant_IC: rgba(255, 255, 255, 0.5);
+		--systemTertiary-onLight_IC: rgba(0, 0, 0, 0.56);
+		--systemTertiary-onDark_IC: rgba(255, 255, 255, 0.5);
+		--systemQuaternary: rgba(255, 255, 255, 0.1);
+		--systemQuaternary-vibrant: #232323;
+		--systemQuaternary-onLight: rgba(0, 0, 0, 0.1);
+		--systemQuaternary-onDark: rgba(255, 255, 255, 0.1);
+		--systemQuaternary-default_IC: rgba(255, 255, 255, 0.3);
+		--systemQuaternary-vibrant_IC: rgba(255, 255, 255, 0.3);
+		--systemQuaternary-onLight_IC: rgba(0, 0, 0, 0.35);
+		--systemQuaternary-onDark_IC: rgba(255, 255, 255, 0.3);
+		--systemQuinary: rgba(255, 255, 255, 0.05);
+		--systemQuinary-vibrant: #080808;
+		--systemQuinary-onLight: rgba(0, 0, 0, 0.05);
+		--systemQuinary-onDark: rgba(255, 255, 255, 0.05);
+		--systemQuinary-default_IC: rgba(255, 255, 255, 0.1);
+		--systemQuinary-vibrant_IC: rgba(255, 255, 255, 0.1);
+		--systemQuinary-onLight_IC: rgba(0, 0, 0, 0.1);
+		--systemQuinary-onDark_IC: rgba(255, 255, 255, 0.1);
+		--systemGray2: #636366;
+		--systemGray2-onLight: #aeaeb2;
+		--systemGray2-onDark: #636366;
+		--systemGray2-default_IC: #7c7c80;
+		--systemGray2-onLight_IC: #8e8e93;
+		--systemGray2-onDark_IC: #7c7c80;
+		--systemGray3: #48484a;
+		--systemGray3-onLight: #c7c7cc;
+		--systemGray3-onDark: #48484a;
+		--systemGray3-default_IC: #545456;
+		--systemGray3-onLight_IC: #aeaeb2;
+		--systemGray3-onDark_IC: #545456;
+		--systemGray4: #3a3a3c;
+		--systemGray4-onLight: #d1d1d6;
+		--systemGray4-onDark: #3a3a3c;
+		--systemGray4-default_IC: #444446;
+		--systemGray4-onLight_IC: #bcbcc0;
+		--systemGray4-onDark_IC: #444446;
+		--systemGray5: #2c2c2e;
+		--systemGray5-onLight: #e5e5ea;
+		--systemGray5-onDark: #2c2c2e;
+		--systemGray5-default_IC: #363638;
+		--systemGray5-onLight_IC: #d8d8dc;
+		--systemGray5-onDark_IC: #363638;
+		--systemGray6: #1c1c1e;
+		--systemGray6-onLight: #f2f2f7;
+		--systemGray6-onDark: #1c1c1e;
+		--systemGray6-default_IC: #242426;
+		--systemGray6-onLight_IC: #ebebf0;
+		--systemGray6-onDark_IC: #242426;
+		--systemStandardUltrathinMaterialSover: rgba(40, 40, 40, 0.4);
+		--systemStandardUltrathinMaterialSover-inactive: #282828;
+		--systemStandardUltrathinMaterialSover-default_IC: black;
+		--systemStandardUltrathinMaterialSover-inactive_IC: #141414;
+		--systemStandardThinMaterialSover: rgba(40, 40, 40, 0.5);
+		--systemStandardThinMaterialSover-inactive: #282828;
+		--systemStandardThinMaterialSover-default_IC: #0a0a0a;
+		--systemStandardThinMaterialSover-inactive_IC: #141414;
+		--systemStandardMediumMaterialSover: rgba(40, 40, 40, 0.6);
+		--systemStandardMediumMaterialSover-inactive: #282828;
+		--systemStandardMediumMaterialSover-default_IC: #141414;
+		--systemStandardMediumMaterialSover-inactive_IC: #141414;
+		--systemStandardThickMaterialSover: rgba(40, 40, 40, 0.7);
+		--systemStandardThickMaterialSover-inactive: #282828;
+		--systemStandardThickMaterialSover-default_IC: #1e1e1e;
+		--systemStandardThickMaterialSover-inactive_IC: #141414;
+		--systemStandardUltrathickMaterialSover: rgba(40, 40, 40, 0.8);
+		--systemStandardUltrathickMaterialSover-inactive: #282828;
+		--systemStandardUltrathickMaterialSover-default_IC: #282828;
+		--systemStandardUltrathickMaterialSover-inactive_IC: #141414;
+		--systemHeaderMaterialSover: rgba(30, 30, 30, 0.8);
+		--systemHeaderMaterialSover-default_IC: #1e1e1e;
+		--systemToolbarTitlebarMaterialSover: rgba(60, 60, 60, 0.8);
+		--systemToolbarTitlebarMaterialSover-inactive: #282828;
+		--systemToolbarTitlebarMaterialSover-default_IC: #262626;
+		--systemToolbarTitlebarMaterialSover-inactive_IC: #141414;
+		--labelDivider: rgba(255, 255, 255, 0.1);
+		--vibrantDivider: rgba(235, 235, 245, 0.19);
+		--pageBG: #1f1f1f;
+		--shelfBG: rgba(255, 255, 255, 0.05);
+		--genericJoeColor: #323232;
+		--fallbackMaterialBG: rgba(31, 31, 31, 0.97);
+		--liveBadgePlatterBG: #ff5066;
+		--pageBg: #404040;
+		--shelfBg: rgba(255, 255, 255, 0.05);
+		--overlayBg: rgba(64, 64, 64, 0.9);
+		--overlayBgBlur: rgba(64, 64, 64, 0.7);
+		--borderRule: rgba(255, 255, 255, 0.1);
+		--podcastKeyColor: #9c5af2;
+		--podcastPlatterBg: #1c1c1e;
+		--podcastPlatterBgTransparent: rgba(28, 28, 30, 0);
+		--podcastScrim: rgba(255, 255, 255, 0.5);
+		--progressElapsed: rgba(255, 255, 255, 0.9);
+		--progressRemaining: rgba(235, 235, 245, 0.3);
+		--menuItemHoverBg: rgba(255, 255, 255, 0.05);
+		--tracklistGradientStart: rgba(255, 255, 255, 0.1);
+		--tracklistGradientEnd: rgba(255, 255, 255, 0);
+		--footerPlayerBg: #2e2e2e;
+		--emptyPlatterBg: #6e6e6e;
+		--videoEmbedMenuBg: rgba(0, 0, 0, 0.97);
+		--videoEmbedMenuHoverBg: rgba(60, 60, 67, 0.18);
+		--lyricsBg: rgba(45, 45, 45, 0.8);
+		--musicKeyColor: #fa2d48;
+		--musicKeyColor-default_IC: #fa586a;
+		--chromeVolumeTrack: rgba(255, 255, 255, 0.15);
+		--chromeVolumeElapsed: rgba(255, 255, 255, 0.6);
+		--chromeVolumeThumb: #cacaca;
+		--chromeVolumeThumbShadow: rgba(0, 0, 0, 0.1);
+		--chromeVolumeThumbShadowInset: rgba(0, 0, 0, 0.5);
+		--chromeVolumeIcon: rgba(255, 255, 255, 0.4);
+		--chromebg: rgba(45, 45, 45, 0.88);
+		--playerBGFill: rgba(45, 45, 45, 0.88);
+		--playerLCDBGFill: #4d4d4d;
+		--playerScrubberThumb: #d9d9d9;
+		--playerScrubberTrack: rgba(255, 255, 255, 0.1);
+		--playerScrubberFill: rgba(255, 255, 255, 0.6);
+		--playerMissingArtworkIcon: #434343;
+		--playerMissingArtworkBg: #323232;
+		--chromeBg: rgba(45, 45, 45, 0.88);
+		--chromeBorderColor: rgba(0, 0, 0, 0.2);
+		--chromeVolumeIcons: rgba(255, 255, 255, 0.4);
+		--ctxmenuBgColor: rgba(102, 102, 105, 0.93);
+		--ctxmenuBgColorHover: rgba(170, 170, 170, 0.2);
+		--ctxmenuScrim: rgba(0, 0, 0, 0.55);
+		--frostedFallbackHover: rgba(152, 152, 157, 0.8);
+		--dialogShadowColor: rgba(0, 0, 0, 0.55);
+		--unifiedVolumeThumbShadow: rgba(0, 0, 0, 0.1);
+		--unifiedVolumeThumbShadowInset: rgba(0, 0, 0, 0.15);
+		--unifiedVolumeTrackFilled: rgba(246, 246, 246, 0.36);
+		--unifiedVolumeThumb: #d0d0d0;
+		--white80: rgba(255, 255, 255, 0.8);
+		--tracklistGradientWidth: 170px;
+	}
+	@supports not (font: -apple-system-body) {
+		:host {
+			--systemPrimary: rgba(255, 255, 255, 0.92);
+			--systemPrimary-vibrant: #f5f5f7;
+			--systemPrimary-onLight: rgba(0, 0, 0, 0.88);
+			--systemPrimary-onDark: rgba(255, 255, 255, 0.92);
+			--systemSecondary: rgba(255, 255, 255, 0.64);
+			--systemSecondary-vibrant: #a1a1a6;
+			--systemSecondary-onLight: rgba(0, 0, 0, 0.56);
+			--systemSecondary-onDark: rgba(255, 255, 255, 0.64);
+			--systemTertiary: rgba(255, 255, 255, 0.4);
+			--systemTertiary-vibrant: #6e6e73;
+			--systemTertiary-onLight: rgba(0, 0, 0, 0.48);
+			--systemTertiary-onDark: rgba(255, 255, 255, 0.4);
+			--musicKeyColor: #fa586a;
+		}
+	}
+	:host .increase-contrast {
+		--systemRed: #ff6961;
+		--systemRed-vibrant: #ff4136;
+		--systemOrange: #ffb340;
+		--systemOrange-vibrant: #ffb340;
+		--systemYellow: #ffd426;
+		--systemYellow-vibrant: #ffd426;
+		--systemGreen: #31de4b;
+		--systemGreen-vibrant: #31de4b;
+		--systemMint: #63e6e2;
+		--systemMint-vibrant: #63e6e2;
+		--systemTeal: #5de6ff;
+		--systemTeal-vibrant: #5de6ff;
+		--systemCyan: #70d7ff;
+		--systemCyan-vibrant: #70d7ff;
+		--systemBlue: #409cff;
+		--systemBlue-vibrant: #409cff;
+		--systemIndigo: #7d7aff;
+		--systemIndigo-vibrant: #7d7aff;
+		--systemPurple: #da8fff;
+		--systemPurple-vibrant: #da8fff;
+		--systemPink: #ff6482;
+		--systemPink-vibrant: #ff3a5f;
+		--systemBrown: #b59469;
+		--systemBrown-vibrant: #b59469;
+		--systemGray: #98989d;
+		--systemGray-vibrant: #98989d;
+		--systemPrimary: white;
+		--systemPrimary-vibrant: white;
+		--systemPrimary-onLight: black;
+		--systemPrimary-onDark: white;
+		--systemSecondary: rgba(255, 255, 255, 0.7);
+		--systemSecondary-vibrant: rgba(255, 255, 255, 0.7);
+		--systemSecondary-onLight: rgba(0, 0, 0, 0.76);
+		--systemSecondary-onDark: rgba(255, 255, 255, 0.7);
+		--systemTertiary: rgba(255, 255, 255, 0.5);
+		--systemTertiary-vibrant: rgba(255, 255, 255, 0.5);
+		--systemTertiary-onLight: rgba(0, 0, 0, 0.56);
+		--systemTertiary-onDark: rgba(255, 255, 255, 0.5);
+		--systemQuaternary: rgba(255, 255, 255, 0.3);
+		--systemQuaternary-vibrant: rgba(255, 255, 255, 0.3);
+		--systemQuaternary-onLight: rgba(0, 0, 0, 0.35);
+		--systemQuaternary-onDark: rgba(255, 255, 255, 0.3);
+		--systemQuinary: rgba(255, 255, 255, 0.1);
+		--systemQuinary-vibrant: rgba(255, 255, 255, 0.1);
+		--systemQuinary-onLight: rgba(0, 0, 0, 0.1);
+		--systemQuinary-onDark: rgba(255, 255, 255, 0.1);
+		--systemGray2: #7c7c80;
+		--systemGray2-onLight: #8e8e93;
+		--systemGray2-onDark: #7c7c80;
+		--systemGray3: #545456;
+		--systemGray3-onLight: #aeaeb2;
+		--systemGray3-onDark: #545456;
+		--systemGray4: #444446;
+		--systemGray4-onLight: #bcbcc0;
+		--systemGray4-onDark: #444446;
+		--systemGray5: #363638;
+		--systemGray5-onLight: #d8d8dc;
+		--systemGray5-onDark: #363638;
+		--systemGray6: #242426;
+		--systemGray6-onLight: #ebebf0;
+		--systemGray6-onDark: #242426;
+		--systemStandardUltrathinMaterialSover: black;
+		--systemStandardUltrathinMaterialSover-inactive: #141414;
+		--systemStandardThinMaterialSover: #0a0a0a;
+		--systemStandardThinMaterialSover-inactive: #141414;
+		--systemStandardMediumMaterialSover: #141414;
+		--systemStandardMediumMaterialSover-inactive: #141414;
+		--systemStandardThickMaterialSover: #1e1e1e;
+		--systemStandardThickMaterialSover-inactive: #141414;
+		--systemStandardUltrathickMaterialSover: #282828;
+		--systemStandardUltrathickMaterialSover-inactive: #141414;
+		--systemHeaderMaterialSover: #1e1e1e;
+		--systemToolbarTitlebarMaterialSover: #262626;
+		--systemToolbarTitlebarMaterialSover-inactive: #141414;
+		--musicKeyColor: #fa586a;
+	}
+}
+@media (prefers-color-scheme: dark) and (prefers-contrast: more) {
+	:host {
+		--systemRed: #ff6961;
+		--systemRed-vibrant: #ff4136;
+		--systemOrange: #ffb340;
+		--systemOrange-vibrant: #ffb340;
+		--systemYellow: #ffd426;
+		--systemYellow-vibrant: #ffd426;
+		--systemGreen: #31de4b;
+		--systemGreen-vibrant: #31de4b;
+		--systemMint: #63e6e2;
+		--systemMint-vibrant: #63e6e2;
+		--systemTeal: #5de6ff;
+		--systemTeal-vibrant: #5de6ff;
+		--systemCyan: #70d7ff;
+		--systemCyan-vibrant: #70d7ff;
+		--systemBlue: #409cff;
+		--systemBlue-vibrant: #409cff;
+		--systemIndigo: #7d7aff;
+		--systemIndigo-vibrant: #7d7aff;
+		--systemPurple: #da8fff;
+		--systemPurple-vibrant: #da8fff;
+		--systemPink: #ff6482;
+		--systemPink-vibrant: #ff3a5f;
+		--systemBrown: #b59469;
+		--systemBrown-vibrant: #b59469;
+		--systemGray: #98989d;
+		--systemGray-vibrant: #98989d;
+		--systemPrimary: white;
+		--systemPrimary-vibrant: white;
+		--systemPrimary-onLight: black;
+		--systemPrimary-onDark: white;
+		--systemSecondary: rgba(255, 255, 255, 0.7);
+		--systemSecondary-vibrant: rgba(255, 255, 255, 0.7);
+		--systemSecondary-onLight: rgba(0, 0, 0, 0.76);
+		--systemSecondary-onDark: rgba(255, 255, 255, 0.7);
+		--systemTertiary: rgba(255, 255, 255, 0.5);
+		--systemTertiary-vibrant: rgba(255, 255, 255, 0.5);
+		--systemTertiary-onLight: rgba(0, 0, 0, 0.56);
+		--systemTertiary-onDark: rgba(255, 255, 255, 0.5);
+		--systemQuaternary: rgba(255, 255, 255, 0.3);
+		--systemQuaternary-vibrant: rgba(255, 255, 255, 0.3);
+		--systemQuaternary-onLight: rgba(0, 0, 0, 0.35);
+		--systemQuaternary-onDark: rgba(255, 255, 255, 0.3);
+		--systemQuinary: rgba(255, 255, 255, 0.1);
+		--systemQuinary-vibrant: rgba(255, 255, 255, 0.1);
+		--systemQuinary-onLight: rgba(0, 0, 0, 0.1);
+		--systemQuinary-onDark: rgba(255, 255, 255, 0.1);
+		--systemGray2: #7c7c80;
+		--systemGray2-onLight: #8e8e93;
+		--systemGray2-onDark: #7c7c80;
+		--systemGray3: #545456;
+		--systemGray3-onLight: #aeaeb2;
+		--systemGray3-onDark: #545456;
+		--systemGray4: #444446;
+		--systemGray4-onLight: #bcbcc0;
+		--systemGray4-onDark: #444446;
+		--systemGray5: #363638;
+		--systemGray5-onLight: #d8d8dc;
+		--systemGray5-onDark: #363638;
+		--systemGray6: #242426;
+		--systemGray6-onLight: #ebebf0;
+		--systemGray6-onDark: #242426;
+		--systemStandardUltrathinMaterialSover: black;
+		--systemStandardUltrathinMaterialSover-inactive: #141414;
+		--systemStandardThinMaterialSover: #0a0a0a;
+		--systemStandardThinMaterialSover-inactive: #141414;
+		--systemStandardMediumMaterialSover: #141414;
+		--systemStandardMediumMaterialSover-inactive: #141414;
+		--systemStandardThickMaterialSover: #1e1e1e;
+		--systemStandardThickMaterialSover-inactive: #141414;
+		--systemStandardUltrathickMaterialSover: #282828;
+		--systemStandardUltrathickMaterialSover-inactive: #141414;
+		--systemHeaderMaterialSover: #1e1e1e;
+		--systemToolbarTitlebarMaterialSover: #262626;
+		--systemToolbarTitlebarMaterialSover-inactive: #141414;
+		--musicKeyColor: #fa586a;
+	}
+}
+.contextual-menu__overlay {
+	display: block;
+}
+.contextual-menu__overlay:focus {
+	outline: none;
+}
+.contextual-menu__list {
+	min-width: var(--ctxmenu-item-min-width, 185px);
+	max-width: 100%;
+	max-height: var(--ctxmenu-submenu-max-height, auto);
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+@media (max-width: 483px) {
+	.contextual-menu__list {
+		width: 100%;
+		min-width: unset;
+		max-width: unset;
+		max-height: calc(100vh - 25px * 2);
+	}
+}
+.list-wrapper {
+	position: relative;
+}
+.contextual-menu {
+	padding: 0;
+	min-width: var(--ctxmenu-item-min-width, 185px);
+	max-width: var(--ctxmenu-item-max-width, 350px);
+	display: block;
+	position: fixed;
+	z-index: var(--ctxmenu-z-index-override, var(--ctxmenu-z-index, 5));
+	top: var(--ctxmenu-top);
+	bottom: var(--ctxmenu-bottom);
+	left: var(--ctxmenu-left, 0);
+	border-radius: 6px;
+}
+.contextual-menu[aria-hidden="true"] {
+	display: none;
+	pointer-events: none;
+}
+@media (max-width: 483px) {
+	.contextual-menu:not(.contextual-menu--has-active-submenu) {
+		overflow: hidden;
+	}
+	.contextual-menu:not(.contextual-menu--has-active-submenu)
+		.contextual-menu__list {
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+}
+@supports (background-image: -webkit-named-image(apple-pay-logo-black)) or
+	(-webkit-appearance: -apple-pay-button) {
+	@supports not (content-visibility: hidden) {
+		.contextual-menu {
+			animation-name: menu-thick-material-fix;
+			animation-duration: 10s;
+			animation-fill-mode: forwards;
+		}
+		@media (prefers-color-scheme: dark) {
+			.contextual-menu {
+				animation-name: menu-thick-material-fix-dark;
+			}
+		}
+	}
+}
+@media (max-width: 483px) {
+	.contextual-menu {
+		width: 270px;
+		min-width: unset;
+		max-width: unset;
+		max-height: calc(100vh - 25px * 2);
+		transition: transform 0.2s ease;
+	}
+	.contextual-menu:not(.contextual-menu--in-submenu) {
+		top: auto !important;
+		right: calc(50vw - 270px / 2) !important;
+		bottom: 25px !important;
+		left: calc(50vw - 270px / 2) !important;
+	}
+}
+@keyframes menu-thick-material-fix {
+	from {
+		backdrop-filter: blur(60px) saturate(209.9%);
+	}
+	to {
+		backdrop-filter: blur(60px) saturate(210%);
+	}
+}
+@keyframes menu-thick-material-fix-dark {
+	from {
+		backdrop-filter: blur(60px) saturate(219.9%);
+	}
+	to {
+		backdrop-filter: blur(60px) saturate(220%);
+	}
+}
+.contextual-menu--in-submenu {
+	position: relative;
+	top: unset;
+	right: unset;
+	bottom: unset;
+	left: unset;
+}
+.contextual-menu::before {
+	background-color: var(--systemStandardThickMaterialSover-default_IC);
+	content: "";
+	width: 100%;
+	height: 100%;
+	display: block;
+	position: absolute;
+	z-index: -1;
+	top: 0;
+	left: 0;
+	border-radius: inherit;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 8px 40px
+		var(--dialogShadowColor);
+}
+@supports (backdrop-filter: blur(10px)) {
+	.contextual-menu::before {
+		background-color: var(--systemStandardThickMaterialSover);
+		backdrop-filter: blur(60px) saturate(210%);
+	}
+	@media (prefers-color-scheme: dark) {
+		.contextual-menu::before {
+			backdrop-filter: blur(60px) saturate(220%);
+		}
+	}
+}
+@media (prefers-contrast: more) {
+	.contextual-menu::before {
+		backdrop-filter: none;
+		background-color: var(--systemStandardThickMaterialSover-default_IC);
+	}
+}
+@media (max-width: 483px) {
+	.contextual-menu--has-active-submenu {
+		transform: translateX(-100vw);
+	}
+}
+.contextual-menu--has-active-submenu .contextual-menu-item--nested__active {
+	display: block;
+	opacity: 1;
+	pointer-events: unset;
+}
+@media (max-width: 483px) {
+	.contextual-menu--has-active-submenu .contextual-menu-item--nested__active {
+		transform: translateX(100vw);
+	}
+}
+.contextual-menu__group {
+	border-top: 2px solid var(--labelDivider);
+}
+.contextual-menu__group .contextual-menu__group-title {
+	font-size: 15px;
+	line-height: 1.3333833333;
+	font-weight: 600;
+	letter-spacing: 0em;
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+	padding: 10px 16px 2px 16px;
+	display: block;
+	color: var(--systemTertiary);
+}
+.contextual-menu__group .contextual-menu__group-title:lang(th) {
+	line-height: 1.58;
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"Thonburi Pro", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial",
+		sans-serif;
+}
+.contextual-menu__group .contextual-menu__group-title:lang(ar) {
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"Arabic UI Text", "SF Pro Icons", "Segoe UI", "Helvetica Neue", "Helvetica",
+		"Arial", sans-serif;
+}
+.contextual-menu__group .contextual-menu__group-title:lang(he) {
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"Arial Hebrew", "SF Pro Icons", "Segoe UI", "Helvetica Neue", "Helvetica",
+		"Arial", sans-serif;
+}
+.contextual-menu__group .contextual-menu__group-title:lang(hi) {
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"Kohinoor Devanagari", "SF Pro Icons", "Helvetica Neue", "Helvetica",
+		"Arial", sans-serif;
+}
+.contextual-menu__group .contextual-menu__group-title:lang(ja) {
+	font-family:
+		-apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro", "Hiragino Sans", "SF Pro Icons", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "メイリオ", "Meiryo", "ＭＳ Ｐゴシック", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+}
+.contextual-menu__group .contextual-menu__group-title:lang(ko) {
+	font-family:
+		-apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro", "Apple SD Gothic Neo", "SF Pro Icons", "Apple Gothic", "HY Gulim", "MalgunGothic", "HY Dotum", "Lexi Gulim", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+}
+.contextual-menu__group .contextual-menu__group-title:lang(zh-CN) {
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"PingFang SC", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial",
+		sans-serif;
+}
+.contextual-menu__group .contextual-menu__group-title:lang(zh-HK) {
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"PingFang HK", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial",
+		sans-serif;
+}
+.contextual-menu__group .contextual-menu__group-title:lang(zh-MO) {
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"PingFang HK", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial",
+		sans-serif;
+}
+.contextual-menu__group .contextual-menu__group-title:lang(zh-TW) {
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"PingFang TC", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial",
+		sans-serif;
+}
+.contextual-menu__group
+	.contextual-menu__group-title
+	+ amp-contextual-menu-item
+	> li
+	> button {
+	border-top: none;
+}
+@media (min-width: 484px) {
+	.contextual-menu__group .contextual-menu__group-title {
+		font-size: 11px;
+		line-height: 1.2727272727;
+		font-weight: 600;
+		letter-spacing: 0em;
+		font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji",
+			"SF Pro", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial",
+			sans-serif;
+		padding: 6px 10px 2px 10px;
+	}
+	.contextual-menu__group .contextual-menu__group-title:lang(th) {
+		line-height: 1.5082018182;
+		font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji",
+			"SF Pro", "Thonburi Pro", "SF Pro Icons", "Helvetica Neue", "Helvetica",
+			"Arial", sans-serif;
+	}
+	.contextual-menu__group .contextual-menu__group-title:lang(ar) {
+		font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji",
+			"SF Pro", "Arabic UI Text", "SF Pro Icons", "Segoe UI", "Helvetica Neue",
+			"Helvetica", "Arial", sans-serif;
+	}
+	.contextual-menu__group .contextual-menu__group-title:lang(he) {
+		font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji",
+			"SF Pro", "Arial Hebrew", "SF Pro Icons", "Segoe UI", "Helvetica Neue",
+			"Helvetica", "Arial", sans-serif;
+	}
+	.contextual-menu__group .contextual-menu__group-title:lang(hi) {
+		font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji",
+			"SF Pro", "Kohinoor Devanagari", "SF Pro Icons", "Helvetica Neue",
+			"Helvetica", "Arial", sans-serif;
+	}
+	.contextual-menu__group .contextual-menu__group-title:lang(ja) {
+		font-family:
+			-apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro", "Hiragino Sans", "SF Pro Icons", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "メイリオ", "Meiryo", "ＭＳ Ｐゴシック", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+	}
+	.contextual-menu__group .contextual-menu__group-title:lang(ko) {
+		font-family:
+			-apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro", "Apple SD Gothic Neo", "SF Pro Icons", "Apple Gothic", "HY Gulim", "MalgunGothic", "HY Dotum", "Lexi Gulim", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+	}
+	.contextual-menu__group .contextual-menu__group-title:lang(zh-CN) {
+		font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji",
+			"SF Pro", "PingFang SC", "SF Pro Icons", "Helvetica Neue", "Helvetica",
+			"Arial", sans-serif;
+	}
+	.contextual-menu__group .contextual-menu__group-title:lang(zh-HK) {
+		font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji",
+			"SF Pro", "PingFang HK", "SF Pro Icons", "Helvetica Neue", "Helvetica",
+			"Arial", sans-serif;
+	}
+	.contextual-menu__group .contextual-menu__group-title:lang(zh-MO) {
+		font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji",
+			"SF Pro", "PingFang HK", "SF Pro Icons", "Helvetica Neue", "Helvetica",
+			"Arial", sans-serif;
+	}
+	.contextual-menu__group .contextual-menu__group-title:lang(zh-TW) {
+		font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji",
+			"SF Pro", "PingFang TC", "SF Pro Icons", "Helvetica Neue", "Helvetica",
+			"Arial", sans-serif;
+	}
+}
+.contextual-menu__subhead + .contextual-menu__group {
+	border-top: none;
+}
+@media (min-width: 484px) {
+	.contextual-menu__subhead {
+		display: none;
+	}
+}
+.contextual-menu-item.contextual-menu__subhead button {
+	margin: 0;
+	padding: 0;
+	display: block;
+	border: 0;
+	background-color: transparent;
+	outline: none;
+	cursor: pointer;
+	appearance: none;
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
+	font-size: 13px;
+	line-height: 1.2307692308;
+	font-weight: 600;
+	letter-spacing: 0em;
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+	padding: 0 16px;
+	width: 100%;
+	height: 45px;
+	align-self: center;
+	overflow: hidden;
+	color: var(--systemSecondary);
+	text-align: center;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	justify-self: center;
+}
+.contextual-menu-item.contextual-menu__subhead button::-moz-focus-inner {
+	border: 0;
+}
+.contextual-menu-item.contextual-menu__subhead button:lang(th) {
+	line-height: 1.4584815385;
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"Thonburi Pro", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial",
+		sans-serif;
+}
+.contextual-menu-item.contextual-menu__subhead button:lang(ar) {
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"Arabic UI Text", "SF Pro Icons", "Segoe UI", "Helvetica Neue", "Helvetica",
+		"Arial", sans-serif;
+}
+.contextual-menu-item.contextual-menu__subhead button:lang(he) {
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"Arial Hebrew", "SF Pro Icons", "Segoe UI", "Helvetica Neue", "Helvetica",
+		"Arial", sans-serif;
+}
+.contextual-menu-item.contextual-menu__subhead button:lang(hi) {
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"Kohinoor Devanagari", "SF Pro Icons", "Helvetica Neue", "Helvetica",
+		"Arial", sans-serif;
+}
+.contextual-menu-item.contextual-menu__subhead button:lang(ja) {
+	font-family:
+		-apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro", "Hiragino Sans", "SF Pro Icons", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "メイリオ", "Meiryo", "ＭＳ Ｐゴシック", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+}
+.contextual-menu-item.contextual-menu__subhead button:lang(ko) {
+	font-family:
+		-apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro", "Apple SD Gothic Neo", "SF Pro Icons", "Apple Gothic", "HY Gulim", "MalgunGothic", "HY Dotum", "Lexi Gulim", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+}
+.contextual-menu-item.contextual-menu__subhead button:lang(zh-CN) {
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"PingFang SC", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial",
+		sans-serif;
+}
+.contextual-menu-item.contextual-menu__subhead button:lang(zh-HK) {
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"PingFang HK", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial",
+		sans-serif;
+}
+.contextual-menu-item.contextual-menu__subhead button:lang(zh-MO) {
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"PingFang HK", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial",
+		sans-serif;
+}
+.contextual-menu-item.contextual-menu__subhead button:lang(zh-TW) {
+	font-family: -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "SF Pro",
+		"PingFang TC", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial",
+		sans-serif;
+}
+@media (max-width: 483px) {
+	.contextual-menu-item.contextual-menu__subhead button {
+		padding: 0;
+	}
+}
+ul,
+li {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
