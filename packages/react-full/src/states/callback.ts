@@ -4,7 +4,7 @@
  */
 
 import type { LyricLineMouseEvent } from "@applemusic-like-lyrics/core";
-import type { LyricPlayerProps } from "@applemusic-like-lyrics/react";
+import type { LyricPlayerRef } from "@applemusic-like-lyrics/react";
 import { atom } from "jotai";
 
 export interface Callback<Args extends any[], Result = void> {
@@ -57,18 +57,14 @@ export const onSeekPositionAtom = atom(c((_position: number) => {}));
  * @param _evt 对应的歌词行事件对象
  */
 export const onLyricLineClickAtom = atom(
-	c(((_evt: LyricLineMouseEvent) => {}) as NonNullable<
-		LyricPlayerProps["onLyricLineClick"]
-	>),
+	c((_evt: LyricLineMouseEvent, _playerRef: LyricPlayerRef | null) => {}),
 );
 /**
  * 当试图对歌词行打开上下文菜单（例如右键点击）时触发的回调函数
  * @param _evt 对应的歌词行事件对象
  */
 export const onLyricLineContextMenuAtom = atom(
-	c(((_evt: LyricLineMouseEvent) => {}) as NonNullable<
-		LyricPlayerProps["onLyricLineContextMenu"]
-	>),
+	c((_evt: LyricLineMouseEvent, _playerRef: LyricPlayerRef | null) => {}),
 );
 /**
  * 当触发设置音量大小时触发的回调函数

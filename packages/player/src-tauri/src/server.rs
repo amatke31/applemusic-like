@@ -11,6 +11,7 @@ use futures::stream::SplitSink;
 use tauri::{AppHandle, Emitter};
 use tracing::*;
 use ws_protocol::Body;
+use tauri::ipc::Channel;
 
 type Connections = Arc<AsyncRwLock<Vec<SplitSink<WebSocketStream<TcpStream>, Message>>>>;
 type ConnectionAddrs = Arc<StdRwLock<HashSet<SocketAddr>>>;
@@ -30,7 +31,7 @@ impl AMLLWebSocketServer {
             connection_addrs: Arc::new(StdRwLock::new(HashSet::with_capacity(8))),
         }
     }
-    pub fn reopen(&mut self, addr: String) {
+    pub fn reopen(&mut self, addr: String, channel: Channel<ws_protocol::Body>) {
         if let Some(task) = self.server_handle.take() {
             block_on(task.cancel());
         }
@@ -54,6 +55,7 @@ impl AMLLWebSocketServer {
                                 app.clone(),
                                 connections.clone(),
                                 conn_addrs.clone(),
+                                channel.clone(),
                             ));
                         }
                         break;
@@ -101,6 +103,7 @@ impl AMLLWebSocketServer {
         app: AppHandle,
         conns: Connections,
         conn_addrs: ConnectionAddrs,
+        channel: Channel<ws_protocol::Body>,
     ) -> anyhow::Result<()> {
         let addr = stream.peer_addr()?;
         let addr_str = addr.to_string();
@@ -119,15 +122,16 @@ impl AMLLWebSocketServer {
 
         while let Some(Ok(data)) = read.next().await {
             let data = data.into_data();
-            trace!("WebSocket 客户端 {addr} 发送原始数据: {data:?}");
+            // trace!("WebSocket 客户端 {addr} 发送原始数据: {data:?}");
             if let Ok(body) = ws_protocol::parse_body(&data) {
-                match &body {
-                    Body::OnAudioData { .. } => {}
-                    _ => {
-                        trace!("WebSocket 客户端 {addr} 解析到原始数据: {body:?}");
-                    }
-                }
-                app.emit("on-ws-protocol-client-body", body)?;
+                // match &body {
+                //     Body::OnAudioData { .. } => {}
+                //     _ => {
+                //         trace!("WebSocket 客户端 {addr} 解析到原始数据: {body:?}");
+                //     }
+                // }
+                // app.emit("on-ws-protocol-client-body", body)?;
+                channel.send(body)?;
             }
         }
 

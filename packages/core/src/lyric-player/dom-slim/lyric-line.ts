@@ -298,26 +298,7 @@ export class LyricLineEl extends LyricLineBase {
 			this.measureLockMark = false;
 		},
 	);
-	async measureSize(): Promise<[number, number]> {
-		await this.measureLock(async () => {
-			const size: [number, number] = await measure(() => [
-				this.element.clientWidth,
-				this.element.clientHeight,
-			]);
-			if (import.meta.env.DEV) {
-				if (size[0] * size[1] === 0) {
-					console.warn(
-						"Zero size detected",
-						this.lyricLine,
-						this.element,
-						this.element.parentElement,
-					);
-				}
-			}
-			this.lineSize = size;
-		});
-		return this.lineSize as [number, number];
-	}
+
 	getLine() {
 		return this.lyricLine;
 	}

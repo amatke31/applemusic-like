@@ -89,6 +89,7 @@ type MouseEventListener = (
 export class LyricLineEl extends LyricLineBase {
 	private element: HTMLElement = document.createElement("div");
 	private splittedWords: RealWord[] = [];
+
 	// 由 LyricPlayer 来设置
 	lineSize: number[] = [0, 0];
 
@@ -106,6 +107,7 @@ export class LyricLineEl extends LyricLineBase {
 	) {
 		super();
 		this._prevParentEl = lyricPlayer.getElement();
+		lyricPlayer.resizeObserver.observe(this.element);
 		this.element.setAttribute("class", styles.lyricLine);
 		if (this.lyricLine.isBG) {
 			this.element.classList.add(styles.lyricBgLine);
@@ -113,6 +115,7 @@ export class LyricLineEl extends LyricLineBase {
 		if (this.lyricLine.isDuet) {
 			this.element.classList.add(styles.lyricDuetLine);
 		}
+		this.lineTransforms.posY.setPosition(window.innerHeight * 2);
 		this.element.appendChild(document.createElement("div")); // 歌词行
 		this.element.appendChild(document.createElement("div")); // 翻译行
 		this.element.appendChild(document.createElement("div")); // 音译行
@@ -124,7 +127,6 @@ export class LyricLineEl extends LyricLineBase {
 		roman.setAttribute("class", styles.lyricSubLine);
 		this.rebuildElement();
 		this.rebuildStyle();
-		this.markMaskImageDirty("Initial construction");
 	}
 	private listenersMap = new Map<string, Set<MouseEventListener>>();
 	private readonly onMouseEvent = (e: MouseEvent) => {
@@ -191,7 +193,6 @@ export class LyricLineEl extends LyricLineBase {
 	async enable(maskAnimationTime = this.lyricLine.startTime) {
 		this.isEnabled = true;
 		this.element.classList.add(styles.active);
-		await this.waitMaskImageUpdated();
 		const main = this.element.children[0] as HTMLDivElement;
 		for (const word of this.splittedWords) {
 			for (const a of word.elementAnimations) {
@@ -229,7 +230,6 @@ export class LyricLineEl extends LyricLineBase {
 	}
 	private lastWord?: RealWord;
 	async resume() {
-		await this.waitMaskImageUpdated();
 		if (!this.isEnabled) return;
 		for (const word of this.splittedWords) {
 			for (const a of word.elementAnimations) {
@@ -253,7 +253,6 @@ export class LyricLineEl extends LyricLineBase {
 		}
 	}
 	async pause() {
-		await this.waitMaskImageUpdated();
 		if (!this.isEnabled) return;
 		for (const word of this.splittedWords) {
 			for (const a of word.elementAnimations) {
@@ -275,49 +274,7 @@ export class LyricLineEl extends LyricLineBase {
 			}
 		}
 	}
-	private measureLockMark = false;
-	private measureLock = mutexifyFunction(
-		async (callback: () => Promise<void>): Promise<void> => {
-			if (this.measureLockMark) return;
-			this.measureLockMark = true;
-			if (this._hide) {
-				await mutate(() => {
-					this._prevParentEl.appendChild(this.element);
-					this.element.style.display = "";
-					this.element.style.visibility = "hidden";
-				});
-			}
-			await callback();
-			if (this._hide) {
-				await mutate(() => {
-					this._prevParentEl.removeChild(this.element);
-					this.element.style.display = "none";
-					this.element.style.visibility = "";
-				});
-			}
-			this.measureLockMark = false;
-		},
-	);
-	async measureSize(): Promise<[number, number]> {
-		await this.measureLock(async () => {
-			const size: [number, number] = await measure(() => [
-				this.element.clientWidth,
-				this.element.clientHeight,
-			]);
-			if (import.meta.env.DEV) {
-				if (size[0] * size[1] === 0) {
-					console.warn(
-						"Zero size detected",
-						this.lyricLine,
-						this.element,
-						this.element.parentElement,
-					);
-				}
-			}
-			this.lineSize = size;
-		});
-		return this.lineSize as [number, number];
-	}
+
 	getLine() {
 		return this.lyricLine;
 	}
@@ -326,15 +283,17 @@ export class LyricLineEl extends LyricLineBase {
 	private lastStyle = "";
 	show() {
 		this._hide = false;
-		if (!this.measureLockMark && !this.element.parentElement) {
+		if (!this.element.parentElement) {
 			this._prevParentEl.appendChild(this.element);
+			this.lyricPlayer.resizeObserver.observe(this.element);
 		}
 		this.rebuildStyle();
 	}
 	hide() {
 		this._hide = true;
-		if (!this.measureLockMark && this.element.parentElement) {
+		if (this.element.parentElement) {
 			this._prevParentEl.removeChild(this.element);
+			this.lyricPlayer.resizeObserver.unobserve(this.element);
 		}
 	}
 	private rebuildStyle() {
@@ -657,72 +616,33 @@ export class LyricLineEl extends LyricLineBase {
 	private get totalDuration() {
 		return this.lyricLine.endTime - this.lyricLine.startTime;
 	}
-	private maskImageDirty = false;
-	private markImageDirtyPromiseResolve: Set<() => void> = new Set();
-	private markImageDirtyPromise: Promise<void> = new Promise((resolve) => {
-		this.markImageDirtyPromiseResolve.add(resolve);
-	});
-	markMaskImageDirty(_debugReason = ""): Promise<void> {
-		this.maskImageDirty = true;
-		if (!this.element.classList.contains(styles.dirty))
-			this.element.classList.add(styles.dirty);
-		// if (import.meta.env.DEV) {
-		// 	console.log("Mark mask image dirty: ", _debugReason);
-		// }
-		const newPromise = Promise.all([
-			this.markImageDirtyPromise,
-			new Promise<void>((resolve) => {
-				this.markImageDirtyPromiseResolve.add(resolve);
-			}),
-		]).then(() => {});
-		this.markImageDirtyPromise = newPromise;
-		return newPromise;
-	}
-	waitMaskImageUpdated(): Promise<void> {
-		return this.markImageDirtyPromise;
-	}
-	async updateMaskImage() {
-		this.maskImageDirty = false;
-		await this.measureLock(async () => {
-			await Promise.all(
-				this.splittedWords.map(async (word) => {
-					const el = word.mainElement;
-					if (el) {
-						await measure(() => {
-							word.padding = Number.parseFloat(
-								getComputedStyle(el).paddingLeft,
-							);
-							word.width = el.clientWidth - word.padding * 2;
-							word.height = el.clientHeight - word.padding * 2;
-						});
-					} else {
-						word.width = 0;
-						word.height = 0;
-						word.padding = 0;
-					}
-					if (word.width * word.height === 0) {
-						console.warn("Word size is zero");
-					}
-				}),
-			);
 
-			await mutate(() => {
-				if (this.lyricPlayer.supportMaskImage) {
-					this.generateWebAnimationBasedMaskImage();
-				} else {
-					this.generateCalcBasedMaskImage();
-				}
-			});
-		});
-
-		for (const resolve of this.markImageDirtyPromiseResolve) {
-			resolve();
-			this.markImageDirtyPromiseResolve.delete(resolve);
+	override onLineSizeChange(size: [number, number]) {
+		this.updateMaskImageSync();
+	}
+	updateMaskImageSync() {
+		for (const word of this.splittedWords) {
+			const el = word.mainElement;
+			if (el) {
+				word.padding = Number.parseFloat(getComputedStyle(el).paddingLeft);
+				word.width = el.clientWidth - word.padding * 2;
+				word.height = el.clientHeight - word.padding * 2;
+			} else {
+				word.width = 0;
+				word.height = 0;
+				word.padding = 0;
+			}
 		}
-		await mutate(() => {
-			this.element.classList.remove(styles.dirty);
-		});
+		if (this.lyricPlayer.supportMaskImage) {
+			this.generateWebAnimationBasedMaskImage();
+		} else {
+			this.generateCalcBasedMaskImage();
+		}
+		if (this.isEnabled) {
+			this.enable(this.lyricPlayer.getCurrentTime());
+		}
 	}
+
 	private generateCalcBasedMaskImage() {
 		for (const word of this.splittedWords) {
 			const wordEl = word.mainElement;
@@ -756,6 +676,7 @@ export class LyricLineEl extends LyricLineBase {
 			}
 		}
 	}
+
 	private generateWebAnimationBasedMaskImage() {
 		// 因为歌词行有可能比行内单词的结束时间早，有可能导致过渡动画提早停止出现瑕疵
 		// 所以要以单词的结束时间为准
@@ -901,7 +822,7 @@ export class LyricLineEl extends LyricLineBase {
 		// roman.style.opacity = `${subopacity}`;
 		if (force || !enableSpring) {
 			this.blur = Math.min(32, blur);
-			if (force) this.element.classList.add(styles.tmpDisableTransition);
+			// if (force) this.element.classList.add(styles.tmpDisableTransition);
 			// this.lineWebAnimationTransforms.posX.setTargetPosition(left);
 			// this.lineWebAnimationTransforms.posY.setTargetPosition(top);
 			// this.lineWebAnimationTransforms.scale.setTargetPosition(scale);
@@ -915,10 +836,10 @@ export class LyricLineEl extends LyricLineBase {
 					this.hide();
 				}
 			} else this.rebuildStyle();
-			if (force)
-				requestAnimationFrame(() => {
-					this.element.classList.remove(styles.tmpDisableTransition);
-				});
+			// if (force)
+			// 	requestAnimationFrame(() => {
+			// 		this.element.classList.remove(styles.tmpDisableTransition);
+			// 	});
 		} else {
 			// this.lineWebAnimationTransforms.posX.stop();
 			// this.lineWebAnimationTransforms.posY.stop();
@@ -938,9 +859,6 @@ export class LyricLineEl extends LyricLineBase {
 		this.lineTransforms.scale.update(delta);
 		if (this.isInSight) {
 			this.show();
-			if (this.maskImageDirty) {
-				this.updateMaskImage();
-			}
 		} else {
 			this.hide();
 		}
@@ -997,7 +915,7 @@ export class LyricLineEl extends LyricLineBase {
 
 	get isInSight() {
 		const t = this.lineTransforms.posY.getCurrentPosition();
-		const h = this.lineSize[1];
+		const h = this.lyricPlayer.lyricLinesSize.get(this)?.[1] ?? 0;
 		const b = t + h;
 		const pb = this.lyricPlayer.size[1];
 		return !(t > pb + h || b < -h);
@@ -1024,6 +942,7 @@ export class LyricLineEl extends LyricLineBase {
 	}
 	override dispose(): void {
 		this.disposeElements();
+		this.lyricPlayer.resizeObserver.unobserve(this.element);
 		this.element.remove();
 	}
 }

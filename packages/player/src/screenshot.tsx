@@ -4,15 +4,10 @@ import { createRoot } from "react-dom/client";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import "react-toastify/dist/ReactToastify.css";
 import App from "./App.tsx";
-import "./assets/AM_index.css";
-import "./assets/AMPContextualMenu.css";
-import "./assets/AMPCONtextualMenuItem.css";
-import "./assets/AMPList.css";
-import "./assets/LockupVirtualScroll.css";
-import "./i18n";
+import "./i18n.ts";
 import "./styles.css";
-import "./utils/player";
-// import "./utils/merge-raf";
+import "./utils/player.ts";
+import { ScreenshotApp } from "./pages/screenshot/index.tsx";
 
 const ErrorRender = (props: FallbackProps) => {
 	console.error(props.error);
@@ -68,7 +63,7 @@ addEventListener("on-system-titlebar-click-minimize", async () => {
 createRoot(document.getElementById("root") as HTMLElement).render(
 	<ErrorBoundary fallbackRender={ErrorRender}>
 		<Provider>
-			<App />
+			<ScreenshotApp />
 		</Provider>
 	</ErrorBoundary>,
 );

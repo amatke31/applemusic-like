@@ -1,19 +1,22 @@
 use crate::server::AMLLWebSocketServer;
 use amll_player_core::AudioInfo;
+use screen_capture::take_screenshot;
 use serde::*;
 use serde_json::Value;
-use std::sync::RwLock;
 use std::net::SocketAddr;
+use std::sync::RwLock;
 use symphonia::core::io::{MediaSourceStream, MediaSourceStreamOptions};
+use tauri::ipc::Channel;
 use tauri::{
-    utils::config::WindowEffectsConfig, window::Effect, AppHandle, Manager, PhysicalSize, Runtime,
-    Size, State, WebviewWindowBuilder,
+    AppHandle, Manager, PhysicalSize, Runtime, Size, State, WebviewWindowBuilder,
+    utils::config::WindowEffectsConfig, window::Effect,
 };
 use tauri_plugin_fs::OpenOptions;
 use tracing::*;
 
 mod client;
 mod player;
+mod screen_capture;
 mod server;
 
 pub type AMLLWebSocketServerWrapper = RwLock<AMLLWebSocketServer>;
@@ -21,8 +24,12 @@ pub type AMLLWebSocketServerState<'r> = State<'r, AMLLWebSocketServerWrapper>;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
-fn ws_reopen_connection(addr: &str, ws: AMLLWebSocketServerState) {
-    ws.write().unwrap().reopen(addr.to_string());
+fn ws_reopen_connection(
+    addr: &str,
+    ws: AMLLWebSocketServerState,
+    channel: Channel<ws_protocol::Body>,
+) {
+    ws.write().unwrap().reopen(addr.to_string(), channel);
 }
 
 #[tauri::command]
@@ -126,20 +133,12 @@ async fn read_local_music_metadata(
     }
 }
 
-fn recreate_window(app: &AppHandle) {
-    if let Some(win) = app.get_webview_window("main") {
-        #[cfg(desktop)]
-        {
-            let _ = win.show();
-            let _ = win.set_focus();
-        }
-        return;
-    }
-    #[cfg(debug_assertions)]
-    let url = tauri::WebviewUrl::External(app.config().build.dev_url.clone().unwrap());
-    #[cfg(not(debug_assertions))]
-    let url = tauri::WebviewUrl::App("index.html".into());
-    let win: WebviewWindowBuilder<'_, _, _> = WebviewWindowBuilder::new(app, "main", url);
+async fn create_common_win<'a>(
+    app: &'a AppHandle,
+    url: tauri::WebviewUrl,
+    label: &str,
+) -> tauri::WebviewWindowBuilder<'a, tauri::Wry, AppHandle> {
+    let win = WebviewWindowBuilder::new(app, label, url);
     #[cfg(target_os = "windows")]
     let win = win.transparent(true);
     #[cfg(not(desktop))]
@@ -188,16 +187,52 @@ fn recreate_window(app: &AppHandle) {
     #[cfg(target_os = "macos")]
     let win = win.title_bar_style(tauri::TitleBarStyle::Overlay);
 
+    win
+}
+
+async fn recreate_window(app: &AppHandle, label: &str, path: Option<&str>) {
+    info!("Recreating window: {}", label);
+    if let Some(win) = app.get_webview_window(label) {
+        #[cfg(desktop)]
+        {
+            let _ = win.show();
+            let _ = win.set_focus();
+        }
+        return;
+    }
+    #[cfg(debug_assertions)]
+    let url = {
+        tauri::WebviewUrl::External(
+            app.config()
+                .build
+                .dev_url
+                .clone()
+                .unwrap()
+                .join(path.unwrap_or(""))
+                .expect("Failed to create external URL"),
+        )
+    };
+    #[cfg(not(debug_assertions))]
+    let url = tauri::WebviewUrl::App(path.unwrap_or("index.html").into());
+    let win = create_common_win(app, url, label).await;
+
     let win = win.build().expect("can't show original window");
 
     #[cfg(desktop)]
     {
         let _ = win.set_focus();
-        if let Ok(orig_size) = win.inner_size() {
+        if let Ok(orig_size) = dbg!(win.inner_size()) {
             let _ = win.set_size(Size::Physical(PhysicalSize::new(0, 0)));
             let _ = win.set_size(orig_size);
         }
     }
+
+    info!("Created window: {}", label);
+}
+
+#[tauri::command]
+async fn open_screenshot_window(app: AppHandle) {
+    recreate_window(&app, "screenshot", Some("screenshot.html")).await;
 }
 
 fn init_logging() {
@@ -278,6 +313,8 @@ pub fn run() {
             ws_reopen_connection,
             ws_get_connections,
             ws_boardcast_message,
+            open_screenshot_window,
+            screen_capture::take_screenshot,
             player::local_player_send_msg,
             read_local_music_metadata,
             restart_app,
@@ -292,7 +329,9 @@ pub fn run() {
                 app.handle().clone(),
             )));
             #[cfg(not(mobile))]
-            recreate_window(app.handle());
+            {
+                tauri::async_runtime::block_on(recreate_window(app.handle(), "main", None));
+            }
             Ok(())
         })
         .run(context)

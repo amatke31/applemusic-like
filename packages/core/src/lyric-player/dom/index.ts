@@ -40,40 +40,10 @@ export type LyricLineMouseEventListener = (evt: LyricLineMouseEvent) => void;
 export class DomLyricPlayer extends LyricPlayerBase {
 	override currentLyricLineObjects: LyricLineEl[] = [];
 
-	private debounceCalcLayout = debounce(
-		() =>
-			this.calcLayout(true, true).then(() =>
-				this.currentLyricLineObjects.map(async (el, i) => {
-					el.markMaskImageDirty("DomLyricPlayer onResize");
-					await el.waitMaskImageUpdated();
-					if (this.hotLines.has(i)) {
-						el.enable(this.currentTime);
-						el.resume();
-					}
-				}),
-			),
-		1000,
-	);
-
 	override onResize(): void {
 		const computedStyles = getComputedStyle(this.element);
 		this._baseFontSize = Number.parseFloat(computedStyles.fontSize);
-		const innerWidth =
-			this.element.clientWidth -
-			Number.parseFloat(computedStyles.paddingLeft) -
-			Number.parseFloat(computedStyles.paddingRight);
-		const innerHeight =
-			this.element.clientHeight -
-			Number.parseFloat(computedStyles.paddingTop) -
-			Number.parseFloat(computedStyles.paddingBottom);
-		this.innerSize[0] = innerWidth;
-		this.innerSize[1] = innerHeight;
 		this.rebuildStyle();
-		for (const obj of this.currentLyricLineObjects) {
-			if (!obj.getElement().classList.contains(styles.dirty))
-				obj.getElement().classList.add(styles.dirty);
-		}
-		this.debounceCalcLayout();
 	}
 
 	readonly supportPlusLighter = CSS.supports("mix-blend-mode", "plus-lighter");
@@ -114,19 +84,19 @@ export class DomLyricPlayer extends LyricPlayerBase {
 	}
 
 	private rebuildStyle() {
-		const width = this.innerSize[0];
-		const height = this.innerSize[1];
-		this.element.style.setProperty("--amll-lp-width", `${width.toFixed(4)}px`);
-		this.element.style.setProperty(
-			"--amll-lp-height",
-			`${height.toFixed(4)}px`,
-		);
+		// const width = this.innerSize[0];
+		// const height = this.innerSize[1];
+		// this.element.style.setProperty("--amll-lp-width", `${width.toFixed(4)}px`);
+		// this.element.style.setProperty(
+		// 	"--amll-lp-height",
+		// 	`${height.toFixed(4)}px`,
+		// );
 	}
 
 	override setWordFadeWidth(value = 0.5) {
 		super.setWordFadeWidth(value);
 		for (const el of this.currentLyricLineObjects) {
-			el.markMaskImageDirty("DomLyricPlayer setWordFadeWidth");
+			el.updateMaskImageSync();
 		}
 	}
 
@@ -159,16 +129,15 @@ export class DomLyricPlayer extends LyricPlayerBase {
 			lineEl.addMouseEventListener("contextmenu", this.onLineClickedHandler);
 			this.element.appendChild(lineEl.getElement());
 			this.lyricLinesIndexes.set(lineEl, i);
-			lineEl.markMaskImageDirty("DomLyricPlayer setLyricLines");
+			this.lyricLineElementMap.set(lineEl.getElement(), lineEl);
+			// lineEl.updateMaskImageSync();
 			return lineEl;
 		});
 
 		this.setLinePosXSpringParams({});
 		this.setLinePosYSpringParams({});
 		this.setLineScaleSpringParams({});
-		this.calcLayout(true, true).then(() => {
-			this.initialLayoutFinished = true;
-		});
+		this.calcLayout(true);
 	}
 
 	override pause() {

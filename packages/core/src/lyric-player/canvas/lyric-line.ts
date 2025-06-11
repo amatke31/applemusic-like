@@ -29,7 +29,7 @@ export class CanvasLyricLine extends LyricLineBase {
 		return this.line;
 	}
 	private lineSize: [number, number] = [0, 0];
-	override measureSize(): [number, number] {
+	measureSize(): [number, number] {
 		const maxMainLineIndex = Math.max(
 			0,
 			...this.layoutWords.flat().map((w) => w.lineIndex + 1),

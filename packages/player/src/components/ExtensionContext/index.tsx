@@ -17,7 +17,7 @@ import * as playerStates from "../../states/index.ts";
 import { PlayerExtensionContext, sourceMapOffsetLines } from "./ext-ctx.ts";
 
 const AsyncFunction: FunctionConstructor = Object.getPrototypeOf(
-	async () => {},
+	async () => { },
 ).constructor;
 
 class Notify {
@@ -25,8 +25,8 @@ class Notify {
 	resolve: () => void;
 	reject: (err: Error) => void;
 	constructor() {
-		let resolve: () => void = () => {};
-		let reject: (err: Error) => void = () => {};
+		let resolve: () => void = () => { };
+		let reject: (err: Error) => void = () => { };
 		const p = new Promise<void>((res, rej) => {
 			resolve = res;
 			reject = rej;
@@ -73,7 +73,7 @@ const SingleExtensionContext: FC<{
 		);
 
 		const loadedExt: LoadedExtension = {
-			extensionFunc: async () => {},
+			extensionFunc: async () => { },
 			extensionMeta,
 			context,
 		};
@@ -203,8 +203,8 @@ export const ExtensionContext: FC = () => {
 		() =>
 			new Map(
 				loadableExtensions.map((state) => {
-					let resolve: () => void = () => {};
-					let reject: (err: Error) => void = () => {};
+					let resolve: () => void = () => { };
+					let reject: (err: Error) => void = () => { };
 					const p = new Promise<void>((res, rej) => {
 						resolve = res;
 						reject = rej;

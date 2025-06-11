@@ -10,7 +10,7 @@ export class BottomLineEl implements HasElement, Disposable {
 	private top = 0;
 	private delay = 0;
 	// 由 LyricPlayer 来设置
-	lineSize: number[] = [0, 0];
+	lineSize: [number, number] = [0, 0];
 	readonly lineTransforms = {
 		posX: new Spring(0),
 		posY: new Spring(0),

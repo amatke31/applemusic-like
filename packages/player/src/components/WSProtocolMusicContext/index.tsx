@@ -18,7 +18,7 @@ import {
 	onRequestPrevSongAtom,
 	onSeekPositionAtom,
 } from "@applemusic-like-lyrics/react-full";
-import { invoke } from "@tauri-apps/api/core";
+import { Channel, invoke } from "@tauri-apps/api/core";
 import { type Event, listen } from "@tauri-apps/api/event";
 import { useAtomValue, useSetAtom, useStore } from "jotai";
 import { type FC, useEffect, useRef } from "react";
@@ -117,14 +117,16 @@ export const WSProtocolMusicContext: FC = () => {
 				sendWSMessage("seekPlayProgress", {
 					progress: progress | 0,
 				});
+				playerRef?.lyricPlayer?.resetScroll();
 			}),
 		);
 		store.set(
 			onLyricLineClickAtom,
-			toEmit((evt) => {
+			toEmit((evt, playerRef) => {
 				sendWSMessage("seekPlayProgress", {
 					progress: evt.line.getLine().startTime | 0,
 				});
+				playerRef?.lyricPlayer?.resetScroll();
 			}),
 		);
 		store.set(
@@ -219,9 +221,9 @@ export const WSProtocolMusicContext: FC = () => {
 		};
 
 		let curCoverBlobUrl = "";
+		const onBodyChannel = new Channel<WSBodyMap[keyof WSBodyMessageMap]>()
 
-		function onBody(evt: Event<WSBodyMap[keyof WSBodyMessageMap]>) {
-			const payload = evt.payload;
+		function onBody(payload: WSBodyMap[keyof WSBodyMessageMap]) {
 
 			switch (payload.type) {
 				case "ping": {
@@ -331,7 +333,9 @@ export const WSProtocolMusicContext: FC = () => {
 			}
 		}
 
-		const unlistenBody = listen("on-ws-protocol-client-body", onBody);
+		onBodyChannel.onmessage = onBody;
+
+		// const unlistenBody = listen("on-ws-protocol-client-body", onBody);
 		const unlistenDisconnected = listen<string>(
 			"on-ws-protocol-client-disconnected",
 			(evt) =>
@@ -344,10 +348,11 @@ export const WSProtocolMusicContext: FC = () => {
 		);
 		invoke("ws_reopen_connection", {
 			addr: wsProtocolListenAddr,
+			channel: onBodyChannel,
 		});
 		return () => {
 			unlistenConnected.then((u) => u());
-			unlistenBody.then((u) => u());
+			// unlistenBody.then((u) => u());
 			unlistenDisconnected.then((u) => u());
 			invoke("ws_reopen_connection", {
 				addr: "",

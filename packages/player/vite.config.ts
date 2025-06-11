@@ -94,6 +94,10 @@ export default defineConfig({
 		},
 		rollupOptions: {
 			shimMissingExports: true,
+			input: {
+				index: "index.html",
+				screenshot: "screenshot.html",
+			},
 		},
 		sourcemap: "inline",
 	},

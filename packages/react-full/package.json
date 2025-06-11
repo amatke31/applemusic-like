@@ -1,6 +1,6 @@
 {
   "name": "@applemusic-like-lyrics/react-full",
-  "version": "0.2.0-alpha.1",
+  "version": "0.2.0-alpha.2",
   "description": "AMLL 组件库的 React 绑定，但是更加完备且高度灵活",
   "repository": {
     "url": "https://github.com/Steve-xmh/applemusic-like-lyrics.git",
@@ -12,6 +12,7 @@
   "main": "dist/amll-react-framework.cjs",
   "module": "./dist/amll-react-framework.js",
   "typings": "./dist/index.d.ts",
+  "style": "./dist/amll-react-framework.css",
   "exports": {
     ".": {
       "import": "./dist/amll-react-framework.js",
@@ -19,14 +20,18 @@
       "types": "./dist/index.d.ts"
     },
     "./style.css": {
-      "import": "./dist/style.css",
-      "require": "./dist/style.css"
+      "import": "./dist/amll-react-framework.css",
+      "require": "./dist/amll-react-framework.css"
     }
   },
+  "sideEffects": [
+    "*.css"
+  ],
   "files": [
     "dist/**/*.js",
     "dist/**/*.ts",
     "dist/**/*.cjs",
+    "dist/**/*.css",
     "dist/**/*.map"
   ],
   "scripts": {

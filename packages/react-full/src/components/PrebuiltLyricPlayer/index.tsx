@@ -3,7 +3,11 @@
  * 已经部署好所有组件的歌词播放器组件，在正确设置所有的 Jotai 状态后可以开箱即用
  */
 
-import { BackgroundRender, LyricPlayer } from "@applemusic-like-lyrics/react";
+import {
+	BackgroundRender,
+	LyricPlayer,
+	type LyricPlayerRef,
+} from "@applemusic-like-lyrics/react";
 import structuredClone from "@ungap/structured-clone";
 import { useAtom, useAtomValue } from "jotai";
 import {
@@ -197,6 +201,7 @@ const PrebuiltCoreLyricPlayer: FC<{
 	alignPosition: number;
 	alignAnchor: "center" | "bottom" | "top";
 }> = ({ alignPosition, alignAnchor }) => {
+	const amllPlayerRef = useRef<LyricPlayerRef>(null);
 	const musicIsPlaying = useAtomValue(musicPlayingAtom);
 	const lyricLines = useAtomValue(musicLyricLinesAtom);
 	const isLyricPageOpened = useAtomValue(isLyricPageOpenedAtom);
@@ -267,6 +272,7 @@ const PrebuiltCoreLyricPlayer: FC<{
 				fontWeight: lyricFontWeight || undefined,
 				letterSpacing: lyricLetterSpacing || undefined,
 			}}
+			ref={amllPlayerRef}
 			playing={musicIsPlaying}
 			disabled={!isLyricPageOpened}
 			alignPosition={alignPosition}
@@ -278,8 +284,10 @@ const PrebuiltCoreLyricPlayer: FC<{
 			enableSpring={enableLyricLineSpringAnimation}
 			wordFadeWidth={Math.max(0.01, lyricWordFadeWidth)}
 			lyricPlayer={lyricPlayerImplementation}
-			onLyricLineClick={onLyricLineClick}
-			onLyricLineContextMenu={onLyricLineContextMenu}
+			onLyricLineClick={(evt) => onLyricLineClick?.(evt, amllPlayerRef.current)}
+			onLyricLineContextMenu={(evt) =>
+				onLyricLineContextMenu?.(evt, amllPlayerRef.current)
+			}
 		/>
 	);
 };

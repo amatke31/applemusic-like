@@ -22,8 +22,10 @@ export abstract class LyricPlayerBase
 	protected element: HTMLElement = document.createElement("div");
 
 	protected currentTime = 0;
-	protected lyricLinesSize: WeakMap<LyricLineBase, [number, number]> =
-		new WeakMap();
+	/** @internal */
+	lyricLinesSize: WeakMap<LyricLineBase, [number, number]> = new WeakMap();
+	/** @internal */
+	lyricLineElementMap: WeakMap<Element, LyricLineBase> = new WeakMap();
 	protected currentLyricLines: LyricLine[] = [];
 	// protected currentLyricLineObjects: LyricLineBase[] = [];
 	protected processedLines: LyricLine[] = [];
@@ -82,12 +84,56 @@ export abstract class LyricPlayerBase
 	};
 	private scrolledHandler = 0;
 	protected isScrolled = false;
+	/** @internal */
+	resizeObserver: ResizeObserver = new ResizeObserver(((entries) => {
+		let shouldRelayout = false;
+		let shouldRebuildPlayerStyle = false;
+		for (const entry of entries) {
+			if (entry.target === this.element) {
+				const rect = entry.contentRect;
+				this.size[0] = rect.width;
+				this.size[1] = rect.height;
+				shouldRebuildPlayerStyle = true;
+			} else if (entry.target === this.interludeDots.getElement()) {
+				this.interludeDotsSize[0] = entry.target.clientWidth;
+				this.interludeDotsSize[1] = entry.target.clientHeight;
+				shouldRelayout = true;
+			} else if (entry.target === this.bottomLine.getElement()) {
+				const newSize: [number, number] = [
+					entry.target.clientWidth,
+					entry.target.clientHeight,
+				];
+				const oldSize: [number, number] = this.bottomLine.lineSize;
 
-	resizeObserver: ResizeObserver = new ResizeObserver(((e) => {
-		const rect = e[0].contentRect;
-		this.size[0] = rect.width;
-		this.size[1] = rect.height;
-		this.onResize();
+				if (newSize[0] !== oldSize[0] || newSize[1] !== oldSize[1]) {
+					this.bottomLine.lineSize = newSize;
+					shouldRelayout = true;
+				}
+			} else {
+				const lineObj = this.lyricLineElementMap.get(entry.target);
+				if (lineObj) {
+					const newSize: [number, number] = [
+						entry.target.clientWidth,
+						entry.target.clientHeight,
+					];
+					const oldSize: [number, number] = this.lyricLinesSize.get(
+						lineObj,
+					) ?? [0, 0];
+
+					if (newSize[0] !== oldSize[0] || newSize[1] !== oldSize[1]) {
+						this.lyricLinesSize.set(lineObj, newSize);
+						lineObj.onLineSizeChange(newSize);
+						shouldRelayout = true;
+					}
+				}
+			}
+		}
+		if (shouldRelayout) {
+			this.calcLayout(true);
+		}
+		if (shouldRebuildPlayerStyle) {
+			this.onResize();
+		}
 	}) as ResizeObserverCallback);
 	protected wordFadeWidth = 0.5;
 	protected targetAlignIndex = 0;
@@ -95,6 +141,7 @@ export abstract class LyricPlayerBase
 	constructor() {
 		super();
 		this.resizeObserver.observe(this.element);
+		this.resizeObserver.observe(this.interludeDots.getElement());
 		this.element.classList.add(styles.lyricPlayer);
 
 		this.element.appendChild(this.interludeDots.getElement());
@@ -388,7 +435,7 @@ export abstract class LyricPlayerBase
 	 * @param initialTime 初始时间，默认为 0
 	 */
 	setLyricLines(lines: LyricLine[], initialTime = 0) {
-		this.initialLayoutFinished = false;
+		this.initialLayoutFinished = true;
 		for (const line of lines) {
 			for (const word of line.words) {
 				word.word = word.word.replace(/\s+/g, " ");
@@ -540,7 +587,7 @@ export abstract class LyricPlayerBase
 			for (const v of this.hotLines) {
 				this.bufferedLines.add(v);
 			}
-			this.calcLayout(true);
+			this.calcLayout();
 		} else if (removedIds.size > 0 || addedIds.size > 0) {
 			if (removedIds.size === 0 && addedIds.size > 0) {
 				for (const v of addedIds) {
@@ -593,20 +640,7 @@ export abstract class LyricPlayerBase
 	 * @param force 是否不经过动画直接修改布局定位
 	 * @param reflow 是否进行重新布局（重新计算每行歌词大小）
 	 */
-	async calcLayout(force?: boolean, reflow?: boolean) {
-		if (reflow) {
-			// this.emUnit = Number.parseFloat(getComputedStyle(this.element).fontSize);
-			await Promise.all(
-				this.currentLyricLineObjects.map(async (lineObj) => {
-					const size: [number, number] = await lineObj.measureSize();
-					this.lyricLinesSize.set(lineObj, size);
-				}),
-			);
-			this.interludeDotsSize[0] = this.interludeDots.getElement().clientWidth;
-			this.interludeDotsSize[1] = this.interludeDots.getElement().clientHeight;
-
-			this.bottomLine.lineSize = await this.bottomLine.measureSize();
-		}
+	async calcLayout(sync = false) {
 		const interlude = this.getCurrentInterlude();
 		let curPos = -this.scrollOffset;
 		let targetAlignIndex = this.scrollToIndex;
@@ -622,6 +656,8 @@ export abstract class LyricPlayerBase
 		} else {
 			this.interludeDots.setInterlude(undefined);
 		}
+		// 避免一开始就让所有歌词行挤在一起
+		const LINE_HEIGHT_FALLBACK = this.size[1] / 5;
 		const scrollOffset = this.currentLyricLineObjects
 			.slice(0, targetAlignIndex)
 			.reduce(
@@ -629,7 +665,7 @@ export abstract class LyricPlayerBase
 					acc +
 					(el.getLine().isBG && this.isPlaying
 						? 0
-						: (this.lyricLinesSize.get(el)?.[1] ?? 0)),
+						: (this.lyricLinesSize.get(el)?.[1] ?? LINE_HEIGHT_FALLBACK)),
 				0,
 			);
 		this.scrollBoundary[0] = -scrollOffset;
@@ -638,7 +674,8 @@ export abstract class LyricPlayerBase
 		const curLine = this.currentLyricLineObjects[targetAlignIndex];
 		this.targetAlignIndex = targetAlignIndex;
 		if (curLine) {
-			const lineHeight = this.lyricLinesSize.get(curLine)?.[1] ?? 0;
+			const lineHeight =
+				this.lyricLinesSize.get(curLine)?.[1] ?? LINE_HEIGHT_FALLBACK;
 			switch (this.alignAnchor) {
 				case "bottom":
 					curPos -= lineHeight;
@@ -652,7 +689,7 @@ export abstract class LyricPlayerBase
 		}
 		const latestIndex = Math.max(...this.bufferedLines);
 		let delay = 0;
-		let baseDelay = 0.05;
+		let baseDelay = sync ? 0 : 0.05;
 		let setDots = false;
 		this.currentLyricLineObjects.forEach((lineObj, i) => {
 			const hasBuffered = this.bufferedLines.has(i);
@@ -666,11 +703,11 @@ export abstract class LyricPlayerBase
 					i === this.scrollToIndex + 1)
 			) {
 				setDots = true;
-				this.interludeDots.setTransform(0, curPos + 10);
+				this.interludeDots.setTransform(0, curPos);
 				if (interlude) {
 					this.interludeDots.setInterlude([interlude[0], interlude[1]]);
 				}
-				curPos += this.interludeDotsSize[1] + 40;
+				curPos += this.interludeDotsSize[1];
 			}
 			let targetOpacity: number;
 
@@ -727,13 +764,13 @@ export abstract class LyricPlayerBase
 				targetScale,
 				targetOpacity,
 				window.innerWidth <= 1024 ? blurLevel * 0.8 : blurLevel,
-				force,
+				false,
 				delay,
 			);
 			if (line.isBG && (isActive || !this.isPlaying)) {
-				curPos += this.lyricLinesSize.get(lineObj)?.[1] ?? 0;
+				curPos += this.lyricLinesSize.get(lineObj)?.[1] ?? LINE_HEIGHT_FALLBACK;
 			} else if (!line.isBG) {
-				curPos += this.lyricLinesSize.get(lineObj)?.[1] ?? 0;
+				curPos += this.lyricLinesSize.get(lineObj)?.[1] ?? LINE_HEIGHT_FALLBACK;
 			}
 			if (curPos >= 0 && !this.isSeeking) {
 				if (!line.isBG) delay += baseDelay;
@@ -743,7 +780,7 @@ export abstract class LyricPlayerBase
 		});
 		this.scrollBoundary[1] = curPos + this.scrollOffset - this.size[1] / 2;
 		// console.groupEnd();
-		this.bottomLine.setTransform(0, curPos, force, delay);
+		this.bottomLine.setTransform(0, curPos, false, delay);
 	}
 
 	/**
@@ -891,12 +928,12 @@ export abstract class LyricLineBase extends EventTarget implements Disposable {
 		posY: new Spring(0),
 		scale: new Spring(100),
 	};
-	abstract measureSize(): PromiseLike<[number, number]> | [number, number];
 	abstract getLine(): LyricLine;
 	abstract enable(): void;
 	abstract disable(): void;
 	abstract resume(): void;
 	abstract pause(): void;
+	onLineSizeChange(size: [number, number]): void {}
 	setTransform(
 		top: number = this.top,
 		scale: number = this.scale,
