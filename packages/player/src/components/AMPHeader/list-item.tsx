@@ -10,7 +10,7 @@ export const AMPHeaderListItem = forwardRef<
 
 	return (
 		<li
-			className={`navigation-item navigation-item__all-playlists svelte-1a5yt87 drop-reset${isSelected ? " navigation-item--selected" : ""}`}
+			className={`navigation-item navigation-item__all-playlists svelte-1a5yt87 drop-reset${isSelected && " navigation-item--selected"}`}
 			aria-selected="true"
 			data-testid="navigation-item"
 		>

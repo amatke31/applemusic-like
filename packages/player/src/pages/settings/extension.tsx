@@ -4,7 +4,6 @@ import {
 	Box,
 	Button,
 	Callout,
-	Card,
 	Flex,
 	IconButton,
 	Switch,
@@ -19,6 +18,7 @@ import { open as shellOpen } from "@tauri-apps/plugin-shell";
 import { atom, useAtomValue, useStore } from "jotai";
 import type { FC } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { Card, CardGroup } from "../../components/Card";
 import {
 	ExtensionLoadResult,
 	extensionDirAtom,
@@ -128,127 +128,133 @@ export const ExtensionTab: FC = () => {
 					<Trans i18nKey="page.settings.others.restartProgram">重启程序</Trans>
 				</Button>
 			</Flex>
-			{extensionMetas.map((meta) => (
-				<Card key={`${meta.fileName}-${meta.id}`} my="2">
-					<Flex align="center" gap="4" wrap="wrap">
-						<Avatar
-							size="5"
-							fallback={<div />}
-							src={String(meta.icon)}
-							style={{
-								color: "white",
-							}}
-						/>
-						{meta.loadResult === ExtensionLoadResult.Loadable && (
+			<CardGroup>
+				{extensionMetas.map((meta) => (
+					<Card key={`${meta.fileName}-${meta.id}`} my="2">
+						<Flex align="center" gap="4" wrap="wrap">
+							<Avatar
+								size="5"
+								fallback={<div />}
+								src={String(meta.icon)}
+								style={{
+									color: "white",
+								}}
+							/>
+							{meta.loadResult === ExtensionLoadResult.Loadable && (
+								<Flex flexGrow="1" direction="column" justify="center">
+									<Text weight="bold">
+										{t("name", meta.id, { ns: meta.id })}
+									</Text>
+									<Text size="2">{meta.id}</Text>
+								</Flex>
+							)}
+							{meta.loadResult === ExtensionLoadResult.Disabled && (
+								<Flex flexGrow="1" direction="column" justify="center">
+									<Text weight="bold">
+										{t("name", meta.id, { ns: meta.id })}
+									</Text>
+									<Text size="2">{meta.id}</Text>
+								</Flex>
+							)}
+							{meta.loadResult === ExtensionLoadResult.InvaildExtensionFile && (
+								<Flex flexGrow="1" direction="column" justify="center">
+									<Box>
+										<Text color="gray">{meta.fileName}</Text>
+									</Box>
+									<Text color="gray" size="2">
+										<Trans i18nKey="extension.error.invaildPluginFile">
+											无效扩展程序文件
+										</Trans>
+									</Text>
+								</Flex>
+							)}
+							{meta.loadResult === ExtensionLoadResult.MissingDependency && (
+								<Flex flexGrow="1" direction="column" justify="center">
+									<Box>
+										<Text color="gray">{meta.fileName}</Text>
+									</Box>
+									<Text color="gray" size="2">
+										<Trans i18nKey="extension.error.missingDependency">
+											缺失依赖项
+										</Trans>
+									</Text>
+								</Flex>
+							)}
+							{meta.loadResult === ExtensionLoadResult.MissingMetadata && (
+								<Flex flexGrow="1" direction="column" justify="center">
+									<Box>
+										<Text color="gray">{meta.fileName}</Text>
+									</Box>
+									<Text color="gray" size="2">
+										<Trans i18nKey="extension.error.missingMetadata">
+											缺失必需元数据
+										</Trans>
+									</Text>
+								</Flex>
+							)}
+							{meta.loadResult === ExtensionLoadResult.ExtensionIdConflict && (
+								<Flex flexGrow="1" direction="column" justify="center">
+									<Box>
+										<Text color="gray">{meta.id}</Text>
+									</Box>
+									<Text color="gray" size="2">
+										<Trans i18nKey="extension.error.pluginIdConflict">
+											扩展程序 ID 冲突
+										</Trans>
+									</Text>
+								</Flex>
+							)}
 							<Flex flexGrow="1" direction="column" justify="center">
-								<Text weight="bold">{t("name", meta.id, { ns: meta.id })}</Text>
-								<Text size="2">{meta.id}</Text>
-							</Flex>
-						)}
-						{meta.loadResult === ExtensionLoadResult.Disabled && (
-							<Flex flexGrow="1" direction="column" justify="center">
-								<Text weight="bold">{t("name", meta.id, { ns: meta.id })}</Text>
-								<Text size="2">{meta.id}</Text>
-							</Flex>
-						)}
-						{meta.loadResult === ExtensionLoadResult.InvaildExtensionFile && (
-							<Flex flexGrow="1" direction="column" justify="center">
-								<Box>
-									<Text color="gray">{meta.fileName}</Text>
-								</Box>
-								<Text color="gray" size="2">
-									<Trans i18nKey="extension.error.invaildPluginFile">
-										无效扩展程序文件
-									</Trans>
+								<Text color="gray" align="right" size="2">
+									{meta.version}
+								</Text>
+								<Text color="gray" align="right" size="2">
+									{meta.fileName}
 								</Text>
 							</Flex>
-						)}
-						{meta.loadResult === ExtensionLoadResult.MissingDependency && (
-							<Flex flexGrow="1" direction="column" justify="center">
-								<Box>
-									<Text color="gray">{meta.fileName}</Text>
-								</Box>
-								<Text color="gray" size="2">
-									<Trans i18nKey="extension.error.missingDependency">
-										缺失依赖项
-									</Trans>
-								</Text>
-							</Flex>
-						)}
-						{meta.loadResult === ExtensionLoadResult.MissingMetadata && (
-							<Flex flexGrow="1" direction="column" justify="center">
-								<Box>
-									<Text color="gray">{meta.fileName}</Text>
-								</Box>
-								<Text color="gray" size="2">
-									<Trans i18nKey="extension.error.missingMetadata">
-										缺失必需元数据
-									</Trans>
-								</Text>
-							</Flex>
-						)}
-						{meta.loadResult === ExtensionLoadResult.ExtensionIdConflict && (
-							<Flex flexGrow="1" direction="column" justify="center">
-								<Box>
-									<Text color="gray">{meta.id}</Text>
-								</Box>
-								<Text color="gray" size="2">
-									<Trans i18nKey="extension.error.pluginIdConflict">
-										扩展程序 ID 冲突
-									</Trans>
-								</Text>
-							</Flex>
-						)}
-						<Flex flexGrow="1" direction="column" justify="center">
-							<Text color="gray" align="right" size="2">
-								{meta.version}
-							</Text>
-							<Text color="gray" align="right" size="2">
-								{meta.fileName}
-							</Text>
-						</Flex>
-						<Switch
-							disabled={
-								meta.loadResult !== ExtensionLoadResult.Loadable &&
-								meta.loadResult !== ExtensionLoadResult.Disabled
-							}
-							checked={meta.loadResult === ExtensionLoadResult.Loadable}
-							onCheckedChange={async () => {
-								const extensionDir = await store.get(extensionDirAtom);
-								const extensionPath = await path.join(
-									extensionDir,
-									meta.fileName,
-								);
-								if (extensionPath.endsWith(".disabled")) {
-									await rename(
-										extensionPath,
-										extensionPath.substring(0, extensionPath.length - 9),
-									);
-								} else {
-									await rename(extensionPath, `${extensionPath}.disabled`);
+							<Switch
+								disabled={
+									meta.loadResult !== ExtensionLoadResult.Loadable &&
+									meta.loadResult !== ExtensionLoadResult.Disabled
 								}
-								store.set(extensionMetaAtom);
-								store.set(requireRestartAtom, true);
-							}}
-						/>
-						<IconButton
-							variant="soft"
-							onClick={async () => {
-								const extensionDir = await store.get(extensionDirAtom);
-								const extensionPath = await path.join(
-									extensionDir,
-									meta.fileName,
-								);
-								await remove(extensionPath);
-								store.set(extensionMetaAtom);
-								store.set(requireRestartAtom, true);
-							}}
-						>
-							<TrashIcon />
-						</IconButton>
-					</Flex>
-				</Card>
-			))}
+								checked={meta.loadResult === ExtensionLoadResult.Loadable}
+								onCheckedChange={async () => {
+									const extensionDir = await store.get(extensionDirAtom);
+									const extensionPath = await path.join(
+										extensionDir,
+										meta.fileName,
+									);
+									if (extensionPath.endsWith(".disabled")) {
+										await rename(
+											extensionPath,
+											extensionPath.substring(0, extensionPath.length - 9),
+										);
+									} else {
+										await rename(extensionPath, `${extensionPath}.disabled`);
+									}
+									store.set(extensionMetaAtom);
+									store.set(requireRestartAtom, true);
+								}}
+							/>
+							<IconButton
+								variant="soft"
+								onClick={async () => {
+									const extensionDir = await store.get(extensionDirAtom);
+									const extensionPath = await path.join(
+										extensionDir,
+										meta.fileName,
+									);
+									await remove(extensionPath);
+									store.set(extensionMetaAtom);
+									store.set(requireRestartAtom, true);
+								}}
+							>
+								<TrashIcon />
+							</IconButton>
+						</Flex>
+					</Card>
+				))}
+			</CardGroup>
 		</>
 	);
 };

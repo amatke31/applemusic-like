@@ -2,7 +2,6 @@ import { InfoCircledIcon } from "@radix-ui/react-icons";
 import {
 	Box,
 	Callout,
-	Card,
 	Container,
 	Flex,
 	Text,
@@ -11,6 +10,7 @@ import {
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { type FC, useEffect, useMemo } from "react";
 import { Trans } from "react-i18next";
+import { Card, CardGroup } from "../../components/Card";
 import {
 	MusicContextMode,
 	musicContextModeAtom,
@@ -46,23 +46,25 @@ export const Component: FC = () => {
 			mb="150px"
 		>
 			<Flex align="end" mt="7" gap="4" />
-			<Card mt="2">
-				<Flex align="center">
-					<Box flexGrow="1">
-						<Text>
-							<Trans i18nKey="page.ws.recv.openNetworkAddress">
-								开放网络地址
-							</Trans>
-						</Text>
-					</Box>
-					<TextField.Root
-						type="url"
-						placeholder="0.0.0.0:11444"
-						value={wsProtocolListenAddr}
-						onChange={(e) => setWsProtocolListenAddr(e.target.value)}
-					/>
-				</Flex>
-			</Card>
+			<CardGroup>
+				<Card>
+					<Flex align="center">
+						<Box flexGrow="1">
+							<Text>
+								<Trans i18nKey="page.ws.recv.openNetworkAddress">
+									开放网络地址
+								</Trans>
+							</Text>
+						</Box>
+						<TextField.Root
+							type="url"
+							placeholder="0.0.0.0:11444"
+							value={wsProtocolListenAddr}
+							onChange={(e) => setWsProtocolListenAddr(e.target.value)}
+						/>
+					</Flex>
+				</Card>
+			</CardGroup>
 			<Callout.Root mt="2">
 				<Callout.Icon>
 					<InfoCircledIcon />
@@ -74,23 +76,27 @@ export const Component: FC = () => {
 					</Trans>
 				</Callout.Text>
 			</Callout.Root>
-			<Card mt="2">
-				<Text weight="bold">
-					<Trans i18nKey="page.ws.recv.connectedClients">已连接的客户端</Trans>
-				</Text>
-				{connectedAddrsArray.map((addr) => (
-					<Box key={`connected-addr-${addr}`}>
-						<Text color="gray">{addr}</Text>
-					</Box>
-				))}
-				{connectedAddrsArray.length === 0 && (
-					<Box>
-						<Text color="gray">
-							<Trans i18nKey="page.ws.recv.noClients">无</Trans>
-						</Text>
-					</Box>
-				)}
-			</Card>
+			<CardGroup>
+				<Card>
+					<Text weight="bold">
+						<Trans i18nKey="page.ws.recv.connectedClients">
+							已连接的客户端
+						</Trans>
+					</Text>
+					{connectedAddrsArray.map((addr) => (
+						<Box key={`connected-addr-${addr}`}>
+							<Text color="gray">{addr}</Text>
+						</Box>
+					))}
+					{connectedAddrsArray.length === 0 && (
+						<Box>
+							<Text color="gray">
+								<Trans i18nKey="page.ws.recv.noClients">无</Trans>
+							</Text>
+						</Box>
+					)}
+				</Card>
+			</CardGroup>
 		</Container>
 	);
 };

@@ -49,12 +49,12 @@ export const AMPHeader = forwardRef<
 				>
 					<div className="navigation__scrollable-container svelte-13li0vp">
 						<AMPHeaderList label="">
-							<AMPHeaderListItem label="首页" icon={<HomeIcon />} to="/" />
 							<AMPHeaderListItem
 								label="搜索"
 								icon={<SearchIcon />}
 								to="/search"
 							/>
+							<AMPHeaderListItem label="首页" icon={<HomeIcon />} to="/" />
 							<AMPHeaderListItem
 								label="设置"
 								icon={<GearIcon />}
@@ -99,18 +99,14 @@ export const AMPHeader = forwardRef<
 								icon={<StarSquareIcon />}
 								to="/like"
 							/>
-							{playlists ? (
-								playlists.map((playlist) => (
-									<AMPHeaderListItem
-										key={playlist.id}
-										label={playlist.name}
-										icon={<MusicNoteListIcon />}
-										to={`/playlist/${playlist.id}`}
-									/>
-								))
-							) : (
-								<div />
-							)}
+							{playlists?.map((playlist) => (
+								<AMPHeaderListItem
+									key={playlist.id}
+									label={playlist.name}
+									icon={<MusicNoteListIcon />}
+									to={`/playlist/${playlist.id}`}
+								/>
+							))}
 						</AMPHeaderList>
 					</div>
 				</div>

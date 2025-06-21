@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { type Song, db } from "../../dexie";
 import { useSongCover } from "../../utils/use-song-cover";
 import AMPContextualMenuButton from "../AMPContextualMenuButton";
-import { StarIcon } from "../AMPIcon";
+import { EllipsisIcon, StarIcon } from "../AMPIcon";
 
 export const PlaylistSongCard = forwardRef<
 	HTMLDivElement,
@@ -197,10 +197,9 @@ export const PlaylistSongCard = forwardRef<
 								data-testid="song-name-wrapper"
 							>
 								<Link to={`/song/${songId}`}>
-									<a
+									<div
 										data-testid="click-action"
 										className="click-action svelte-c0t0j2"
-										href={`/song/${songId}`}
 									>
 										<div
 											className="songs-list-row__song-name svelte-t6plbb"
@@ -231,7 +230,7 @@ export const PlaylistSongCard = forwardRef<
 														},
 													))}
 										</div>
-									</a>
+									</div>
 								</Link>
 								<div
 									className="songs-list-row__by-line svelte-t6plbb songs-list-row__by-line__mobile"
@@ -310,25 +309,7 @@ export const PlaylistSongCard = forwardRef<
 										data-testid="more-button"
 										slot="trigger-content"
 									>
-										<svg
-											width="28"
-											height="28"
-											viewBox="0 0 28 28"
-											className="glyph"
-											xmlns="http://www.w3.org/2000/svg"
-										>
-											<title>更多</title>
-											<circle
-												fill="var(--iconCircleFill, transparent)"
-												cx="14"
-												cy="14"
-												r="14"
-											/>
-											<path
-												fill="var(--iconEllipsisFill, white)"
-												d="M10.105 14c0-.87-.687-1.55-1.564-1.55-.862 0-1.557.695-1.557 1.55 0 .848.695 1.55 1.557 1.55.855 0 1.564-.702 1.564-1.55zm5.437 0c0-.87-.68-1.55-1.542-1.55A1.55 1.55 0 0012.45 14c0 .848.695 1.55 1.55 1.55.848 0 1.542-.702 1.542-1.55zm5.474 0c0-.87-.687-1.55-1.557-1.55-.87 0-1.564.695-1.564 1.55 0 .848.694 1.55 1.564 1.55.848 0 1.557-.702 1.557-1.55z"
-											/>
-										</svg>
+										<EllipsisIcon />
 									</span>
 								</span>
 								<span slot="content">

@@ -1,4 +1,5 @@
 export { ClockIcon } from "./ClockIcon";
+export { EllipsisIcon } from "./EllipsisIcon";
 export { GearIcon } from "./GearIcon";
 export { HomeIcon } from "./HomeIcon";
 export { MicroPhoneIcon } from "./MicroPhoneIcon";

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { type Playlist, db } from "../../dexie.ts";
 import { emitAudioThread } from "../../utils/player.ts";
 import AMPContextualMenuButton from "../AMPContextualMenuButton/index.tsx";
+import { EllipsisIcon } from "../AMPIcon";
 import { PlaylistCover } from "../PlaylistCover/index.tsx";
 
 export const PlaylistCard = forwardRef<
@@ -84,21 +85,20 @@ export const PlaylistCard = forwardRef<
 						className="product-lockup__controls svelte-1rancje"
 					>
 						<Link to={`/playlist/${playlist.id}`}>
-							<a
+							<div
 								className="product-lockup__link svelte-1rancje"
 								data-testid="product-lockup-link"
 								// aria-label="Against the Tide - Single、鸣潮先约电台 &amp; Forts"
-								href={`/playlist/${playlist.id}`}
 							>
 								{playlist.name}
-							</a>
+							</div>
 						</Link>
 						<div
 							data-testid="play-button"
 							className="product-lockup__play-button svelte-1rancje"
 						>
 							<button
-								aria-label="播放“Against the Tide - Single”"
+								aria-label={`播放“${playlist.name}”`}
 								className="play-button svelte-1tvdl0z play-button--platter"
 								data-testid="play-button"
 								type="button"
@@ -137,25 +137,7 @@ export const PlaylistCard = forwardRef<
 											data-testid="more-button"
 											slot="trigger-content"
 										>
-											<svg
-												width="28"
-												height="28"
-												viewBox="0 0 28 28"
-												className="glyph"
-												xmlns="http://www.w3.org/2000/svg"
-											>
-												<title>更多</title>
-												<circle
-													fill="var(--iconCircleFill, transparent)"
-													cx="14"
-													cy="14"
-													r="14"
-												/>
-												<path
-													fill="var(--iconEllipsisFill, white)"
-													d="M10.105 14c0-.87-.687-1.55-1.564-1.55-.862 0-1.557.695-1.557 1.55 0 .848.695 1.55 1.557 1.55.855 0 1.564-.702 1.564-1.55zm5.437 0c0-.87-.68-1.55-1.542-1.55A1.55 1.55 0 0012.45 14c0 .848.695 1.55 1.55 1.55.848 0 1.542-.702 1.542-1.55zm5.474 0c0-.87-.687-1.55-1.557-1.55-.87 0-1.564.695-1.564 1.55 0 .848.694 1.55 1.564 1.55.848 0 1.557-.702 1.557-1.55z"
-												/>
-											</svg>
+											<EllipsisIcon />
 										</span>
 									</span>
 									<span slot="content">
