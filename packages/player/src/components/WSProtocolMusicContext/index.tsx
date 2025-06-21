@@ -221,10 +221,9 @@ export const WSProtocolMusicContext: FC = () => {
 		};
 
 		let curCoverBlobUrl = "";
-		const onBodyChannel = new Channel<WSBodyMap[keyof WSBodyMessageMap]>()
+		const onBodyChannel = new Channel<WSBodyMap[keyof WSBodyMessageMap]>();
 
 		function onBody(payload: WSBodyMap[keyof WSBodyMessageMap]) {
-
 			switch (payload.type) {
 				case "ping": {
 					sendWSMessage("pong");

@@ -5,8 +5,7 @@
       "options": {
         "cacheableOperations": [
           "build:dev",
-          "build",
-          "fmt"
+          "build"
         ]
       }
     }
@@ -14,9 +13,6 @@
   "targetDefaults": {
     "fmt": {
       "cache": true,
-      "dependsOn": [
-        "^fmt"
-      ],
       "outputs": [
         "{projectRoot}/src"
       ]
@@ -24,8 +20,7 @@
     "build": {
       "cache": true,
       "dependsOn": [
-        "^build",
-        "fmt"
+        "^build"
       ],
       "outputs": [
         "{projectRoot}/dist",

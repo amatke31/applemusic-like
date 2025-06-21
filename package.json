@@ -3,9 +3,9 @@
   "private": true,
   "license": "GPL-3.0",
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "lerna": "^8.1.9",
-    "typescript": "^5.8.2"
+    "@biomejs/biome": "^2.0.0",
+    "lerna": "^8.2.2",
+    "typescript": "^5.8.3"
   },
   "scripts": {
     "build:libs": "lerna run build --scope \"*/react-full\" --scope \"*/vue\" --scope \"*/lyric\" --scope \"*/ws-protocol\""

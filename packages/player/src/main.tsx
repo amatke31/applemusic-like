@@ -11,8 +11,8 @@ import "./assets/AMPList.css";
 import "./assets/LockupVirtualScroll.css";
 import "./i18n";
 import "./styles.css";
+import "./utils/merge-raf";
 import "./utils/player";
-// import "./utils/merge-raf";
 
 const ErrorRender = (props: FallbackProps) => {
 	console.error(props.error);

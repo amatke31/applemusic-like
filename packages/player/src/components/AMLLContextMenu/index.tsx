@@ -67,7 +67,7 @@ export const AMLLContextMenuContent: FC = () => {
 			<ContextMenu.Separator />
 			<ContextMenu.Item
 				onClick={() => {
-					setRecordPanelOpened(true)
+					setRecordPanelOpened(true);
 				}}
 			>
 				<Trans i18nKey="amll.contextMenu.openRecorder">打开捕获面板</Trans>
