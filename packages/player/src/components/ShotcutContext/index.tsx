@@ -3,7 +3,7 @@ import {
 	onPlayOrResumeAtom,
 	onRequestNextSongAtom,
 	onRequestPrevSongAtom,
-} from "@applemusic-like-lyrics/react-full";
+} from "@applemusic-like-lyrics/states";
 import {
 	type ShortcutEvent,
 	register,

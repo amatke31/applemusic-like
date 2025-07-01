@@ -1,5 +1,4 @@
 import * as lyric from "@applemusic-like-lyrics/lyric";
-import * as amllStates from "@applemusic-like-lyrics/react-full/states";
 import chalk from "chalk";
 import { useAtomValue, useSetAtom, useStore } from "jotai";
 import { type FC, useCallback, useEffect, useMemo, useRef } from "react";
@@ -10,12 +9,13 @@ import {
 	ExtensionLoadResult,
 	type ExtensionMetaState,
 	type LoadedExtension,
-	extensionMetaAtom,
 	loadedExtensionAtom,
-} from "../../states/extension.ts";
-import * as playerStates from "../../states/index.ts";
+} from "@applemusic-like-lyrics/states";
+import * as playerStates from "@applemusic-like-lyrics/states";
 import { PlayerExtensionContext, sourceMapOffsetLines } from "./ext-ctx.ts";
+import * as amllStates from "@applemusic-like-lyrics/states";
 
+import { extensionMetaAtom } from "../../states/extension.ts";
 const AsyncFunction: FunctionConstructor = Object.getPrototypeOf(
 	async () => {},
 ).constructor;

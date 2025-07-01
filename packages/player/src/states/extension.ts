@@ -1,42 +1,18 @@
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { mkdir, readDir, readTextFile } from "@tauri-apps/plugin-fs";
 import { atom } from "jotai";
-import type { PlayerExtensionContext } from "../components/ExtensionContext/ext-ctx.ts";
 import i18n from "../i18n.ts";
 
-export enum ExtensionLoadResult {
-	Loadable = "loadable",
-	Disabled = "disabled",
-	InvaildExtensionFile = "invaild-extension-file",
-	ExtensionIdConflict = "extension-id-conflict",
-	MissingMetadata = "missing-metadata",
-	MissingDependency = "missing-dependency",
-	JavaScriptFileCorrupted = "javascript-file-corrupted",
-}
-
-export interface ExtensionMetaState {
-	loadResult: ExtensionLoadResult;
-	id: string;
-	fileName: string;
-	scriptData: string;
-	dependency: string[];
-	[key: string]: string | string[] | undefined;
-}
-
-export interface LoadedExtension {
-	extensionMeta: ExtensionMetaState;
-	extensionFunc: () => Promise<void>;
-	context: PlayerExtensionContext;
-}
+import {
+	ExtensionLoadResult,
+	type ExtensionMetaState,
+	reloadExtensionMetaAtom,
+} from "@applemusic-like-lyrics/states";
 
 export const extensionDirAtom = atom(async () => {
 	const appDir = await appDataDir();
 	return await join(appDir, "extensions");
 });
-
-const reloadExtensionMetaAtom = atom(Symbol());
-
-export const loadedExtensionAtom = atom<LoadedExtension[]>([]);
 
 export const extensionMetaAtom = atom(
 	async (get) => {
@@ -157,6 +133,6 @@ export const extensionMetaAtom = atom(
 		return extensionMetas;
 	},
 	(_get, set) => {
-		set(reloadExtensionMetaAtom, Symbol());
+		set(reloadExtensionMetaAtom, (c) => c + 1);
 	},
 );

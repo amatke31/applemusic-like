@@ -1,7 +1,7 @@
 .musicInfo {
 	display: flex;
 	color: white;
-	font-size: max(2.0vh, 1em);
+	font-size: max(2vh, 1em);
 	min-width: 0;
 }
 

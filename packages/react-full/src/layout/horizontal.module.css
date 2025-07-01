@@ -26,8 +26,9 @@
 		/* left: var(--hide-lyric-left); */
 
 		.lyric {
-			transition: opacity 0.25s cubic-bezier(0.5, 0, 0.5, 1), transform 0.5s
-				cubic-bezier(0.5, 0, 0.5, 1);
+			transition:
+				opacity 0.25s cubic-bezier(0.5, 0, 0.5, 1),
+				transform 0.5s cubic-bezier(0.5, 0, 0.5, 1);
 			opacity: 0;
 			pointer-events: none;
 		}
@@ -93,7 +94,8 @@
 
 	position: relative;
 
-	margin-top: calc(-8px + 1.75em); /* 计算一下该有的间距 没懂为啥整个加个gap8px */
+	margin-top: calc(-8px + 1.75em);
+	/* 计算一下该有的间距 没懂为啥整个加个gap8px */
 }
 
 .lyric {
@@ -110,7 +112,8 @@
 	mix-blend-mode: plus-lighter;
 	contain: paint;
 
-	@media screen and (max-width: 1600px), (max-height: 1000px) {
+	@media screen and (max-width: 1600px),
+	(max-height: 1000px) {
 		padding-right: 8%;
 	}
 }
@@ -126,7 +129,8 @@
 	padding-right: 4em;
 	padding-left: 4em;
 
-	@media screen and (max-width: 1600px), (max-height: 1000px) {
+	@media screen and (max-width: 1600px),
+	(max-height: 1000px) {
 		gap: 2em;
 		padding-right: 2em;
 		padding-left: 2em;

@@ -7,7 +7,6 @@ import { type Plugin, defineConfig } from "vite";
 import i18nextLoader from "vite-plugin-i18next-loader";
 import lightningcss from "vite-plugin-lightningcss";
 import svgr from "vite-plugin-svgr";
-import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from "vite-plugin-wasm";
 
 const host = process.env.TAURI_DEV_HOST;
@@ -73,14 +72,12 @@ const GitMetadataPlugin = (): Plugin => {
 		},
 		load(id) {
 			if (id === RESOLVED_VIRTUAL_ID) {
-				return `export const commit = ${JSON.stringify(gitCommit)};\nexport const branch = ${JSON.stringify(gitBranch)};`;
+				return `export const commit = ${JSON.stringify(
+					gitCommit,
+				)};\nexport const branch = ${JSON.stringify(gitBranch)};`;
 			}
 		},
 	};
-};
-
-const ReactCompilerConfig = {
-	target: "18",
 };
 
 // https://vitejs.dev/config/
@@ -95,8 +92,8 @@ export default defineConfig({
 		rollupOptions: {
 			shimMissingExports: true,
 			input: {
-				index: "index.html",
-				screenshot: "screenshot.html",
+				index: resolve(__dirname, "index.html"),
+				screenshot: resolve(__dirname, "screenshot.html"),
 			},
 		},
 		sourcemap: "inline",
@@ -104,15 +101,12 @@ export default defineConfig({
 	plugins: [
 		react({
 			babel: {
-				plugins: [
-					["babel-plugin-react-compiler", ReactCompilerConfig],
-					jotaiDebugLabel,
-					jotaiReactRefresh,
-				],
+				plugins: [jotaiDebugLabel, jotaiReactRefresh],
 			},
 		}),
 		wasm(),
 		// topLevelAwait(),
+
 		svgr({
 			svgrOptions: {
 				ref: true,
@@ -129,7 +123,7 @@ export default defineConfig({
 		}),
 	],
 	resolve: {
-		dedupe: ["react", "react-dom", "react-compiler-runtime", "jotai"],
+		dedupe: ["react", "react-dom", "jotai"],
 		alias: {
 			"@applemusic-like-lyrics/core": resolve(__dirname, "../core/src"),
 			"@applemusic-like-lyrics/react": resolve(__dirname, "../react/src"),

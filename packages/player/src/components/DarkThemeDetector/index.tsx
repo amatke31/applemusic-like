@@ -1,28 +1,35 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { useSetAtom } from "jotai";
 import { type FC, useEffect } from "react";
-import {
-	DarkMode,
-	autoDarkModeAtom,
-	darkModeAtom,
-} from "../../states/index.ts";
-
-const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+import { autoDarkModeAtom } from "@applemusic-like-lyrics/states";
 
 export const DarkThemeDetector: FC = () => {
-	const setDarkMode = useSetAtom(autoDarkModeAtom);
-	const darkMode = useAtomValue(darkModeAtom);
+	const setAutoDarkMode = useSetAtom(autoDarkModeAtom);
+
 	useEffect(() => {
-		if (darkMode !== DarkMode.Auto) return;
-		const onDarkModeChange = (e: MediaQueryListEvent) => {
-			setDarkMode(e.matches);
+		const appWindow = getCurrentWindow();
+		let unlisten: (() => void) | undefined;
+
+		const setupListener = async () => {
+			try {
+				const initialTheme = await appWindow.theme();
+				setAutoDarkMode(initialTheme === "dark");
+			} catch (e) {
+				console.error("获取当前的系统主题失败，设置为浅色主题", e);
+				setAutoDarkMode(false);
+			}
+
+			unlisten = await appWindow.onThemeChanged(({ payload: theme }) => {
+				setAutoDarkMode(theme === "dark");
+			});
 		};
-		setDarkMode(darkMediaQuery.matches);
-		darkMediaQuery.addEventListener("change", onDarkModeChange);
+
+		setupListener();
+
 		return () => {
-			darkMediaQuery.removeEventListener("change", onDarkModeChange);
+			unlisten?.();
 		};
-	}, [darkMode, setDarkMode]);
+	}, [setAutoDarkMode]);
+
 	return null;
 };
-
-export default DarkThemeDetector;

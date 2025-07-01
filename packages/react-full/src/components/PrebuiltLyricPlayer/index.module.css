@@ -33,11 +33,12 @@
 .songMediaButton {
 	height: 10vh;
 
-	@media screen and (max-height: 768px), (max-width: 1200px) {
+	@media screen and (max-height: 768px),
+	(max-width: 1200px) {
 		height: 8vh;
 	}
 
-	& > svg {
+	&>svg {
 		scale: 3;
 		transition: scale 0.3s;
 
@@ -62,11 +63,12 @@
 .songMediaPlayButton {
 	height: 10vh;
 
-	@media screen and (max-height: 768px), (max-width: 1200px) {
+	@media screen and (max-height: 768px),
+	(max-width: 1200px) {
 		height: 8vh;
 	}
 
-	& > svg {
+	&>svg {
 		scale: 2;
 		transition: scale 0.3s;
 
@@ -114,24 +116,24 @@
 		margin-top: 0;
 	}
 
-	& > * {
+	&>* {
 		flex: 1;
 	}
 
-	& > *:nth-child(2) {
+	&>*:nth-child(2) {
 		flex: 0;
 	}
 
-	& > *:last-child {
+	&>*:last-child {
 		text-align: right;
 	}
 }
 
-.bigControls > button {
+.bigControls>button {
 	height: 10vh !important;
 	width: 10vh !important;
 
-	&:nth-child(2) > svg {
+	&:nth-child(2)>svg {
 		scale: 1.75;
 
 		@media screen and (max-width: 480px) {
@@ -139,7 +141,7 @@
 		}
 	}
 
-	& > svg {
+	&>svg {
 		scale: 2.5;
 
 		@media screen and (max-width: 480px) {
@@ -154,8 +156,9 @@
 }
 
 .bigMusicInfo {
-	transition: transform 0.3s var(--info-timing-func-in), opacity 0.3s
-		var(--info-timing-func-in);
+	transition:
+		transform 0.3s var(--info-timing-func-in),
+		opacity 0.3s var(--info-timing-func-in);
 	transform: translateY(-25vh);
 	opacity: 0;
 	overflow-x: hidden;
@@ -172,23 +175,26 @@
 }
 
 .bigMusicInfo.hideLyric {
-	transition: transform 0.5s 0.3s var(--info-timing-func-out), opacity 0.5s 0.3s
-		var(--info-timing-func-out);
+	transition:
+		transform 0.5s 0.3s var(--info-timing-func-out),
+		opacity 0.5s 0.3s var(--info-timing-func-out);
 	transform: translateY(0);
 	opacity: 1;
 }
 
 .smallMusicInfo {
-	transition: transform 0.5s 0.3s var(--info-timing-func-out), opacity 0.3s 0.3s
-		var(--info-timing-func-out);
+	transition:
+		transform 0.5s 0.3s var(--info-timing-func-out),
+		opacity 0.3s 0.3s var(--info-timing-func-out);
 	transform: translateY(0);
 	opacity: 1;
 	font-size: clamp(1em, 2vh, 1.25em) !important;
 }
 
 .smallMusicInfo.hideLyric {
-	transition: transform 0.3s var(--info-timing-func-in), opacity 0.3s
-		var(--info-timing-func-in);
+	transition:
+		transform 0.3s var(--info-timing-func-in),
+		opacity 0.3s var(--info-timing-func-in);
 	transform: translateY(25vh);
 	opacity: 0;
 }

@@ -4,7 +4,7 @@ import { SourceMapConsumer, SourceMapGenerator } from "source-map-js";
 import type { db } from "../../dexie.ts";
 import type ExtensionEnv from "../../extension-env.ts";
 import i18n from "../../i18n.ts";
-import type { ExtensionMetaState } from "../../states/extension.ts";
+import type { ExtensionMetaState } from "@applemusic-like-lyrics/states";
 
 export async function sourceMapOffsetLines(
 	code: string,

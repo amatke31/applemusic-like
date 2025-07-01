@@ -1,63 +1,63 @@
 {
-  "name": "@applemusic-like-lyrics/react",
-  "version": "0.2.0-alpha.5",
-  "description": "AMLL 组件库的 React 绑定",
-  "repository": {
-    "url": "https://github.com/Steve-xmh/applemusic-like-lyrics.git",
-    "directory": "packages/react",
-    "type": "git"
-  },
-  "type": "module",
-  "license": "GPL-3.0",
-  "files": [
-    "dist/**/*.js",
-    "dist/**/*.ts",
-    "dist/**/*.cjs",
-    "dist/**/*.map"
-  ],
-  "scripts": {
-    "build:docs": "typedoc --plugin typedoc-plugin-markdown --out docs src/index.ts",
-    "build": "vite build",
-    "build:dev": "vite build",
-    "fmt": "biome format --write ./src",
-    "dev": "vite dev",
-    "preinstall": "npx only-allow pnpm"
-  },
-  "main": "./dist/amll-react.cjs",
-  "module": "./dist/amll-react.js",
-  "typings": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/amll-react.js",
-      "require": "./dist/amll-react.cjs",
-      "types": "./dist/index.d.ts"
-    }
-  },
-  "devDependencies": {
-    "@applemusic-like-lyrics/lyric": "workspace:^",
-    "@biomejs/biome": "^1.9.4",
-    "@pixi/app": "^7.4.3",
-    "@pixi/core": "^7.4.3",
-    "@pixi/display": "^7.4.3",
-    "@pixi/filter-blur": "^7.4.3",
-    "@pixi/filter-color-matrix": "^7.4.3",
-    "@pixi/sprite": "^7.4.3",
-    "@types/react": "^19.0.12",
-    "@types/react-dom": "^19.0.4",
-    "@vitejs/plugin-react": "^4.3.4",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "typedoc": "^0.28.1",
-    "typedoc-plugin-markdown": "^4.6.0",
-    "typescript": "^5.8.2",
-    "vite": "^6.2.3",
-    "vite-plugin-dts": "^4.5.3"
-  },
-  "dependencies": {
-    "@applemusic-like-lyrics/core": "workspace:^"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-dom": "*"
-  }
+	"name": "@applemusic-like-lyrics/react",
+	"version": "0.2.0-alpha.5",
+	"description": "AMLL 组件库的 React 绑定",
+	"repository": {
+		"url": "https://github.com/Steve-xmh/applemusic-like-lyrics.git",
+		"directory": "packages/react",
+		"type": "git"
+	},
+	"type": "module",
+	"license": "GPL-3.0",
+	"files": [
+		"dist/**/*.js",
+		"dist/**/*.ts",
+		"dist/**/*.cjs",
+		"dist/**/*.map"
+	],
+	"scripts": {
+		"build:docs": "typedoc --plugin typedoc-plugin-markdown --out docs src/index.ts",
+		"build": "vite build",
+		"build:dev": "vite build",
+		"fmt": "biome format --write ./src",
+		"dev": "vite dev",
+		"preinstall": "npx only-allow pnpm"
+	},
+	"main": "./dist/amll-react.cjs",
+	"module": "./dist/amll-react.js",
+	"typings": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/amll-react.js",
+			"require": "./dist/amll-react.cjs",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"devDependencies": {
+		"@applemusic-like-lyrics/lyric": "workspace:^",
+		"@biomejs/biome": "^1.9.4",
+		"@pixi/app": "^7.4.3",
+		"@pixi/core": "^7.4.3",
+		"@pixi/display": "^7.4.3",
+		"@pixi/filter-blur": "^7.4.3",
+		"@pixi/filter-color-matrix": "^7.4.3",
+		"@pixi/sprite": "^7.4.3",
+		"@types/react": "^19.0.12",
+		"@types/react-dom": "^19.0.4",
+		"@vitejs/plugin-react": "^4.3.4",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"typedoc": "^0.28.1",
+		"typedoc-plugin-markdown": "^4.6.0",
+		"typescript": "^5.8.2",
+		"vite": "^6.2.3",
+		"vite-plugin-dts": "^4.5.3"
+	},
+	"dependencies": {
+		"@applemusic-like-lyrics/core": "workspace:^"
+	},
+	"peerDependencies": {
+		"react": "*",
+		"react-dom": "*"
+	}
 }

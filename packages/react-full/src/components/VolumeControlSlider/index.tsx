@@ -1,10 +1,10 @@
-import { useEffect, useRef } from "react";
-import { BouncingSlider } from "../BouncingSlider";
+import React, { useEffect, useRef } from "react";
+import { BouncingSlider, type SliderProps } from "../BouncingSlider";
 import IconSpeaker from "./icon_speaker.svg?react";
 import IconSpeaker3 from "./icon_speaker_3.svg?react";
 import styles from "./index.module.css";
 
-export const VolumeControl: typeof BouncingSlider = (props) => {
+export const VolumeControl: React.FC<SliderProps> = (props) => {
 	const lastValueRef = useRef(props.value);
 	const minSpeakerRef = useRef<SVGSVGElement>(null);
 	const maxSpeakerRef = useRef<SVGSVGElement>(null);

@@ -12,7 +12,12 @@ export default defineConfig({
 			formats: ["es"],
 		},
 		rollupOptions: {
-			external: ["react", "react-dom", "react/jsx-runtime", "@applemusic-like-lyrics/core"],
+			external: [
+				"react",
+				"react-dom",
+				"react/jsx-runtime",
+				"@applemusic-like-lyrics/core",
+			],
 		},
 	},
 	plugins: [

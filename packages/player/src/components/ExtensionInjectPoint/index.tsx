@@ -5,7 +5,7 @@ import { type ComponentType, type FC, Fragment, useMemo } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import { Trans, useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { loadedExtensionAtom } from "../../states/extension.ts";
+import { loadedExtensionAtom } from "@applemusic-like-lyrics/states";
 
 const ErrorCallout: FC<
 	FallbackProps & {
@@ -69,7 +69,15 @@ export const ExtensionInjectPoint: FC<{
 							),
 						);
 					}}
-					fallbackRender={() => (hideErrorCallout ? null : <ErrorCallout />)}
+					fallbackRender={(props) =>
+						hideErrorCallout ? null : (
+							<ErrorCallout
+								{...props}
+								id={id}
+								injectPointName={injectPointName}
+							/>
+						)
+					}
 				>
 					<InjectedComponent />
 				</ErrorBoundary>

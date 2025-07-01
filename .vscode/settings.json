@@ -1,34 +1,20 @@
 {
-	"typescript.tsdk": "node_modules/typescript/lib",
-	"editor.codeActionsOnSave": {
-		"quickfix.biome": "always",
-		"source.organizeImports.biome": "always",
-		"source.fixAll.ts": "explicit",
-		"source.removeUnused.ts": "explicit",
-		"source.removeUnusedImports": "explicit",
-		"source.sortImports": "always",
-		"source.organizeImports": "always"
-	},
-	"editor.formatOnSave": true,
-	"editor.defaultFormatter": "biomejs.biome",
-	"rust-analyzer.linkedProjects": [
-		"./packages/player/src-tauri/Cargo.toml",
-		"./packages/skia-player/Cargo.toml",
-		"./packages/lyric/Cargo.toml"
-	],
-	"[javascript]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	},
-	"[typescript]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	},
-	"[typescriptreact]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	},
-	"[css]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	},
-	"[toml]": {
-		"editor.defaultFormatter": "tamasfe.even-better-toml"
-	}
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "editor.defaultFormatter": "biomejs.biome",
+    "[toml]": {
+        "editor.defaultFormatter": "tamasfe.even-better-toml"
+    },
+    "[rust]": {
+        "editor.defaultFormatter": "rust-lang.rust-analyzer"
+    },
+    "rust-analyzer.linkedProjects": [
+        "./packages/player/src-tauri/Cargo.toml",
+        "./packages/skia-player/Cargo.toml",
+        "./packages/lyric/Cargo.toml",
+        "./packages/player-core/Cargo.toml"
+    ],
+    "[css]": {
+        "editor.defaultFormatter": "vscode.css-language-features"
+    },
+    "rust-analyzer.check.allTargets": true
 }

@@ -11,8 +11,11 @@
 	height: fit-content;
 	padding: 2vh 1em;
 	contain: content;
-	transition: opacity 0.25s, filter 0.2s, background-color 0.25s, box-shadow
-		0.25s;
+	transition:
+		opacity 0.25s,
+		filter 0.2s,
+		background-color 0.25s,
+		box-shadow 0.25s;
 	box-sizing: border-box;
 	border-radius: 0.25em;
 
@@ -33,7 +36,11 @@
 .lyricBgLine {
 	opacity: 0;
 	font-size: max(calc(1em * var(--amll-lp-bg-line-scale, 0.7)), 10px);
-	transition: opacity 0.25s, scale 0.5s, filter 0.2s, background-color 0.25s,
+	transition:
+		opacity 0.25s,
+		scale 0.5s,
+		filter 0.2s,
+		background-color 0.25s,
 		box-shadow 0.25s;
 	/* 因为字体大小缩小了，故内边距要和主行字体大小统一，行边距计算公式为 100% / font-size 转 em 单位 */
 	padding: 1vh
@@ -41,7 +48,11 @@
 
 	&.active {
 		transition:
-			opacity 0.5s 0.25s, scale 1.5s cubic-bezier(0, 1, 0, 1) 0.25s, filter 0.2s, background-color 0.25s, box-shadow 0.25s;
+			opacity 0.5s 0.25s,
+			scale 1.5s cubic-bezier(0, 1, 0, 1) 0.25s,
+			filter 0.2s,
+			background-color 0.25s,
+			box-shadow 0.25s;
 		opacity: 0.4;
 	}
 }

@@ -1,22 +1,22 @@
 use std::{
     io::Write,
     sync::{
+        Arc, Mutex,
         atomic::{AtomicBool, AtomicU64},
         mpsc::RecvTimeoutError,
-        Arc, Mutex,
     },
     time::Duration,
 };
 
+use Playback::MediaPlayerAudioDeviceType;
 use tempfile::NamedTempFile;
 use tokio::sync::mpsc::UnboundedReceiver;
 use windows::{
-    core::*,
     Foundation::*,
     Media::*,
     Storage::{StorageFile, Streams::RandomAccessStreamReference},
+    core::*,
 };
-use Playback::MediaPlayerAudioDeviceType;
 
 use super::MediaStateMessage;
 

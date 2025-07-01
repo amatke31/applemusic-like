@@ -35,7 +35,14 @@ import {
 	onRequestOpenMenuAtom,
 	onRequestPrevSongAtom,
 	onSeekPositionAtom,
-} from "@applemusic-like-lyrics/react-full";
+	advanceLyricDynamicLyricTimeAtom,
+	currentPlaylistAtom,
+	currentPlaylistMusicIndexAtom,
+	musicIdAtom,
+	type MusicQualityState,
+	musicQualityAtom,
+	fftDataRangeAtom,
+} from "@applemusic-like-lyrics/states";
 import chalk from "chalk";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useAtomValue, useSetAtom, useStore } from "jotai";
@@ -43,14 +50,6 @@ import { type FC, useEffect, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { db } from "../../dexie.ts";
-import {
-	advanceLyricDynamicLyricTimeAtom,
-	currentPlaylistAtom,
-	currentPlaylistMusicIndexAtom,
-	fftDataRangeAtom,
-	musicIdAtom,
-	musicQualityAtom,
-} from "../../states/index.ts";
 import {
 	type AudioInfo,
 	type AudioQuality,
@@ -197,31 +196,37 @@ function pairLyric(line: LyricLine, lines: CoreLyricLine[], key: TransLine) {
 
 const MusicQualityTagText: FC = () => {
 	const { t } = useTranslation();
-	const musicQuality = useAtomValue(musicQualityAtom);
+	const musicQuality = useAtomValue<MusicQualityState>(musicQualityAtom);
 	const setMusicQualityTag = useSetAtom(musicQualityTagAtom);
 
 	useLayoutEffect(() => {
 		switch (musicQuality.type) {
 			case AudioQualityType.None:
 				return setMusicQualityTag(null);
+
 			case AudioQualityType.Lossless:
 				return setMusicQualityTag({
 					tagIcon: true,
 					tagText: t("amll.qualityTag.lossless", "无损"),
 					isDolbyAtmos: false,
 				});
-			case AudioQualityType.HiRes:
+
+			case AudioQualityType.HiResLossless:
 				return setMusicQualityTag({
 					tagIcon: true,
 					tagText: t("amll.qualityTag.hires", "高解析度无损"),
 					isDolbyAtmos: false,
 				});
+
 			case AudioQualityType.DolbyAtmos:
 				return setMusicQualityTag({
 					tagIcon: false,
 					tagText: "",
 					isDolbyAtmos: true,
 				});
+
+			default:
+				return setMusicQualityTag(null);
 		}
 	}, [t, musicQuality, setMusicQualityTag]);
 
@@ -229,6 +234,13 @@ const MusicQualityTagText: FC = () => {
 };
 const TTML_LOG_TAG = chalk.bgHex("#FF5577").hex("#FFFFFF")(" TTML DB ");
 const LYRIC_LOG_TAG = chalk.bgHex("#FF4444").hex("#FFFFFF")(" LYRIC ");
+
+interface GitHubContent {
+	name: string;
+	path: string;
+	type: "file" | "dir";
+	sha: string;
+}
 
 const LyricContext: FC = () => {
 	const musicId = useAtomValue(musicIdAtom);
@@ -263,7 +275,7 @@ const LyricContext: FC = () => {
 				return;
 			}
 
-			const fileList = await fileListRes.json();
+			const fileList: GitHubContent[] = await fileListRes.json();
 			const rawLyricsEntry = fileList.find(
 				(v) => v.name === "raw-lyrics" && v.type === "dir",
 			);
@@ -278,7 +290,7 @@ const LyricContext: FC = () => {
 				rawLyricsEntry.sha,
 			);
 
-			const rawLyricsRes = await fetch(
+			const lyricFileListRes = await fetch(
 				`https://api.github.com/repos/Steve-xmh/amll-ttml-db/git/trees/${rawLyricsEntry.sha}`,
 				{
 					signal: sig.signal,
@@ -286,17 +298,18 @@ const LyricContext: FC = () => {
 				},
 			);
 
-			if (rawLyricsRes.status < 200 || rawLyricsRes.status > 399) {
+			if (lyricFileListRes.status < 200 || lyricFileListRes.status > 399) {
 				console.warn(
 					TTML_LOG_TAG,
 					"TTML DB 歌词库同步失败：获取 raw-lyrics 文件夹下的文件列表失败",
-					rawLyricsRes.status,
-					rawLyricsRes.statusText,
+					lyricFileListRes.status,
+					lyricFileListRes.statusText,
 				);
 				return;
 			}
 
-			const lyricFileList = await rawLyricsRes.json();
+			const lyricFileList: { tree: GitHubContent[] } =
+				await lyricFileListRes.json();
 
 			const fileMap = Object.fromEntries(
 				lyricFileList.tree.map((v) => [v.path, v]),
@@ -434,11 +447,30 @@ const LyricContext: FC = () => {
 						return;
 					}
 				}
+				const compatibleLyricLines: CoreLyricLine[] = parsedLyricLines.map(
+					(line) => ({
+						...line,
+						words: line.words.map((word) => ({
+							...word,
+							obscene: false,
+						})),
+					}),
+				);
 				if (song.translatedLrc) {
 					try {
 						const translatedLyricLines = parseLrc(song.translatedLrc);
 						for (const line of translatedLyricLines) {
-							pairLyric(line, parsedLyricLines, "translatedLyric");
+							pairLyric(
+								{
+									...line,
+									words: line.words.map((word) => ({
+										...word,
+										obscene: false,
+									})),
+								},
+								compatibleLyricLines,
+								"translatedLyric",
+							);
 						}
 						console.log(LYRIC_LOG_TAG, "已匹配翻译歌词");
 					} catch (err) {
@@ -449,21 +481,32 @@ const LyricContext: FC = () => {
 					try {
 						const romanLyricLines = parseLrc(song.romanLrc);
 						for (const line of romanLyricLines) {
-							pairLyric(line, parsedLyricLines, "romanLyric");
+							pairLyric(
+								{
+									...line,
+									words: line.words.map((word) => ({
+										...word,
+										obscene: false,
+									})),
+								},
+								compatibleLyricLines,
+								"romanLyric",
+							);
 						}
 						console.log(LYRIC_LOG_TAG, "已匹配音译歌词");
 					} catch (err) {
 						console.warn(LYRIC_LOG_TAG, "解析音译歌词时出现错误", err);
 					}
 				}
+				const processedLines: CoreLyricLine[] = compatibleLyricLines;
 				if (advanceLyricDynamicLyricTime) {
-					for (const line of parsedLyricLines) {
+					for (const line of processedLines) {
 						line.startTime = Math.max(0, line.startTime - 400);
 						line.endTime = Math.max(0, line.endTime - 400);
 					}
 				}
-				setLyricLines(parsedLyricLines);
-				setHideLyricView(parsedLyricLines.length === 0);
+				setLyricLines(processedLines);
+				setHideLyricView(processedLines.length === 0);
 			} catch (e) {
 				console.warn("解析歌词时出现错误", e);
 				setLyricLines([]);
@@ -625,7 +668,7 @@ export const LocalMusicContext: FC = () => {
 			if (LOSSLESS_CODECS.has(codec) || codec.startsWith("pcm_")) {
 				result = AudioQualityType.Lossless;
 				if ((quality.sampleRate || 0) > 48000) {
-					result = AudioQualityType.HiRes;
+					result = AudioQualityType.HiResLossless;
 				}
 			}
 			if ((quality.channels || 0) > 2) {

@@ -59,7 +59,9 @@
 		height: var(--cover-button-size);
 		margin-top: calc(var(--cover-button-size) / -2);
 		opacity: 0;
-		transition: opacity 0.2s ease, transform 0.2s ease;
+		transition:
+			opacity 0.2s ease,
+			transform 0.2s ease;
 		pointer-events: none;
 	}
 
@@ -96,7 +98,9 @@
 		width: var(--cover-button-size);
 		height: var(--cover-button-size);
 		margin-top: calc(var(--cover-button-size) / -2);
-		transition: background-color 0.2s ease, backdrop-filter 0.2s ease;
+		transition:
+			background-color 0.2s ease,
+			backdrop-filter 0.2s ease;
 		background: rgba(100, 100, 100, 0.1);
 	}
 }

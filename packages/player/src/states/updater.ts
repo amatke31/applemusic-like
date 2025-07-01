@@ -1,11 +1,14 @@
-import { type Update, check } from "@tauri-apps/plugin-updater";
+import { check } from "@tauri-apps/plugin-updater";
 import chalk from "chalk";
 import { atom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
 
-export const isChechingUpdateAtom = atom(false);
-export const updateInfoAtom = atom<Update | false>(false);
+import {
+	isChechingUpdateAtom,
+	updateInfoAtom,
+} from "@applemusic-like-lyrics/states";
+
 const LOG_TAG = chalk.bgHex("#FFAA00").hex("#FFFFFF")(" UPDATER ");
+
 export const checkUpdateAtom = atom(null, async (get, set) => {
 	set(isChechingUpdateAtom, true);
 	const oldUpdateInfo = get(updateInfoAtom);
@@ -25,5 +28,3 @@ export const checkUpdateAtom = atom(null, async (get, set) => {
 		set(isChechingUpdateAtom, false);
 	}
 });
-
-export const autoUpdateAtom = atomWithStorage("amll-player.autoUpdate", true);

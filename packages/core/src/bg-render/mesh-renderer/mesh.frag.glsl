@@ -38,11 +38,16 @@ void main() {
     
     vec4 result = texture2D(u_texture, finalUV);
     
-    // 合并多个乘法操作
     float alphaVolumeFactor = u_alpha * max(0.5, 1.0 - u_volume * 0.5);
     result.rgb *= v_color * alphaVolumeFactor;
     result.a *= alphaVolumeFactor;
+    
     result.rgb += vec3(dither);
+    
+    float dist = distance(v_uv, vec2(0.5));
+    float vignette = smoothstep(0.8, 0.3, dist);
+    float mask = 0.6 + vignette * 0.4;
+    result.rgb *= mask;
     
     gl_FragColor = result;
 }

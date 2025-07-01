@@ -3,7 +3,7 @@ import type { i18n } from "i18next";
 import type { Atom, createStore } from "jotai";
 import type { ComponentType } from "react";
 import type { db } from "./dexie.ts";
-import type * as playerStates from "./states.ts";
+import type * as playerStates from "@applemusic-like-lyrics/states";
 
 export type * as RadixTheme from "@radix-ui/themes";
 export type * as Jotai from "jotai";

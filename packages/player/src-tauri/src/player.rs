@@ -7,21 +7,20 @@ static PLAYER_HANDLER: RwLock<Option<AudioPlayerHandle>> = RwLock::const_new(Non
 
 #[tauri::command]
 pub async fn local_player_send_msg(msg: AudioThreadEventMessage<AudioThreadMessage>) {
-    if let Some(handler) = &*PLAYER_HANDLER.read().await {
-        if let Err(err) = handler.send(msg).await {
-            warn!("failed to send msg to local player: {:?}", err);
-        }
+    if let Some(handler) = &*PLAYER_HANDLER.read().await
+        && let Err(err) = handler.send(msg).await
+    {
+        warn!("failed to send msg to local player: {:?}", err);
     }
 }
 
+#[cfg_attr(not(mobile), allow(unused_mut))]
 async fn local_player_main<R: Runtime>(manager: impl Manager<R> + Clone + Send + Sync + 'static) {
-    #[cfg(mobile)]
     let mut player = AudioPlayer::new(AudioPlayerConfig {});
-    #[cfg(not(mobile))]
-    let player = AudioPlayer::new(AudioPlayerConfig {});
     let handler = player.handler();
     PLAYER_HANDLER.write().await.replace(handler);
 
+    #[cfg(mobile)]
     let manager_clone = manager.clone();
     #[cfg(mobile)]
     player.set_custom_local_song_loader(Box::new(move |path| {
@@ -54,9 +53,7 @@ async fn local_player_main<R: Runtime>(manager: impl Manager<R> + Clone + Send +
 }
 
 pub fn init_local_player<R: Runtime>(emitter: impl Manager<R> + Clone + Send + Sync + 'static) {
-    std::thread::spawn(|| {
-        tokio::runtime::Runtime::new()
-            .unwrap()
-            .block_on(local_player_main(emitter));
+    tauri::async_runtime::spawn(async move {
+        local_player_main(emitter).await;
     });
 }

@@ -16,10 +16,10 @@ import {
 	musicCoverAtom,
 	musicLyricLinesAtom,
 	musicNameAtom,
-} from "./states/music";
+} from "@applemusic-like-lyrics/states";
 import { ContextMenu, Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-import { onRequestOpenMenuAtom } from "./states/callback";
+import { onRequestOpenMenuAtom } from "@applemusic-like-lyrics/states";
 import {
 	parseLrc,
 	parseQrc,
@@ -35,7 +35,7 @@ const mapLyric = (
 	i: number,
 	lines: RawLyricLine[],
 ): LyricLine => ({
-	words: line.words,
+	words: line.words.map((w) => ({ ...w, obscene: false })),
 	startTime: line.words[0]?.startTime ?? 0,
 	endTime:
 		line.words[line.words.length - 1]?.endTime ?? Number.POSITIVE_INFINITY,
@@ -58,6 +58,7 @@ const App: FC = () => {
 						word: "Test",
 						startTime: 0,
 						endTime: 1000,
+						obscene: false,
 					},
 				],
 				startTime: 0,
@@ -168,7 +169,7 @@ const App: FC = () => {
 		[store],
 	);
 
-	useLayoutEffect(() => {}, []);
+	useLayoutEffect(() => { }, []);
 
 	useLayoutEffect(() => {
 		store.set(onRequestOpenMenuAtom, {

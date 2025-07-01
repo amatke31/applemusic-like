@@ -2,12 +2,12 @@
 	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
 	"files": {
 		"includes": [
-			"**/src/*.json",
-			"**/src/*.js",
-			"**/src/*.ts",
-			"**/src/*.jsx",
-			"**/src/*.tsx",
-			"**/src/*.css"
+			"packages/**/*.json",
+			"packages/**/*.js",
+			"packages/**/*.ts",
+			"packages/**/*.jsx",
+			"packages/**/*.tsx",
+			"packages/**/*.css"
 		]
 	},
 	"formatter": {

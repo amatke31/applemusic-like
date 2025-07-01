@@ -47,7 +47,7 @@
 			opacity: 1;
 		}
 
-		>* {
+		> * {
 			content-visibility: auto;
 			contain-intrinsic-size: 100% 2em;
 		}

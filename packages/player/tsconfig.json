@@ -23,7 +23,7 @@
 			"@applemusic-like-lyrics/core": ["../core/src"],
 			"@applemusic-like-lyrics/react": ["../react/src"],
 			"@applemusic-like-lyrics/react-full": ["../react-full/src"],
-			"@applemusic-like-lyrics/react-full/states": ["../react-full/src/states"]
+			"@applemusic-like-lyrics/states": ["../states/src"]
 		}
 	},
 	"include": ["src", "../react-full/src/utils/duration.ts"],
