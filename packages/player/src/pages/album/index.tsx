@@ -14,7 +14,7 @@ import { EllipsisIcon } from "../../components/AMPIcon/EllipsisIcon.tsx";
 import { PageContainer } from "../../components/PageContainer/index.tsx";
 import { PlaylistCover } from "../../components/PlaylistCover/index.tsx";
 import { PlaylistSongCard } from "../../components/PlaylistSongCard/index.tsx";
-import { type Song, db } from "../../dexie.ts";
+import { Playlist, type Song, db } from "../../dexie.ts";
 import { emitAudioThread, readLocalMusicMetadata } from "../../utils/player.ts";
 import SongsList from "../../components/SongsList/index.tsx";
 
@@ -33,162 +33,36 @@ export type Loadable<Value> =
 
 export const Component: FC = () => {
 	const param = useParams();
-	const playlist = useLiveQuery(
-		() => db.playlists.get(Number(param.id)),
-		[param.id],
-	);
+	const songs = useLiveQuery(() => db.songs.toArray());
 	const { t } = useTranslation();
 
 	const [selectedSongId, setSelectedSongId] = useState("");
 
+	const playlist = useMemo(() => {
+		if (param.id === undefined) return;
+		if (songs === undefined) return;
+		const albums: Playlist[] = [];
+		const albumNames: { [x: string]: number } = {};
+		for (const song of songs) {
+			if (!Object.hasOwn(albumNames, song.songAlbum)) {
+				albumNames[song.songAlbum] = albums.length;
+				albums.push({
+					name: song.songAlbum,
+					id: albums.length + 1,
+					songIds: [],
+					createTime: 1,
+					updateTime: 1,
+					playTime: 0,
+				});
+			}
+			albums[albumNames[song.songAlbum]].songIds.push(song.id);
+		}
+		return albums[Number(param.id)];
+	}, [songs, param.id]);
+
 	useEffect(() => {
 		setSelectedSongId("");
-	}, [param.id]);
-
-	const onAddLocalMusics = useCallback(async () => {
-		let filters = [
-			{
-				name: t("page.playlist.addLocalMusic.filterName", "音频文件"),
-				extensions: ["mp3", "flac", "wav", "m4a", "aac", "ogg"],
-			},
-			{
-				name: t("page.playlist.addLocalMusic.allFiles", "所有文件"),
-				extensions: ["*"],
-			},
-		];
-		if (platform() === "android") {
-			filters = [
-				{
-					name: t("page.playlist.addLocalMusic.filterName", "音频文件"),
-					extensions: ["audio/*"],
-				},
-				{
-					name: t("page.playlist.addLocalMusic.allFiles", "所有文件"),
-					extensions: ["*/*"],
-				},
-			];
-		}
-		if (platform() === "ios") {
-			filters.length = 0;
-		}
-		const results = await open({
-			multiple: true,
-			title: "选择本地音乐",
-			filters,
-		});
-		if (!results) return;
-		console.log(results);
-		const id = toast.loading(
-			t(
-				"page.playlist.addLocalMusic.toast.parsingMusicMetadata",
-				"正在解析音乐元数据以添加歌曲 ({current, plural, other {#}} / {total, plural, other {#}})",
-				{
-					current: 0,
-					total: results.length,
-				},
-			),
-		);
-		let current = 0;
-		let success = 0;
-		let errored = 0;
-		const transformed = (
-			await Promise.all(
-				results.map(async (v) => {
-					let normalized = v;
-					console.log(v);
-					if (platform() !== "android" && platform() !== "ios") {
-						normalized = (await path.normalize(v)).replace(/\\/gi, "/");
-					}
-					try {
-						console.log(await stat(v));
-						const pathMd5 = md5(normalized);
-						const musicInfo = await readLocalMusicMetadata(normalized);
-
-						const coverData = new Uint8Array(musicInfo.cover);
-						const coverBlob = new Blob([coverData], { type: "image" });
-
-						success += 1;
-						return {
-							id: pathMd5,
-							filePath: normalized,
-							songName: musicInfo.name,
-							songArtists: musicInfo.artist,
-							songAlbum: musicInfo.album,
-							lyricFormat: musicInfo.lyricFormat || "none",
-							lyric: musicInfo.lyric,
-							cover: coverBlob,
-							duration: musicInfo.duration,
-						} satisfies Song;
-					} catch (err) {
-						errored += 1;
-						console.warn("解析歌曲元数据以添加歌曲失败", normalized, err);
-						return null;
-					} finally {
-						current += 1;
-						toast.update(id, {
-							render: t(
-								"page.playlist.addLocalMusic.toast.parsingMusicMetadata",
-								"正在解析音乐元数据以添加歌曲 ({current, plural, other {#}} / {total, plural, other {#}})",
-								{
-									current: 0,
-									total: results.length,
-								},
-							),
-							progress: current / results.length,
-						});
-					}
-				}),
-			)
-		).filter((v) => !!v);
-		await db.songs.bulkPut(transformed);
-		const shouldAddIds = transformed
-			.map((v) => v.id)
-			.filter((v) => !playlist?.songIds.includes(v))
-			.reverse();
-		await db.playlists.update(Number(param.id), (obj) => {
-			obj.songIds.unshift(...shouldAddIds);
-		});
-		toast.done(id);
-		if (errored > 0 && success > 0) {
-			toast.warn(
-				t(
-					"page.playlist.addLocalMusic.toast.partiallyFailed",
-					"已添加 {succeed, plural, other {#}} 首歌曲，其中 {errored, plural, other {#}} 首歌曲添加失败",
-					{
-						succeed: success,
-						errored,
-					},
-				),
-			);
-		} else if (success === 0) {
-			toast.error(
-				t(
-					"page.playlist.addLocalMusic.toast.allFailed",
-					"{errored, plural, other {#}} 首歌曲添加失败",
-					{
-						errored,
-					},
-				),
-			);
-		} else {
-			toast.success(
-				t(
-					"page.playlist.addLocalMusic.toast.success",
-					"已全部添加 {count, plural, other {#}} 首歌曲",
-					{
-						count: success,
-					},
-				),
-			);
-		}
-	}, [playlist, param.id, t]);
-
-	const onPlaylistNameChange = (newName: string) => {
-		if (playlist === undefined) return;
-		db.playlists.update(Number(param.id), (obj) => {
-			obj.name = newName;
-		});
-	};
+	}, []);
 
 	const onPlayList = useCallback(
 		async (songIndex = 0, shuffle = false) => {
@@ -320,7 +194,7 @@ export const Component: FC = () => {
 									</div>
 								</div>
 								<div slot="artwork" draggable="true">
-									<PlaylistCover playlist={playlist} />
+									<PlaylistCover playlist={playlist} isAlbum />
 								</div>
 								<div className="secondary-actions svelte-1uuona0">
 									<div
@@ -335,87 +209,15 @@ export const Component: FC = () => {
 												menuItems={[
 													{
 														label: t("common.edit"),
-														onClick: () => {
-															let newName = playlist?.name || "";
-															const dialog = showAMPDialog(
-																<form
-																	className="playlist-form svelte-1kd2e9n"
-																	onSubmit={(e) => {
-																		e.preventDefault();
-																		onPlaylistNameChange(newName);
-																		dialog.close();
-																	}}
-																>
-																	<h3 className="modal-title svelte-1kd2e9n">
-																		<Trans i18nKey="page.playlist.editPlaylist">
-																			编辑歌单
-																		</Trans>
-																	</h3>
-																	<input
-																		className="playlist-title svelte-1kd2e9n"
-																		name="title"
-																		type="text"
-																		defaultValue={newName}
-																		onChange={(e) => {
-																			newName = e.target.value;
-																		}}
-																		placeholder={t(
-																			"page.playlist.playlistTitle",
-																		)}
-																		required
-																	/>
-																	<span style={{ height: 20 }} />
-																	<div className="buttons svelte-1kd2e9n">
-																		<div className="cancel-button svelte-1kd2e9n">
-																			<div
-																				className="button svelte-yk984v secondary"
-																				data-testid="button-base-wrapper"
-																			>
-																				<button
-																					data-testid="button-base"
-																					type="button"
-																					className="svelte-yk984v"
-																					onClick={() => dialog.close()}
-																				>
-																					<Trans i18nKey="common.dialog.cancel">
-																						取消
-																					</Trans>
-																				</button>
-																			</div>
-																		</div>
-																		<div className="submit-button">
-																			<div
-																				className="button svelte-yk984v primary"
-																				data-testid="button-base-wrapper"
-																			>
-																				<button
-																					data-testid="button-base"
-																					type="submit"
-																					className="svelte-yk984v"
-																				>
-																					<Trans i18nKey="common.dialog.complete">
-																						完成
-																					</Trans>
-																				</button>
-																			</div>
-																		</div>
-																	</div>
-																</form>,
-															);
-														},
+														onClick: () => {},
 													},
 													{
 														label: t("page.playlist.addLocalMusic.label"),
-														onClick: () => {
-															onAddLocalMusics();
-														},
+														onClick: () => {},
 													},
 													{
 														label: t("common.deleteFromLibrary"),
-														onClick: () => {
-															history.back();
-															db.playlists.delete(Number(param.id));
-														},
+														onClick: () => {},
 													},
 												]}
 											>

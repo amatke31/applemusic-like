@@ -1,21 +1,17 @@
 import classNames from "classnames";
 import { useLiveQuery } from "dexie-react-hooks";
 import { type FC, type HTMLProps, useEffect, useState } from "react";
-import { db } from "../../dexie.ts";
+import { db, type Playlist } from "../../dexie.ts";
 import { DefaultCover } from "./default.tsx";
 import styles from "./index.module.css";
 
 export const PlaylistCover: FC<
 	{
-		playlistId: number;
+		playlist: Playlist;
+		isAlbum?: boolean;
 	} & HTMLProps<HTMLDivElement>
-> = ({ playlistId, className, ...props }) => {
+> = ({ playlist, isAlbum, className, ...props }) => {
 	const [playlistImgs, setPlaylistImgs] = useState([] as string[]);
-
-	const playlist = useLiveQuery(
-		() => db.playlists.get(playlistId),
-		[playlistId],
-	);
 
 	const firstFourSongs = useLiveQuery(async () => {
 		if (playlist && !playlist.playlistCover) {
@@ -27,7 +23,8 @@ export const PlaylistCover: FC<
 					if (result.length === 4) break;
 				}
 			}
-			if (result.length > 0 && result.length < 4) result = [result[0]];
+			if (result.length > 0 && (isAlbum || result.length < 4))
+				result = [result[0]];
 			return result;
 		}
 		return [];

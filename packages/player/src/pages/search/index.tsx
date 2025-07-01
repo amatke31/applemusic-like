@@ -18,6 +18,7 @@ import { PlaylistCard } from "../../components/PlaylistCard/index.tsx";
 import { PlaylistSongCard } from "../../components/PlaylistSongCard/index.tsx";
 import { db } from "../../dexie.ts";
 import styles from "./index.module.css";
+import { emitAudioThread } from "../../utils/player.ts";
 
 const FilterButton: FC<
 	{
@@ -115,6 +116,20 @@ export const Component: FC = () => {
 		},
 		[trimmedKeyword, setFilters, setKeyword],
 	);
+
+	const onSong = useCallback(async (songIndex = 0) => {
+		if (songsSearchResult === undefined) return;
+		await emitAudioThread("setPlaylist", {
+			songs: songsSearchResult.map((v, i) => ({
+				type: "local",
+				filePath: v.filePath,
+				origOrder: i,
+			})),
+		});
+		await emitAudioThread("jumpToSong", {
+			songIndex,
+		});
+	}, []);
 
 	return (
 		<Container mx="4">
@@ -273,6 +288,7 @@ export const Component: FC = () => {
 										key={`playlist-song-card-${song.id}`}
 										songId={song.id}
 										songIndex={index}
+										onPlayList={onSong}
 										selectedSongId={selectedSongId}
 										onSelectedSongIdChange={(songId) => {
 											setSelectedSongId(songId);

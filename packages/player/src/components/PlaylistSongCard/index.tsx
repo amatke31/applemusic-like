@@ -2,13 +2,20 @@ import { toDuration } from "@applemusic-like-lyrics/react-full";
 import { useLiveQuery } from "dexie-react-hooks";
 import type { Loadable } from "jotai/vanilla/utils/loadable";
 import type React from "react";
-import { type CSSProperties, forwardRef, useEffect, useState } from "react";
+import {
+	type CSSProperties,
+	forwardRef,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
-import { type Song, db } from "../../dexie";
+import { Link, useNavigate } from "react-router-dom";
+import { Playlist, type Song, db } from "../../dexie";
 import { useSongCover } from "../../utils/use-song-cover";
 import AMPContextualMenuButton from "../AMPContextualMenuButton";
 import { EllipsisIcon, StarIcon } from "../AMPIcon";
+import { DefaultCover } from "../PlaylistCover/default";
 
 export const PlaylistSongCard = forwardRef<
 	HTMLDivElement,
@@ -32,6 +39,8 @@ export const PlaylistSongCard = forwardRef<
 		onSelectedSongIdChange,
 		selectedSongId,
 	}) => {
+		const navigate = useNavigate();
+		const songs = useLiveQuery(() => db.songs.toArray());
 		const song: Loadable<Song> = useLiveQuery(
 			() =>
 				db.songs.get(songId).then((data) => {
@@ -62,6 +71,28 @@ export const PlaylistSongCard = forwardRef<
 		useEffect(() => {
 			setImgError(false);
 		}, [songImgUrl]);
+
+		const album = useMemo(() => {
+			if (songs === undefined) return;
+			if (!(song.state === "hasData" && (song.data.songAlbum || ""))) return;
+			const albums: Playlist[] = [];
+			const albumNames: { [x: string]: number } = {};
+			for (const song2 of songs) {
+				if (!Object.hasOwn(albumNames, song2.songAlbum)) {
+					albumNames[song2.songAlbum] = albums.length;
+					albums.push({
+						name: song2.songAlbum,
+						id: albums.length,
+						songIds: [],
+						createTime: 1,
+						updateTime: 1,
+						playTime: 0,
+					});
+				}
+				albums[albumNames[song2.songAlbum]].songIds.push(song2.id);
+			}
+			return albums[albumNames[song.data.songAlbum]];
+		}, [songs, song]);
 
 		return (
 			<div
@@ -133,7 +164,7 @@ export const PlaylistSongCard = forwardRef<
 										}
 									>
 										<picture className="svelte-10tj07c">
-											{!imgError && (
+											{!imgError && songImgUrl ? (
 												<img
 													alt=""
 													className="artwork-component__contents artwork-component__image svelte-10tj07c"
@@ -145,6 +176,8 @@ export const PlaylistSongCard = forwardRef<
 													style={{ opacity: 1 }}
 													onError={() => setImgError(true)}
 												/>
+											) : (
+												<DefaultCover />
 											)}
 										</picture>
 									</div>
@@ -284,7 +317,9 @@ export const PlaylistSongCard = forwardRef<
 								data-testid="click-action"
 								className="click-action svelte-c0t0j2"
 							>
-								{song.state === "hasData" && (song.data.songAlbum || "")}
+								<Link to={`/album/${album?.id}`}>
+									{song.state === "hasData" && (song.data.songAlbum || "")}
+								</Link>
 							</div>
 						</span>
 					</div>
@@ -309,6 +344,12 @@ export const PlaylistSongCard = forwardRef<
 										label: t("page.playlist.music.dropdown.removeFromPlaylist"),
 										onClick: () => {
 											if (onDeleteSong) onDeleteSong(songId);
+										},
+									},
+									{
+										label: t("common.property"),
+										onClick: () => {
+											navigate(`/song/${songId}`);
 										},
 									},
 								]}

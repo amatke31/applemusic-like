@@ -12,8 +12,9 @@ export const PlaylistCard = forwardRef<
 	HTMLDivElement,
 	PropsWithChildren<{
 		playlist: Playlist;
+		isAlbum?: boolean;
 	}>
->(({ playlist }) => {
+>(({ playlist, isAlbum }) => {
 	const { t } = useTranslation();
 
 	const onPlayList = useCallback(
@@ -72,7 +73,7 @@ export const PlaylistCard = forwardRef<
 							} as React.CSSProperties
 						}
 					>
-						<PlaylistCover playlistId={playlist.id} />
+						<PlaylistCover isAlbum={isAlbum} playlist={playlist} />
 					</div>
 
 					<div
@@ -83,7 +84,7 @@ export const PlaylistCard = forwardRef<
 						data-testid="lockup-control"
 						className="product-lockup__controls svelte-1rancje"
 					>
-						<Link to={`/playlist/${playlist.id}`}>
+						<Link to={`/${isAlbum ? "album" : "playlist"}/${playlist.id}`}>
 							<div
 								className="product-lockup__link svelte-1rancje"
 								data-testid="product-lockup-link"
@@ -132,7 +133,6 @@ export const PlaylistCard = forwardRef<
 										{
 											label: t("common.deleteFromLibrary"),
 											onClick: () => {
-												history.back();
 												db.playlists.delete(Number(playlist.id));
 											},
 										},
@@ -188,29 +188,6 @@ export const PlaylistCard = forwardRef<
 								</div>
 							</div>
 						</Link>
-						{/* <p
-							data-testid="product-lockup-subtitles"
-							className="product-lockup__subtitle-links svelte-1rancje product-lockup__subtitle-links--singlet"
-						>
-							<div
-								className="multiline-clamp svelte-1a7gcr6 multiline-clamp--overflow"
-								style={
-									{
-										"--mc-lineClamp": "var(--defaultClampOverride, 2)",
-									} as React.CSSProperties
-								}
-							>
-								<span className="multiline-clamp__text svelte-1a7gcr6">
-									<a
-										href="https://music.apple.com/WebObjects/MZStore.woa/wa/viewCollaboration?cc=cn&amp;ids=1750699818-1498271801"
-										className="product-lockup__subtitle link svelte-1rancje"
-										data-testid="product-lockup-subtitle"
-									>
-										鸣潮先约电台 &amp; Forts
-									</a>
-								</span>
-							</div>
-						</p> */}
 					</div>
 				</div>
 			</div>

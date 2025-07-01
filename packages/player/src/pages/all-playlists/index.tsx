@@ -57,12 +57,12 @@ export const Component: FC = () => {
 						<Trans i18nKey="page.main.loadingPlaylist">加载歌单中</Trans>
 					</Flex>
 				)}
-				<ExtensionInjectPoint injectPointName="page.main.bottom" />
+				<ExtensionInjectPoint injectPointName="page.albums.bottom" />
 			</Flex>
 		</PageContainer>
 	);
 };
 
-Component.displayName = "MainPage";
+Component.displayName = "AllPlaylistsPage";
 
 export default Component;

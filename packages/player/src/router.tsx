@@ -31,6 +31,16 @@ export const router = createBrowserRouter(
 					errorElement={<ErrorPage />}
 				/>
 				<Route
+					path="/albums"
+					lazy={() => import("./pages/albums/index.tsx")}
+					errorElement={<ErrorPage />}
+				/>
+				<Route
+					path="/songs"
+					lazy={() => import("./pages/songs/index.tsx")}
+					errorElement={<ErrorPage />}
+				/>
+				<Route
 					path="/search"
 					lazy={() => import("./pages/search/index.tsx")}
 					errorElement={<ErrorPage />}
@@ -38,6 +48,11 @@ export const router = createBrowserRouter(
 				<Route
 					path="/playlist/:id"
 					lazy={() => import("./pages/playlist")}
+					errorElement={<ErrorPage />}
+				/>
+				<Route
+					path="/album/:id"
+					lazy={() => import("./pages/album")}
 					errorElement={<ErrorPage />}
 				/>
 				<Route

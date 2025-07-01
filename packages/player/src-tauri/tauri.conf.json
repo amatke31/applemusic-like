@@ -28,9 +28,9 @@
 			"minSdkVersion": 26
 		}
 	},
-	"productName": "AMLL Player",
+	"productName": "AMLP Player",
 	"version": "0.0.1",
-	"identifier": "net.stevexmh.amllplayer",
+	"identifier": "net.amatke31.amlpplayer",
 	"plugins": {
 		"updater": {
 			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEMzMkRDMzMyREMxNzFGQzcKUldUSEh4ZmNNc010d3lPTEZEcW1wMzVHTkpvakVEUGR2bVhJMGZrclBDWWk0R0xiaWRaSTBkUnUK",

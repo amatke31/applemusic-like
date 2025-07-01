@@ -57,7 +57,12 @@
 		"play": "播放",
 		"shuffle": "随机播放",
 		"deleteFromLibrary": "从资料库中删除",
-		"edit": "编辑"
+		"edit": "编辑",
+		"song": "歌曲",
+		"artist": "艺人",
+		"album": "专辑",
+		"time": "时长",
+		"property": "属性"
 	},
 	"extension": {
 		"inject": {
@@ -107,7 +112,11 @@
 				"settings": "设置"
 			},
 			"noPlaylistTip": "没有播放列表，快去新建一个吧！",
-			"loadingPlaylist": "加载歌单中"
+			"noSongTip": "没有音乐",
+			"noAlbumTip": "没有专辑",
+			"loadingPlaylist": "加载歌单中",
+			"loadingSongs": "加载歌曲中",
+			"loadingAlbums": "加载专辑中"
 		},
 		"playlist": {
 			"music": {

@@ -55,7 +55,12 @@
 		"play": "Play",
 		"shuffle": "Shuffle",
 		"deleteFromLibrary": "Delete from Library",
-		"edit": "Edit"
+		"edit": "Edit",
+		"song": "Song",
+		"artist": "Artist",
+		"album": "Album",
+		"time": "Time",
+		"property": "Property"
 	},
 	"extension": {
 		"inject": {
@@ -103,7 +108,11 @@
 				"settings": "Settings"
 			},
 			"noPlaylistTip": "Nothing is here, try to create something?",
-			"loadingPlaylist": "Loading playlist"
+			"noSongTip": "Nothing is here",
+			"noAlbumTip": "Nothing is here",
+			"loadingPlaylist": "Loading playlist",
+			"loadingSongs": "Loading Songs",
+			"loadingAlbums": "Loading Albums"
 		},
 		"playlist": {
 			"music": {
