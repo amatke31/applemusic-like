@@ -121,7 +121,7 @@
 				"uploadCoverImage": "上傳封面圖片"
 			},
 			"totalMusicLabel": "{count, plural, other {#}} 首歌曲",
-			"playAll": "播放",
+			"playAll": "播放全部",
 			"shufflePlayAll": "隨機播放"
 		},
 		"amll-dev": {
@@ -298,7 +298,7 @@
 		},
 		"about": {
 			"subtitle": "關於",
-			"credits": "由 SteveXMH 及其所有 Github 協作者共同開發",
+			"credits": "由 Amatke31 开发\n项目源于SteveXMH及Github协作者的Apple Music-like Lyrics Player",
 			"newVersion": "有可用更新从 {currentVersion} 升級至 {nextVersion}",
 			"updating": "正在更新，完成后將會自動重啟，請稍後……",
 			"downloading": "正在下載更新…… {progressText}",

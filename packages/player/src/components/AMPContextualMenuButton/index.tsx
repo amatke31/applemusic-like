@@ -1,9 +1,7 @@
 import type React from "react";
 import {
-	Children,
 	type FC,
 	type ReactNode,
-	isValidElement,
 	useEffect,
 	useRef,
 	useState,
@@ -14,40 +12,22 @@ interface MenuItem {
 	label: string;
 	icon?: ReactNode;
 	onClick?: () => void;
-	submenu?: {
-		title?: string;
-		groups: {
-			title?: string;
-			items: MenuItem[];
-		}[];
-	};
+	submenu?: MenuItem[];
 }
 
 interface AMPContextualMenuButtonProps {
+	menuItems: Array<MenuItem | false>;
 	children: ReactNode;
 }
 
-function findSlot(children: ReactNode, slotName: string) {
-	let slotContent: ReactNode = null;
-	Children.forEach(children, (child) => {
-		if (isValidElement(child) && child.props && child.props.slot === slotName) {
-			slotContent = child.props.children;
-		}
-	});
-	return slotContent;
-}
-
 export const AMPContextualMenuButton: FC<AMPContextualMenuButtonProps> = ({
+	menuItems = [],
 	children,
 }) => {
 	const [open, setOpen] = useState(false);
 	const [pos, setPos] = useState({ left: 0, top: 0 });
 	const triggerRef = useRef<HTMLButtonElement>(null);
 	const menuRef = useRef<HTMLDivElement>(null);
-
-	// 获取slot内容
-	const trigger = findSlot(children, "trigger");
-	const menuItems = findSlot(children, "content") as unknown as MenuItem[];
 
 	// 关闭菜单
 	useEffect(() => {
@@ -118,20 +98,85 @@ export const AMPContextualMenuButton: FC<AMPContextualMenuButtonProps> = ({
 		}
 	}, [open, pos.left, pos.top]);
 
-	return (
-		<span style={{ display: "inline-block", position: "relative" }}>
-			<div className="amp-contextual-menu-button svelte-1sn4kz">
-				<button
-					ref={triggerRef}
-					className="contextual-menu__trigger"
-					type="button"
-					aria-haspopup="true"
-					aria-expanded={open}
-					onClick={handleOpen}
+	function AMPContextualMenuItem(item: MenuItem) {
+		const [submenuOpen, setSubmenuOpen] = useState(false);
+		const submenuTimeout = useRef<number>();
+
+		return (
+			<div className="amp-contextual-menu">
+				<li
+					className={`contextual-menu-item${item.submenu ? " contextual-menu-item--has-submenu" : ""}`}
+					onMouseEnter={() => {
+						if (item.submenu) {
+							clearTimeout(submenuTimeout.current);
+							setSubmenuOpen(true);
+						}
+					}}
+					onMouseLeave={() => {
+						if (item.submenu) {
+							submenuTimeout.current = window.setTimeout(
+								() => setSubmenuOpen(false),
+								150,
+							);
+						}
+					}}
+					style={{ position: "relative" }}
 				>
-					{trigger}
-				</button>
+					<button
+						title={item.label}
+						onClick={(e) => {
+							if (item.submenu) {
+								e.stopPropagation();
+								return;
+							}
+							item.onClick?.();
+							setOpen(false);
+						}}
+						type="button"
+					>
+						<span className="contextual-menu-item__option-wrapper">
+							<span className="contextual-menu-item__option-text">
+								{item.label}
+							</span>
+							{item.icon && (
+								<>
+									<span className="contextual-menu-item__option-text contextual-menu-item__option-text--after" />
+									<span className="contextual-menu-item__icon-container">
+										{item.icon}
+									</span>
+								</>
+							)}
+						</span>
+					</button>
+					{item.submenu && submenuOpen && (
+						<div
+							className="contextual-menu contextual-menu--in-submenu"
+							style={{
+								position: "absolute",
+								left: "100%",
+								top: 0,
+								minWidth: 185,
+								maxWidth: 350,
+								zIndex: 2147483648,
+							}}
+						>
+							<ul className="contextual-menu__list" role="menu">
+								{item.submenu.map((sub) => (
+									<AMPContextualMenuItem {...sub} key={sub.label} />
+								))}
+							</ul>
+						</div>
+					)}
+				</li>
 			</div>
+		);
+	}
+
+	return (
+		<>
+			<span ref={triggerRef} onClick={handleOpen}>
+				{children}
+			</span>
 			{open &&
 				Array.isArray(menuItems) &&
 				createPortal(
@@ -158,117 +203,23 @@ export const AMPContextualMenuButton: FC<AMPContextualMenuButtonProps> = ({
 								zIndex: 2147483647,
 							}}
 						>
-							<ul className="contextual-menu__list" role="menu">
-								{menuItems.map((item) =>
-									item.submenu ? (
-										<div className="amp-contextual-menu" key={item.label}>
-											<li
-												className="contextual-menu-item"
-												style={
-													{
-														"--ctxmenu-submenu-min-width": "185px",
-														"--ctxmenu-submenu-max-width": "350px",
-														"--ctxmenu-submenu-max-height": "350px",
-													} as React.CSSProperties
-												}
-											>
-												<button title={item.label} type="button">
-													<span className="contextual-menu-item__option-wrapper">
-														<span className="contextual-menu-item__option-text">
-															{item.label}
-														</span>
-														<span className="contextual-menu-item__option-text contextual-menu-item__option-text--after" />
-														<span className="contextual-menu-item__icon-container">
-															{item.icon}
-														</span>
-													</span>
-												</button>
-												<div className="contextual-menu-item--nested">
-													<div className="contextual-menu contextual-menu--in-submenu contextual-menu--nested">
-														<ul className="contextual-menu__list" role="menu">
-															{item.submenu.title && (
-																<li className="contextual-menu-item contextual-menu__subhead">
-																	<button type="button">
-																		<span>{item.submenu.title}</span>
-																	</button>
-																</li>
-															)}
-															{item.submenu.groups.map((group) => (
-																<div
-																	className="contextual-menu__group"
-																	key={
-																		group.title ||
-																		group.items.map((i) => i.label).join("_")
-																	}
-																>
-																	{group.title && (
-																		<span className="contextual-menu__group-title">
-																			{group.title}
-																		</span>
-																	)}
-																	{group.items.map((subitem) => (
-																		<li
-																			className="contextual-menu-item"
-																			key={subitem.label}
-																		>
-																			<button
-																				title={subitem.label}
-																				onClick={() => {
-																					subitem.onClick?.();
-																					setOpen(false);
-																				}}
-																				type="button"
-																			>
-																				<span className="contextual-menu-item__option-wrapper">
-																					<span className="contextual-menu-item__option-text">
-																						{subitem.label}
-																					</span>
-																					<span className="contextual-menu-item__option-text contextual-menu-item__option-text--after" />
-																					<span className="contextual-menu-item__icon-container">
-																						{subitem.icon}
-																					</span>
-																				</span>
-																			</button>
-																		</li>
-																	))}
-																</div>
-															))}
-														</ul>
-													</div>
-												</div>
-											</li>
-										</div>
-									) : (
-										<div className="amp-contextual-menu" key={item.label}>
-											<li className="contextual-menu-item">
-												<button
-													title={item.label}
-													onClick={() => {
-														item.onClick?.();
-														setOpen(false);
-													}}
-													type="button"
-												>
-													<span className="contextual-menu-item__option-wrapper">
-														<span className="contextual-menu-item__option-text">
-															{item.label}
-														</span>
-														<span className="contextual-menu-item__option-text contextual-menu-item__option-text--after" />
-														<span className="contextual-menu-item__icon-container">
-															{item.icon}
-														</span>
-													</span>
-												</button>
-											</li>
-										</div>
-									),
+							<ul
+								className="contextual-menu__list"
+								role="menu"
+								style={{ overflow: "visible" }}
+							>
+								{menuItems.map(
+									(item) =>
+										item && (
+											<AMPContextualMenuItem {...item} key={item.label} />
+										),
 								)}
 							</ul>
 						</div>
 					</div>,
 					document.body,
 				)}
-		</span>
+		</>
 	);
 };
 

@@ -41,6 +41,7 @@
 		"dialog": {
 			"close": "Close",
 			"cancel": "Cancel",
+			"complete": "Complete",
 			"confirm": "Confirm",
 			"filter": {
 				"js": "JavaScript files (*.js)",
@@ -50,7 +51,11 @@
 		},
 		"page": {
 			"back": "Back"
-		}
+		},
+		"play": "Play",
+		"shuffle": "Shuffle",
+		"deleteFromLibrary": "Delete from Library",
+		"edit": "Edit"
 	},
 	"extension": {
 		"inject": {
@@ -125,8 +130,10 @@
 				"uploadCoverImage": "Upload your own cover art"
 			},
 			"totalMusicLabel": "{count, plural, other {#}} song(s)",
-			"playAll": "Play",
-			"shufflePlayAll": "Shuffle"
+			"playAll": "Play All",
+			"shufflePlayAll": "Shuffle",
+			"editPlaylist": "Edit Playlist",
+			"playlistTitle": "Playlist Title"
 		},
 		"amll-dev": {
 			"title": "Apple Music Like Lyrics Developer Page",
@@ -321,7 +328,7 @@
 		},
 		"about": {
 			"subtitle": "About",
-			"credits": "Made by SteveXMH and all Contributors from GitHub",
+			"credits": "Made by Amatke31\nOriginated from SteveXMH and all the Github collaborators' Apple Music-like Lyrics Player",
 			"newVersion": "Available update from {currentVersion} to {nextVersion}",
 			"updating": "Player will restart after update, hold on a second....",
 			"downloading": "Downloading updates…… {progressText}",
@@ -402,6 +409,22 @@
 		},
 		"player": {
 			"tab": "AMLL Player Settings"
+		}
+	},
+	"header": {
+		"home": "Home",
+		"search": "Search",
+		"library": {
+			"label": "Library",
+			"recentlyAdded": "Recently Added",
+			"artists": "Artists",
+			"albums": "Albums",
+			"songs": "Songs"
+		},
+		"playlists": {
+			"label": "Playlists",
+			"allPlaylists": "All Playlists",
+			"favouriteSongs": "Favourite Songs"
 		}
 	}
 }

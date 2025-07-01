@@ -1071,17 +1071,20 @@ const AboutSettings = () => {
 			<SubTitle>
 				<Trans i18nKey="page.about.subtitle">关于</Trans>
 			</SubTitle>
-			<Text as="div">Apple Music-like Lyrics Player</Text>
+			<Text as="div">Apple Music-like Player</Text>
 			<Text as="div" style={{ opacity: "0.5" }}>
-				{" "}
 				{appVersion.state === "hasData" ? `${appVersion.data} - ` : ""}{" "}
 				{commit.substring(0, 7)} - {branch}{" "}
 			</Text>
-			<Text as="div">
-				<Trans i18nKey="page.about.credits">
-					由 SteveXMH 及其所有 Github 协作者共同开发
-				</Trans>
-			</Text>
+			<span style={{ whiteSpace: "pre-wrap" }}>
+				<Text as="div">
+					<Trans i18nKey="page.about.credits">
+						{
+							"由 Amatke31 开发\n项目源于SteveXMH及Github协作者的Apple Music-like Lyrics Player"
+						}
+					</Trans>
+				</Text>
+			</span>
 			<Suspense>
 				{/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
 				{updateInfo && updateInfo.available && (

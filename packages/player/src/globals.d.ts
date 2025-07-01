@@ -18,3 +18,14 @@ declare class ImageCapture {
 	takePhoto(photoSettings?: any): Promise<Blob>;
 	readonly track: MediaStreamTrack;
 }
+declare interface NavList {
+	label: string;
+	items: NavItem[];
+}
+
+
+declare interface NavItem {
+	label: string;
+	icon?: ReactNode;
+	to: string;
+}

@@ -14,7 +14,7 @@ export const PlaylistCard = forwardRef<
 		playlist: Playlist;
 	}>
 >(({ playlist }) => {
-	useTranslation();
+	const { t } = useTranslation();
 
 	const onPlayList = useCallback(
 		async (songIndex = 0, shuffle = false) => {
@@ -54,7 +54,6 @@ export const PlaylistCard = forwardRef<
 		<li className="grid-item svelte-1a54yxp">
 			<div
 				className="product-lockup svelte-1rancje"
-				// aria-label="Against the Tide - Single、鸣潮先约电台 &amp; Forts"
 				data-testid="product-lockup"
 				draggable="true"
 			>
@@ -88,7 +87,6 @@ export const PlaylistCard = forwardRef<
 							<div
 								className="product-lockup__link svelte-1rancje"
 								data-testid="product-lockup-link"
-								// aria-label="Against the Tide - Single、鸣潮先约电台 &amp; Forts"
 							>
 								{playlist.name}
 							</div>
@@ -129,27 +127,34 @@ export const PlaylistCard = forwardRef<
 							className="product-lockup__context-button svelte-1rancje"
 						>
 							<div slot="context-button">
-								<AMPContextualMenuButton>
-									<span slot="trigger">
-										<span
-											aria-label="更多"
-											className="more-button svelte-1sn4kz more-button--platter more-button--material"
-											data-testid="more-button"
-											slot="trigger-content"
-										>
-											<EllipsisIcon />
-										</span>
-									</span>
-									<span slot="content">
-										{[
-											{
-												label: "删除",
-												onClick: () => {
-													history.back();
-													db.playlists.delete(Number(playlist.id));
-												},
+								<AMPContextualMenuButton
+									menuItems={[
+										{
+											label: t("common.deleteFromLibrary"),
+											onClick: () => {
+												history.back();
+												db.playlists.delete(Number(playlist.id));
 											},
-										]}
+										},
+									]}
+								>
+									<span
+										style={{ display: "inline-block", position: "relative" }}
+									>
+										<div className="amp-contextual-menu-button svelte-1sn4kz">
+											<button
+												className="contextual-menu__trigger"
+												type="button"
+											>
+												<span
+													className="more-button svelte-1sn4kz more-button--platter more-button--material"
+													data-testid="more-button"
+													slot="trigger-content"
+												>
+													<EllipsisIcon />
+												</span>
+											</button>
+										</div>
 									</span>
 								</AMPContextualMenuButton>
 							</div>

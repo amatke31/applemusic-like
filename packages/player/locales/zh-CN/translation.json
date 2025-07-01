@@ -43,6 +43,7 @@
 		"dialog": {
 			"close": "关闭",
 			"cancel": "取消",
+			"complete": "完成",
 			"confirm": "确认",
 			"filter": {
 				"js": "JavaScript 文件 (*.js)",
@@ -52,7 +53,11 @@
 		},
 		"page": {
 			"back": "返回"
-		}
+		},
+		"play": "播放",
+		"shuffle": "随机播放",
+		"deleteFromLibrary": "从资料库中删除",
+		"edit": "编辑"
 	},
 	"extension": {
 		"inject": {
@@ -129,8 +134,10 @@
 				"uploadCoverImage": "上传封面图片"
 			},
 			"totalMusicLabel": "{count, plural, other {#}} 首歌曲",
-			"playAll": "播放",
-			"shufflePlayAll": "随机播放"
+			"playAll": "播放全部",
+			"shufflePlayAll": "随机播放",
+			"editPlaylist": "编辑歌单",
+			"playlistTitle": "歌单标题"
 		},
 		"amll-dev": {
 			"title": "Apple Music Like Lyrics 开发者页面",
@@ -334,7 +341,7 @@
 		},
 		"about": {
 			"subtitle": "关于",
-			"credits": "由 SteveXMH 及其所有 Github 协作者共同开发",
+			"credits": "由 Amatke31 开发\n项目源于SteveXMH及所有Github协作者的Apple Music-like Lyrics Player",
 			"newVersion": "有可用更新从 {currentVersion} 升级至 {nextVersion}",
 			"updating": "正在更新，完成后将会自动重启，请稍后……",
 			"downloading": "正在下载更新…… {progressText}",
@@ -419,5 +426,21 @@
 			"tab": "AMLL Player 设置"
 		}
 	},
-	"name": ""
+	"name": "",
+	"header": {
+		"home": "主页",
+		"search": "搜索",
+		"library": {
+			"label": "资料库",
+			"recentlyAdded": "最近添加",
+			"artists": "艺人",
+			"albums": "专辑",
+			"songs": "歌曲"
+		},
+		"playlists": {
+			"label": "播放列表",
+			"allPlaylists": "所有播放列表",
+			"favouriteSongs": "喜爱的歌曲"
+		}
+	}
 }

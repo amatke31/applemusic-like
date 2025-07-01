@@ -40,3 +40,20 @@
 		padding: 0 0.5rem;
 	}
 }
+
+.appContainer {
+	display: grid;
+	grid-template-columns: 0fr 0fr 1fr;
+	grid-template-rows: 1fr 0fr;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+	contain: paint;
+}
+
+.playbar {
+	grid-row: 2 / 3;
+	grid-column: 2 / 4;
+
+	border-top: solid 1px var(--gray-6);
+}

@@ -115,8 +115,8 @@ export function showAMPDialog(content: ReactNode) {
 		);
 	}
 
-	import("react-dom").then(({ render }) => {
-		render(<DialogWrapper />, container);
+	import("react-dom/client").then(({ createRoot }) => {
+		createRoot(container).render(<DialogWrapper />);
 	});
 
 	return { close };

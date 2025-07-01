@@ -11,14 +11,12 @@ export const AMPHeaderListItem = forwardRef<
 	return (
 		<li
 			className={`navigation-item navigation-item__all-playlists svelte-1a5yt87 drop-reset${isSelected && " navigation-item--selected"}`}
-			aria-selected="true"
 			data-testid="navigation-item"
 		>
 			<Link to={to}>
 				<div
 					className="navigation-item__link svelte-1a5yt87"
 					data-testid="all-playlists"
-					aria-pressed="true"
 					tabindex="-1"
 				>
 					<div className="navigation-item__content svelte-zhx7t9">

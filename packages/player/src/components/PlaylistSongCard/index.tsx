@@ -81,11 +81,13 @@ export const PlaylistSongCard = forwardRef<
 						}))
 				}
 				data-drop-area=""
-				onKeyDown={() => {
+				onClick={(e) => {
+					e.stopPropagation();
 					onSelectedSongIdChange(songId);
 				}}
-				onMouseDown={() => {
-					onSelectedSongIdChange(songId);
+				onDoubleClick={(e) => {
+					e.stopPropagation();
+					if (onPlayList) onPlayList(songIndex);
 				}}
 			>
 				<div
@@ -154,7 +156,7 @@ export const PlaylistSongCard = forwardRef<
 							>
 								<div className="interactive-play-button svelte-a72zjx">
 									<button
-										aria-label={`播放${
+										aria-label={`Play ${
 											song.state === "hasData" &&
 											(song.data.songName ||
 												song.data.filePath ||
@@ -209,7 +211,7 @@ export const PlaylistSongCard = forwardRef<
 													song.data.filePath ||
 													t(
 														"page.playlist.music.unknownSongName",
-														"未知歌曲 ID {id}",
+														"Unknown ID {id}",
 														{
 															id: songId,
 														},
@@ -224,7 +226,7 @@ export const PlaylistSongCard = forwardRef<
 													song.data.filePath ||
 													t(
 														"page.playlist.music.unknownSongName",
-														"未知歌曲 ID {id}",
+														"Unknown ID {id}",
 														{
 															id: songId,
 														},
@@ -301,26 +303,28 @@ export const PlaylistSongCard = forwardRef<
 								(song.data.duration ? toDuration(song.data.duration) : "")}
 						</time>
 						<div className="songs-list-row__context-menu svelte-t6plbb">
-							<AMPContextualMenuButton>
-								<span slot="trigger">
-									<span
-										aria-label="更多"
-										className="more-button svelte-1sn4kz more-button--non-platter"
-										data-testid="more-button"
-										slot="trigger-content"
-									>
-										<EllipsisIcon />
-									</span>
-								</span>
-								<span slot="content">
-									{[
-										{
-											label: "移除",
-											onClick: () => {
-												if (onDeleteSong) onDeleteSong(songId);
-											},
+							<AMPContextualMenuButton
+								menuItems={[
+									{
+										label: t("page.playlist.music.dropdown.removeFromPlaylist"),
+										onClick: () => {
+											if (onDeleteSong) onDeleteSong(songId);
 										},
-									]}
+									},
+								]}
+							>
+								<span style={{ display: "inline-block", position: "relative" }}>
+									<div className="amp-contextual-menu-button svelte-1sn4kz">
+										<button className="contextual-menu__trigger" type="button">
+											<span
+												className="more-button svelte-1sn4kz more-button--non-platter"
+												data-testid="more-button"
+												slot="trigger-content"
+											>
+												<EllipsisIcon />
+											</span>
+										</button>
+									</div>
 								</span>
 							</AMPContextualMenuButton>
 						</div>

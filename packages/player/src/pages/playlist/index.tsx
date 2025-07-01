@@ -241,7 +241,10 @@ export const Component: FC = () => {
 	return (
 		<div className="scrollable-page svelte-mt0bfj">
 			<PageContainer>
-				<div className="content-container svelte-9l1caf">
+				<div
+					className="content-container svelte-9l1caf"
+					onClick={() => setSelectedSongId("")}
+				>
 					<div className="section svelte-qc4ih7">
 						<div className="section-content svelte-qc4ih7">
 							<div className="container-detail-header svelte-1uuona0 container-detail-header--no-description">
@@ -280,7 +283,7 @@ export const Component: FC = () => {
 														<path d="m4.4 15.14 10.386-6.096c.842-.459.794-1.64 0-2.097L4.401.85c-.87-.53-2-.12-2 .82v12.625c0 .966 1.06 1.4 2 .844z" />
 													</svg>
 												</span>
-												<Trans i18nKey="page.playlist.playAll">播放全部</Trans>
+												<Trans i18nKey="common.play">播放</Trans>
 											</button>
 										</div>
 									</div>
@@ -310,9 +313,7 @@ export const Component: FC = () => {
 														<path d="M.012 10.903c0 .43.333.732.79.732H2.54c1.272 0 2.019-.37 2.89-1.397l1.79-2.13 1.767 2.093c.894 1.065 1.737 1.434 3.009 1.434h1.478v1.782c0 .355.214.562.57.562.162 0 .31-.06.435-.155l2.898-2.418c.281-.23.281-.584 0-.828L14.48 8.161a.671.671 0 0 0-.436-.156c-.355 0-.569.2-.569.562v1.597H12.04c-.872 0-1.442-.288-2.07-1.042L8.166 6.985l1.811-2.144c.643-.761 1.161-1.035 2.019-1.035h1.478v1.627c0 .355.214.562.57.562.162 0 .31-.06.435-.156l2.898-2.417c.281-.23.281-.584 0-.828L14.48.177a.67.67 0 0 0-.436-.156c-.355 0-.569.2-.569.562v1.745h-1.471c-1.316 0-2.122.362-3.06 1.486L7.22 5.862l-1.79-2.13c-.87-1.027-1.67-1.397-2.933-1.397H.803c-.458 0-.791.303-.791.732s.333.74.79.74h1.635c.828 0 1.404.288 2.04 1.042l1.797 2.136-1.797 2.137c-.636.754-1.168 1.042-1.988 1.042H.803c-.458 0-.791.31-.791.74Z" />
 													</svg>
 												</span>
-												<Trans i18nKey="page.playlist.shufflePlayAll">
-													随机播放
-												</Trans>
+												<Trans i18nKey="common.shuffle">随机播放</Trans>
 											</button>
 										</div>
 									</div>
@@ -329,96 +330,112 @@ export const Component: FC = () => {
 											className="cloud-buttons svelte-u0auos"
 											data-testid="cloud-buttons"
 										>
-											<AMPContextualMenuButton>
-												<span slot="trigger">
-													<span
-														aria-label="更多"
-														className="more-button svelte-1sn4kz more-button--platter"
-														data-testid="more-button"
-														slot="trigger-content"
-													>
-														<EllipsisIcon />
-													</span>
-												</span>
-												<span slot="content">
-													{[
-														{
-															label: "编辑",
-															onClick: () => {
-																let newName = playlist?.name || "";
-																const dialog = showAMPDialog(
-																	<form
-																		className="playlist-form svelte-1kd2e9n"
-																		onSubmit={(e) => {
-																			e.preventDefault();
-																			onPlaylistNameChange(newName);
-																			dialog.close();
-																		}}
-																	>
-																		<h3 className="modal-title svelte-1kd2e9n">
+											<AMPContextualMenuButton
+												menuItems={[
+													{
+														label: t("common.edit"),
+														onClick: () => {
+															let newName = playlist?.name || "";
+															const dialog = showAMPDialog(
+																<form
+																	className="playlist-form svelte-1kd2e9n"
+																	onSubmit={(e) => {
+																		e.preventDefault();
+																		onPlaylistNameChange(newName);
+																		dialog.close();
+																	}}
+																>
+																	<h3 className="modal-title svelte-1kd2e9n">
+																		<Trans i18nKey="page.playlist.editPlaylist">
 																			编辑歌单
-																		</h3>
-																		<input
-																			className="playlist-title svelte-1kd2e9n"
-																			name="title"
-																			type="text"
-																			defaultValue={newName}
-																			onChange={(e) => {
-																				newName = e.target.value;
-																			}}
-																			placeholder="歌单标题"
-																			required
-																		/>
-																		<span style={{ height: 20 }} />
-																		<div className="buttons svelte-1kd2e9n">
-																			<div className="cancel-button svelte-1kd2e9n">
-																				<div
-																					className="button svelte-yk984v secondary"
-																					data-testid="button-base-wrapper"
+																		</Trans>
+																	</h3>
+																	<input
+																		className="playlist-title svelte-1kd2e9n"
+																		name="title"
+																		type="text"
+																		defaultValue={newName}
+																		onChange={(e) => {
+																			newName = e.target.value;
+																		}}
+																		placeholder={t("page.playlist.playlistTitle")}
+																		required
+																	/>
+																	<span style={{ height: 20 }} />
+																	<div className="buttons svelte-1kd2e9n">
+																		<div className="cancel-button svelte-1kd2e9n">
+																			<div
+																				className="button svelte-yk984v secondary"
+																				data-testid="button-base-wrapper"
+																			>
+																				<button
+																					data-testid="button-base"
+																					type="button"
+																					className="svelte-yk984v"
+																					onClick={() => dialog.close()}
 																				>
-																					<button
-																						data-testid="button-base"
-																						type="button"
-																						className="svelte-yk984v"
-																						onClick={() => dialog.close()}
-																					>
+																					<Trans i18nKey="common.dialog.cancel">
 																						取消
-																					</button>
-																				</div>
-																			</div>
-																			<div className="submit-button">
-																				<div
-																					className="button svelte-yk984v primary"
-																					data-testid="button-base-wrapper"
-																				>
-																					<button
-																						data-testid="button-base"
-																						type="submit"
-																						className="svelte-yk984v"
-																					>
-																						完成
-																					</button>
-																				</div>
+																					</Trans>
+																				</button>
 																			</div>
 																		</div>
-																	</form>,
-																);
-															},
+																		<div className="submit-button">
+																			<div
+																				className="button svelte-yk984v primary"
+																				data-testid="button-base-wrapper"
+																			>
+																				<button
+																					data-testid="button-base"
+																					type="submit"
+																					className="svelte-yk984v"
+																				>
+																					<Trans i18nKey="common.dialog.complete">
+																						完成
+																					</Trans>
+																				</button>
+																			</div>
+																		</div>
+																	</div>
+																</form>,
+															);
 														},
-														{
-															label: "添加歌曲",
-															onClick: () => {
-																onAddLocalMusics();
-															},
+													},
+													{
+														label: t("page.playlist.addLocalMusic.label"),
+														onClick: () => {
+															onAddLocalMusics();
 														},
-														{
-															label: "从资料库中删除",
-															onClick: () => {
-																history.back();
-																db.playlists.delete(Number(param.id));
-															},
+													},
+													{
+														label: t("common.deleteFromLibrary"),
+														onClick: () => {
+															history.back();
+															db.playlists.delete(Number(param.id));
 														},
-													]}
+													},
+												]}
+											>
+												<span
+													style={{
+														display: "inline-block",
+														position: "relative",
+													}}
+												>
+													<div className="amp-contextual-menu-button svelte-1sn4kz">
+														<button
+															className="contextual-menu__trigger"
+															type="button"
+														>
+															<span
+																className="more-button svelte-1sn4kz more-button--platter"
+																data-testid="more-button"
+																slot="trigger-content"
+															>
+																<EllipsisIcon />
+															</span>
+														</button>
+													</div>
 												</span>
 											</AMPContextualMenuButton>
 										</div>
@@ -431,25 +448,21 @@ export const Component: FC = () => {
 						<div className="section-content svelte-qc4ih7">
 							<div
 								className="songs-list svelte-p1kiu8 songs-list--header-is-visible songs-list--playlist"
-								role="grid"
 								draggable="true"
 							>
 								<div
 									className="songs-list__header svelte-p1kiu8 songs-list__header--is-visible"
 									aria-hidden="true"
-									role="row"
 									data-testid="tracklist-column-header"
 								>
 									<div
 										className="songs-list__col songs-list__col--favorite-or-popular songs-list__header-col songs-list__header-col--favorite-or-popular svelte-p1kiu8"
-										role="columnheader"
 										data-testid="tracklist-column-header-favorite-or-popular"
 									>
 										<div className="songs-list__header-col-label songs-list__header-col-label--favorite-or-popular svelte-p1kiu8" />
 									</div>
 									<div
 										className="songs-list__col songs-list__col--song songs-list__header-col songs-list__header-col--song svelte-p1kiu8"
-										role="columnheader"
 										data-testid="tracklist-column-header-song"
 									>
 										<div className="songs-list__header-col-label songs-list__header-col-label--song svelte-p1kiu8">
@@ -458,7 +471,6 @@ export const Component: FC = () => {
 									</div>
 									<div
 										className="songs-list__col songs-list__col--secondary songs-list__header-col songs-list__header-col--secondary svelte-p1kiu8"
-										role="columnheader"
 										data-testid="tracklist-column-header-secondary"
 									>
 										<div className="songs-list__header-col-label songs-list__header-col-label--secondary svelte-p1kiu8">
@@ -467,7 +479,6 @@ export const Component: FC = () => {
 									</div>
 									<div
 										className="songs-list__col songs-list__col--tertiary songs-list__header-col songs-list__header-col--tertiary svelte-p1kiu8"
-										role="columnheader"
 										data-testid="tracklist-column-header-tertiary"
 									>
 										<div className="songs-list__header-col-label songs-list__header-col-label--tertiary svelte-p1kiu8">
@@ -476,7 +487,6 @@ export const Component: FC = () => {
 									</div>
 									<div
 										className="songs-list__col songs-list__col--time songs-list__header-col songs-list__header-col--time svelte-p1kiu8"
-										role="columnheader"
 										data-testid="tracklist-column-header-time"
 									>
 										<div className="songs-list__header-col-label songs-list__header-col-label--time svelte-p1kiu8">
@@ -484,21 +494,20 @@ export const Component: FC = () => {
 										</div>
 									</div>
 								</div>
-								{playlist?.songIds &&
-									playlist.songIds.map((songId, index) => (
-										<PlaylistSongCard
-											key={`playlist-song-card-${songId}`}
-											songId={songId}
-											songIndex={index}
-											onPlayList={onPlayList}
-											onDeleteSong={onDeleteSong}
-											onStar={() => {}}
-											selectedSongId={selectedSongId}
-											onSelectedSongIdChange={(songId) => {
-												setSelectedSongId(songId);
-											}}
-										/>
-									))}
+								{playlist?.songIds?.map((songId, index) => (
+									<PlaylistSongCard
+										key={`playlist-song-card-${songId}`}
+										songId={songId}
+										songIndex={index}
+										onPlayList={onPlayList}
+										onDeleteSong={onDeleteSong}
+										onStar={() => {}}
+										selectedSongId={selectedSongId}
+										onSelectedSongIdChange={(songId) => {
+											setSelectedSongId(songId);
+										}}
+									/>
+								))}
 							</div>
 						</div>
 					</div>
