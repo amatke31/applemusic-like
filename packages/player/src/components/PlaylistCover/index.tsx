@@ -11,47 +11,54 @@ export const PlaylistCover: FC<
 		isAlbum?: boolean;
 	} & HTMLProps<HTMLDivElement>
 > = ({ playlist, isAlbum, className, ...props }) => {
-	const [playlistImgs, setPlaylistImgs] = useState([] as string[]);
+	const [playlistImgs, setPlaylistImgs] = useState<string[]>([]);
 
-	const firstFourSongs = useLiveQuery(async () => {
+	const uniqueSongs = useLiveQuery(async () => {
 		if (playlist && !playlist.playlistCover) {
-			let result = [];
+			const result = [];
+			const seenBlobs = new Set<string>();
+
 			for (const songId of playlist.songIds) {
 				const song = await db.songs.get(songId);
 				if (song?.cover.type.startsWith("image") && song.cover.size > 0) {
-					result.push(song);
-					if (result.length === 4) break;
+					const blobKey = await getBlobSignature(song.cover);
+					if (!seenBlobs.has(blobKey)) {
+						seenBlobs.add(blobKey);
+						result.push(song);
+						if (result.length === 4) break;
+					}
 				}
 			}
-			if (result.length > 0 && (isAlbum || result.length < 4))
-				result = [result[0]];
+
+			if (result.length > 0 && (isAlbum || result.length < 4)) {
+				return [result[0]];
+			}
 			return result;
 		}
 		return [];
 	}, [playlist]);
 
+	// 生成Blob的唯一标识
+	async function getBlobSignature(blob: Blob): Promise<string> {
+		const buffer = await blob.arrayBuffer();
+		const hashBuffer = await crypto.subtle.digest("SHA-1", buffer);
+		const hashArray = Array.from(new Uint8Array(hashBuffer));
+		return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+	}
+
 	useEffect(() => {
 		if (playlist?.playlistCover) {
 			const coverUrl = URL.createObjectURL(playlist.playlistCover);
-
 			setPlaylistImgs([coverUrl]);
-
-			return () => {
-				URL.revokeObjectURL(coverUrl);
-			};
+			return () => URL.revokeObjectURL(coverUrl);
 		}
-		if (firstFourSongs) {
-			const imgs = firstFourSongs.map((v) => URL.createObjectURL(v.cover));
 
+		if (uniqueSongs && uniqueSongs.length > 0) {
+			const imgs = uniqueSongs.map((v) => URL.createObjectURL(v.cover));
 			setPlaylistImgs(imgs);
-
-			return () => {
-				for (const img of imgs) {
-					URL.revokeObjectURL(img);
-				}
-			};
+			return () => imgs.forEach((img) => URL.revokeObjectURL(img));
 		}
-	}, [firstFourSongs, playlist]);
+	}, [uniqueSongs, playlist]);
 
 	return (
 		<div

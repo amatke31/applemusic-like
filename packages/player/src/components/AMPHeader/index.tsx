@@ -12,7 +12,7 @@ import { ExtensionInjectPoint } from "../ExtensionInjectPoint";
 import {
 	MusicContextMode,
 	musicContextModeAtom,
-} from "@applemusic-like-lyrics/states";
+} from "../../states/appAtoms";
 import { useTranslation } from "react-i18next";
 import { platform } from "@tauri-apps/plugin-os";
 import { useAtom } from "jotai";
