@@ -15,7 +15,7 @@ export const Component: FC = () => {
 	const rowVirtualizer = useVirtualizer({
 		count: playlists?.length ?? 0,
 		getScrollElement: () => parentRef.current,
-		estimateSize: () => 96,
+		estimateSize: () => 105,
 		overscan: 5,
 	});
 

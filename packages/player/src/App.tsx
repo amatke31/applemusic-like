@@ -2,7 +2,7 @@ import { Box, Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import { platform, version } from "@tauri-apps/plugin-os";
 import classNames from "classnames";
-import { atom, useAtomValue, useSetAtom, useStore } from "jotai";
+import { atom, useAtomValue, useStore } from "jotai";
 import { StrictMode, Suspense, lazy, useEffect, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
@@ -19,24 +19,25 @@ import { UpdateContext } from "./components/UpdateContext/index.tsx";
 import { WSProtocolMusicContext } from "./components/WSProtocolMusicContext/index.tsx";
 import "./i18n";
 import { router } from "./router.tsx";
-import {
-	DarkMode,
-	MusicContextMode,
-	musicContextModeAtom,
-	darkModeAtom,
-	isDarkThemeAtom,
-	displayLanguageAtom,
-	isLyricPageOpenedAtom,
-	showStatJSFrameAtom,
-	wsLyricOnlyModeAtom,
-	enableWsLyricsInSmtcModeAtom,
-	audioQualityDialogOpenedAtom,
-	onClickAudioQualityTagAtom,
-	lyricSizePresetAtom,
-	LyricSizePreset,
-} from "@applemusic-like-lyrics/states";
 import { invoke } from "@tauri-apps/api/core";
 import { StatsComponent } from "./components/StatsComponent/index.tsx";
+import {
+	isLyricPageOpenedAtom,
+	lyricSizePresetAtom,
+	onClickAudioQualityTagAtom,
+	LyricSizePreset,
+} from "@applemusic-like-lyrics/react-full";
+import {
+	showStatJSFrameAtom,
+	musicContextModeAtom,
+	displayLanguageAtom,
+	isDarkThemeAtom,
+	darkModeAtom,
+	DarkMode,
+	MusicContextMode,
+} from "./states/appAtoms.ts";
+import { audioQualityDialogOpenedAtom } from "./states/smtcAtoms.ts";
+import { StateConnector } from "./components/StateConnector/index.tsx";
 
 const ExtensionContext = lazy(() => import("./components/ExtensionContext"));
 const AMLLWrapper = lazy(() => import("./components/AMLLWrapper"));
@@ -55,16 +56,7 @@ function App() {
 
 	const darkMode = useAtomValue(darkModeAtom);
 
-	const setWsLyricOnlyMode = useSetAtom(wsLyricOnlyModeAtom);
-	const enableWsLyrics = useAtomValue(enableWsLyricsInSmtcModeAtom);
-
 	const lyricSize = useAtomValue(lyricSizePresetAtom);
-
-	useEffect(() => {
-		const isSmtcAndWsEnabled =
-			musicContextMode === MusicContextMode.SystemListener && enableWsLyrics;
-		setWsLyricOnlyMode(isSmtcAndWsEnabled);
-	}, [musicContextMode, enableWsLyrics, setWsLyricOnlyMode]);
 
 	useEffect(() => {
 		const syncThemeToWindow = async () => {
@@ -167,10 +159,11 @@ function App() {
 			{musicContextMode === MusicContextMode.SystemListener && (
 				<SystemListenerMusicContext key={MusicContextMode.SystemListener} />
 			)}
-			{(musicContextMode === MusicContextMode.WSProtocol ||
-				(musicContextMode === MusicContextMode.SystemListener &&
-					enableWsLyrics)) && (
-				<WSProtocolMusicContext key={MusicContextMode.WSProtocol} />
+			{musicContextMode === MusicContextMode.WSProtocol && (
+				<WSProtocolMusicContext
+					key={MusicContextMode.WSProtocol}
+					isLyricOnly={false}
+				/>
 			)}
 
 			<UpdateContext />
@@ -180,6 +173,7 @@ function App() {
 				<ExtensionContext />
 			</Suspense>
 			<ExtensionInjectPoint injectPointName="context" hideErrorCallout />
+			<StateConnector />
 
 			{/* UI渲染 */}
 			<StrictMode>

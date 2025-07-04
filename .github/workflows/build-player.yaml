@@ -12,7 +12,7 @@ concurrency:
 jobs:
   clean-pre-release:
     name: 删除预发布版本的构建产物
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: 删除预发布版本的构建产物
         uses: mknejp/delete-release-assets@v1
@@ -30,7 +30,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: ubuntu-22.04
+          - platform: ubuntu-latest
             args: ""
             name: linux
             arch: x86_64
@@ -61,16 +61,6 @@ jobs:
         name: 克隆仓库
         with:
           fetch-depth: 0 # 为了正确生成开发版本号码
-      - name: 缓存 Cargo 产物
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: 安装 PNPM
         uses: pnpm/action-setup@v4
       - name: 安装 Node.js
@@ -79,12 +69,22 @@ jobs:
           node-version: lts/*
           cache: pnpm
       - name: 安装 Rust 工具链
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@v1
         with:
+          toolchain: 1.88.0
           targets: |
-            ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || (matrix.platform == 'windows-latest' && matrix.arch == 'aarch64') && 'aarch64-pc-windows-msvc' || '' }}
-      - name: 安装 wasm32 目标
-        run: rustup target add wasm32-unknown-unknown
+            wasm32-unknown-unknown,${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || (matrix.platform == 'windows-latest' && matrix.arch == 'aarch64') && 'aarch64-pc-windows-msvc' || '' }}
+
+      - name: 安装 sccache
+        uses: mozilla-actions/sccache-action@v0.0.9
+
+      - name: 配置 sccache
+        run: |
+          echo "RUSTC_WRAPPER=${{ env.SCCACHE_PATH }}" >> $GITHUB_ENV
+          echo "SCCACHE_GHA_ENABLED=true" >> $GITHUB_ENV
+          echo "ACTIONS_CACHE_URL=${{ env.ACTIONS_CACHE_URL }}" >> $GITHUB_ENV
+          echo "ACTIONS_RUNTIME_TOKEN=${{ env.ACTIONS_RUNTIME_TOKEN }}" >> $GITHUB_ENV
+        shell: bash
       # macOS 自带的 Xcode LLVM 不支持 WASM 目标
       - name: "macOS: 安装 LLVM 和 Clang"
         uses: KyleMayes/install-llvm-action@v2
@@ -92,17 +92,17 @@ jobs:
         with:
           version: "15"
       - name: 安装 Tauri 所需系统依赖（仅 Linux）
-        if: matrix.platform == 'ubuntu-22.04'
+        if: matrix.platform == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libasound2-dev libappindicator3-dev libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libasound2-dev libappindicator3-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
       - name: 安装 wasm-pack
         uses: jetli/wasm-pack-action@v0.4.0
         with:
-          version: latest
+          version: 'v0.13.1'
       - name: 构建 AMLL Full React 包
         run: |
-          pnpm i
+          pnpm i --frozen-lockfile --ignore-scripts
           pnpm nx build player
         env:
           AMLL_GITHUB_IS_ACTION: true
@@ -141,22 +141,12 @@ jobs:
     name: 构建 Tauri 安卓移动版本
     needs: clean-pre-release
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         name: 克隆仓库
         with:
           fetch-depth: 0 # 为了正确生成开发版本号码
-      - name: 缓存 Cargo 产物
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: 安装 PNPM
         uses: pnpm/action-setup@v4
       - name: 安装 Node.js
@@ -165,18 +155,28 @@ jobs:
           node-version: lts/*
           cache: pnpm
       - name: 安装 Rust 工具链
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@v1
         with:
+          toolchain: 1.88.0
           targets: "x86_64-unknown-linux-gnu,x86_64-linux-android,i686-linux-android,aarch64-linux-android,arm-linux-androideabi,armv7-linux-androideabi,thumbv7neon-linux-androideabi"
       - name: 安装 wasm-pack
         uses: jetli/wasm-pack-action@v0.4.0
         with:
-          version: latest
+          version: 'v0.13.1'
       - name: 安装 wasm32 目标
         run: rustup target add wasm32-unknown-unknown
+      - name: 安装 sccache
+        uses: mozilla-actions/sccache-action@v0.0.9
+      - name: 配置 sccache
+        run: |
+          echo "RUSTC_WRAPPER=${{ env.SCCACHE_PATH }}" >> $GITHUB_ENV
+          echo "SCCACHE_GHA_ENABLED=true" >> $GITHUB_ENV
+          echo "ACTIONS_CACHE_URL=${{ env.ACTIONS_CACHE_URL }}" >> $GITHUB_ENV
+          echo "ACTIONS_RUNTIME_TOKEN=${{ env.ACTIONS_RUNTIME_TOKEN }}" >> $GITHUB_ENV
+        shell: bash
       - name: 构建 AMLL Full React 包
         run: |
-          pnpm i
+          pnpm i --frozen-lockfile --ignore-scripts
           pnpm lerna run build --concurrency=1 --stream --scope player
         env:
           AMLL_GITHUB_IS_ACTION: true

@@ -13,20 +13,20 @@ import { Box, Button, Flex, Separator, Text, Tooltip } from "@radix-ui/themes";
 import { platform } from "@tauri-apps/plugin-os";
 import { atom, useAtom, useAtomValue } from "jotai";
 import {
-	Suspense,
 	type FC,
 	type ReactNode,
+	Suspense,
 	useEffect,
 	useMemo,
 	useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { loadedExtensionAtom } from "@applemusic-like-lyrics/states";
 import { ExtensionTab } from "./extension.tsx";
 import { PlayerSettingsTab } from "./player.tsx";
 import { PageContainer } from "../../components/PageContainer/index.tsx";
 import { NowPlayingBar } from "../../components/NowPlayingBar/index.tsx";
 import styles from "./index.module.css";
+import { loadedExtensionAtom } from "../../states/extensionsAtoms.ts";
 
 const currentPageAtom = atom("player.general");
 

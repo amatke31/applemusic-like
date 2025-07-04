@@ -13,15 +13,15 @@ import { path } from "@tauri-apps/api";
 import { BaseDirectory } from "@tauri-apps/api/path";
 import { open as dialogOpen } from "@tauri-apps/plugin-dialog";
 import { copyFile, mkdir, remove, rename } from "@tauri-apps/plugin-fs";
+import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { platform } from "@tauri-apps/plugin-os";
 import { atom, useAtomValue, useStore } from "jotai";
 import type { FC } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { ExtensionLoadResult } from "@applemusic-like-lyrics/states";
-import { restartApp } from "../../utils/player.ts";
-import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { extensionDirAtom, extensionMetaAtom } from "../../states/extension.ts";
 import { CardGroup, Card } from "../../components/Card";
+import { restartApp } from "../../utils/player.ts";
+import { ExtensionLoadResult } from "../../states/extensionsAtoms.ts";
 
 const requireRestartAtom = atom(false);
 

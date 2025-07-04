@@ -22,66 +22,6 @@ import {
 	useState,
 } from "react";
 
-import {
-	onChangeVolumeAtom,
-	onClickAudioQualityTagAtom,
-	onClickControlThumbAtom,
-	onLyricLineClickAtom,
-	onLyricLineContextMenuAtom,
-	onPlayOrResumeAtom,
-	onRequestNextSongAtom,
-	onRequestOpenMenuAtom,
-	onRequestPrevSongAtom,
-	onSeekPositionAtom,
-	fftDataAtom,
-	hideLyricViewAtom,
-	isLyricPageOpenedAtom,
-	lowFreqVolumeAtom,
-	musicAlbumNameAtom,
-	musicArtistsAtom,
-	musicCoverAtom,
-	musicCoverIsVideoAtom,
-	musicDurationAtom,
-	musicLyricLinesAtom,
-	musicNameAtom,
-	musicPlayingAtom,
-	correctedMusicPlayingPositionAtom,
-	musicQualityTagAtom,
-	musicVolumeAtom,
-	PlayerControlsType,
-	VerticalCoverLayout,
-	enableLyricLineBlurEffectAtom,
-	enableLyricLineScaleEffectAtom,
-	enableLyricLineSpringAnimationAtom,
-	enableLyricRomanLineAtom,
-	enableLyricSwapTransRomanLineAtom,
-	enableLyricTranslationLineAtom,
-	lyricBackgroundFPSAtom,
-	lyricBackgroundRenderScaleAtom,
-	lyricBackgroundRendererAtom,
-	lyricBackgroundStaticModeAtom,
-	lyricFontFamilyAtom,
-	lyricFontWeightAtom,
-	lyricLetterSpacingAtom,
-	lyricPlayerImplementationAtom,
-	lyricWordFadeWidthAtom,
-	playerControlsTypeAtom,
-	showBottomControlAtom,
-	showMusicAlbumAtom,
-	showMusicArtistsAtom,
-	showMusicNameAtom,
-	showVolumeControlAtom,
-	verticalCoverLayoutAtom,
-	MusicContextMode,
-	musicContextModeAtom,
-	onClickSmtcRepeatAtom,
-	onClickSmtcShuffleAtom,
-	RepeatMode,
-	smtcRepeatModeAtom,
-	smtcShuffleStateAtom,
-	showRemainingTimeAtom,
-} from "@applemusic-like-lyrics/states";
-
 import { toDuration } from "../../utils";
 import { AutoLyricLayout } from "../../layout/auto";
 import { AudioFFTVisualizer } from "../AudioFFTVisualizer";
@@ -110,6 +50,70 @@ import "./icon-animations.css";
 import styles from "./index.module.css";
 import { useThrottle } from "../../hook/useThrottle";
 import React from "react";
+import {
+	onRequestOpenMenuAtom,
+	onRequestPrevSongAtom,
+	onRequestNextSongAtom,
+	onPlayOrResumeAtom,
+	onClickAudioQualityTagAtom,
+	onSeekPositionAtom,
+	onLyricLineClickAtom,
+	onLyricLineContextMenuAtom,
+	onChangeVolumeAtom,
+	onClickControlThumbAtom,
+} from "../../states/callbacks";
+import {
+	showMusicNameAtom,
+	showMusicArtistsAtom,
+	showMusicAlbumAtom,
+	lyricFontFamilyAtom,
+	lyricFontWeightAtom,
+	lyricLetterSpacingAtom,
+	showRemainingTimeAtom,
+	isLyricPageOpenedAtom,
+	lyricPlayerImplementationAtom,
+	enableLyricLineBlurEffectAtom,
+	enableLyricLineScaleEffectAtom,
+	enableLyricLineSpringAnimationAtom,
+	lyricWordFadeWidthAtom,
+	enableLyricTranslationLineAtom,
+	enableLyricRomanLineAtom,
+	enableLyricSwapTransRomanLineAtom,
+	showVolumeControlAtom,
+	playerControlsTypeAtom,
+	PlayerControlsType,
+	hideLyricViewAtom,
+	lyricBackgroundFPSAtom,
+	verticalCoverLayoutAtom,
+	lyricBackgroundStaticModeAtom,
+	lyricBackgroundRenderScaleAtom,
+	lyricBackgroundRendererAtom,
+	showBottomControlAtom,
+	VerticalCoverLayout,
+} from "../../states/configAtoms";
+import {
+	musicNameAtom,
+	musicArtistsAtom,
+	musicAlbumNameAtom,
+	musicPlayingAtom,
+	musicDurationAtom,
+	musicQualityTagAtom,
+	musicLyricLinesAtom,
+	musicVolumeAtom,
+	fftDataAtom,
+	musicCoverAtom,
+	musicCoverIsVideoAtom,
+	lowFreqVolumeAtom,
+} from "../../states/dataAtoms";
+
+import {
+	isShuffleActiveAtom,
+	repeatModeAtom,
+	RepeatMode,
+	toggleShuffleActionAtom,
+	cycleRepeatModeActionAtom,
+	correctedMusicPlayingPositionAtom,
+} from "../../states/controlsAtoms";
 
 const PrebuiltMusicInfo: FC<{
 	className?: string;
@@ -155,12 +159,11 @@ const PrebuiltMediaButtons: FC<{
 	const onRequestNextSong = useAtomValue(onRequestNextSongAtom).onEmit;
 	const onPlayOrResume = useAtomValue(onPlayOrResumeAtom).onEmit;
 
-	const musicContextMode = useAtomValue(musicContextModeAtom);
-	const isShuffleOn = useAtomValue(smtcShuffleStateAtom);
-	const repeatMode = useAtomValue(smtcRepeatModeAtom);
+	const isShuffleOn = useAtomValue(isShuffleActiveAtom);
+	const currentRepeatMode = useAtomValue(repeatModeAtom);
 
-	const toggleShuffle = useSetAtom(onClickSmtcShuffleAtom);
-	const cycleRepeat = useSetAtom(onClickSmtcRepeatAtom);
+	const toggleShuffle = useSetAtom(toggleShuffleActionAtom);
+	const cycleRepeat = useSetAtom(cycleRepeatModeActionAtom);
 
 	const iconStyle = {
 		width: "1.3em",
@@ -168,7 +171,7 @@ const PrebuiltMediaButtons: FC<{
 	};
 
 	const renderRepeatIcon = () => {
-		switch (repeatMode) {
+		switch (currentRepeatMode) {
 			case RepeatMode.One:
 				return <RepeatOneActiveIcon color="#ffffffff" style={iconStyle} />;
 			case RepeatMode.All:
@@ -182,11 +185,7 @@ const PrebuiltMediaButtons: FC<{
 	return (
 		<>
 			{showOtherButtons && (
-				<MediaButton
-					className={styles.songMediaButton}
-					onClick={toggleShuffle}
-					disabled={musicContextMode !== MusicContextMode.SystemListener}
-				>
+				<MediaButton className={styles.songMediaButton} onClick={toggleShuffle}>
 					{isShuffleOn ? (
 						<ShuffleActiveIcon color="#ffffffff" style={iconStyle} />
 					) : (
@@ -218,11 +217,7 @@ const PrebuiltMediaButtons: FC<{
 			</MediaButton>
 
 			{showOtherButtons && (
-				<MediaButton
-					className={styles.songMediaButton}
-					onClick={cycleRepeat}
-					disabled={musicContextMode !== MusicContextMode.SystemListener}
-				>
+				<MediaButton className={styles.songMediaButton} onClick={cycleRepeat}>
 					{renderRepeatIcon()}
 				</MediaButton>
 			)}
@@ -369,7 +364,15 @@ const PrebuiltCoreLyricPlayer: FC<{
 				];
 			}
 		}
-		return processed;
+		return processed.map((line: any) => ({
+			...line,
+			words: Array.isArray(line.words)
+				? line.words.map((word: any) => ({
+						...word,
+						obscene: typeof word.obscene === "boolean" ? word.obscene : false,
+					}))
+				: [],
+		}));
 	}, [
 		lyricLines,
 		enableLyricTranslationLine,
@@ -523,7 +526,6 @@ export const PrebuiltLyricPlayer: FC<HTMLProps<HTMLDivElement>> = ({
 		}
 	}, [isLyricPageOpened]);
 
-
 	useEffect(() => {
 		const titlebarArea = document.getElementById("system-titlebar");
 		if (!titlebarArea) return;
@@ -532,30 +534,30 @@ export const PrebuiltLyricPlayer: FC<HTMLProps<HTMLDivElement>> = ({
 		const handleMouseLeave = () => setIsHoveringTitlebar(false);
 
 		if (isLyricPageOpened) {
-			titlebarArea.addEventListener('mouseenter', handleMouseEnter);
-			titlebarArea.addEventListener('mouseleave', handleMouseLeave);
+			titlebarArea.addEventListener("mouseenter", handleMouseEnter);
+			titlebarArea.addEventListener("mouseleave", handleMouseLeave);
 		} else {
-            setIsHoveringTitlebar(false);
-        }
+			setIsHoveringTitlebar(false);
+		}
 
 		return () => {
-			titlebarArea.removeEventListener('mouseenter', handleMouseEnter);
-			titlebarArea.removeEventListener('mouseleave', handleMouseLeave);
+			titlebarArea.removeEventListener("mouseenter", handleMouseEnter);
+			titlebarArea.removeEventListener("mouseleave", handleMouseLeave);
 		};
 	}, [isLyricPageOpened]);
-
 
 	useEffect(() => {
 		const titlebarButtons = document.getElementById("system-titlebar-buttons");
 		if (!titlebarButtons) return;
 
-		titlebarButtons.style.transition = "opacity 0.3s ease-in-out, pointer-events 0.3s";
-		
-		const shouldBeVisible = !isLyricPageOpened || isHoveringTitlebar || !isGracePeriodOver;
+		titlebarButtons.style.transition =
+			"opacity 0.3s ease-in-out, pointer-events 0.3s";
+
+		const shouldBeVisible =
+			!isLyricPageOpened || isHoveringTitlebar || !isGracePeriodOver;
 
 		titlebarButtons.style.opacity = shouldBeVisible ? "1" : "0";
 		titlebarButtons.style.pointerEvents = shouldBeVisible ? "auto" : "none";
-
 	}, [isLyricPageOpened, isHoveringTitlebar, isGracePeriodOver]);
 
 	const verticalImmerseCover =

@@ -1,6 +1,6 @@
 import { useSetAtom } from "jotai";
 import { useLayoutEffect } from "react";
-import { hideNowPlayingBarAtom } from "@applemusic-like-lyrics/states";
+import { hideNowPlayingBarAtom } from "../states/appAtoms";
 
 export const useHideNowPlayingBar = () => {
 	const setHideNowPlayingBar = useSetAtom(hideNowPlayingBarAtom);

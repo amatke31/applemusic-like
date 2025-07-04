@@ -9,6 +9,14 @@
 	max-width: 100%;
 	overflow: hidden;
 
+	background: none;
+	border: none;
+	margin: 0;
+	font: inherit;
+	color: inherit;
+	text-align: left;
+
+
 	&:hover {
 		background-color: #fff1;
 	}
@@ -26,7 +34,7 @@
 		text-overflow: ellipsis;
 		line-height: 1em;
 
-		> * {
+		>* {
 			overflow: hidden;
 			white-space: nowrap;
 			text-overflow: ellipsis;

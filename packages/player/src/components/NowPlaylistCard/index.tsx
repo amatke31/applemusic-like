@@ -1,9 +1,6 @@
 import { PlayIcon } from "@radix-ui/react-icons";
 import { Avatar, Box, Flex, type FlexProps, Inset } from "@radix-ui/themes";
-import classNames from "classnames";
-import { useLiveQuery } from "dexie-react-hooks";
 import { useAtomValue } from "jotai";
-import md5 from "md5";
 import {
 	type FC,
 	type HTMLProps,
@@ -15,15 +12,14 @@ import {
 } from "react";
 import { Trans } from "react-i18next";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { type Song, db } from "../../dexie.ts";
-import {
-	currentPlaylistAtom,
-	currentPlaylistMusicIndexAtom,
-} from "@applemusic-like-lyrics/states";
+import { db, type Song } from "../../dexie.ts";
 import { type SongData, emitAudioThread } from "../../utils/player.ts";
 import styles from "./index.module.css";
+import {
+	currentPlaylistMusicIndexAtom,
+	currentPlaylistAtom,
+} from "@applemusic-like-lyrics/react-full";
 
-// TODO: 会产生闪烁更新，需要检查修正
 const PlaylistSongItem: FC<
 	{
 		songData: SongData;
@@ -31,66 +27,67 @@ const PlaylistSongItem: FC<
 	} & HTMLProps<HTMLDivElement>
 > = ({ songData, className, index, ...props }) => {
 	const playlistIndex = useAtomValue(currentPlaylistMusicIndexAtom);
-	const [songId, setSongId] = useState<string>("");
-	const lastSongId = useRef("");
-
-	useLayoutEffect(() => {
-		if (songData.type === "local") {
-			const newSongId = md5(songData.filePath);
-			if (lastSongId.current !== newSongId) {
-				console.log("newSongId", lastSongId.current, "->", newSongId);
-				setSongId(newSongId);
-			}
-			lastSongId.current = newSongId;
-		}
-	}, [songData]);
-
-	const [curSongInfo, setCurSongInfo] = useState<Song>();
-	const songInfo = useLiveQuery(() => db.songs.get(songId), [songId]);
-
-	useLayoutEffect(() => {
-		if (songInfo) setCurSongInfo(songInfo);
-	}, [songInfo]);
-
-	const name = useMemo(() => {
-		if (curSongInfo?.songName) return curSongInfo?.songName;
-		if (songData.type === "local") return songData.filePath;
-		return "";
-	}, [songData, curSongInfo]);
-
-	const artists = useMemo(() => {
-		if (curSongInfo) return curSongInfo?.songArtists ?? "";
-		return "";
-	}, [curSongInfo]);
-
 	const [cover, setCover] = useState("");
 
-	useLayoutEffect(() => {
-		if (curSongInfo?.cover) {
-			const newUri = URL.createObjectURL(curSongInfo.cover);
-			setCover(newUri);
-			return () => {
-				URL.revokeObjectURL(newUri);
-			};
+	const song: Song | null = useMemo(() => {
+		if (songData.type === "custom" && songData.songJsonData) {
+			try {
+				return JSON.parse(songData.songJsonData);
+			} catch (e) {
+				console.error("Failed to parse songJsonData:", e);
+				return null;
+			}
 		}
-	}, [curSongInfo]);
+		return null;
+	}, [songData]);
+
+	useLayoutEffect(() => {
+		let newUri: string | null = null;
+		let isActive = true;
+
+		if (song) {
+			db.songs.get(song.id).then((dbSong) => {
+				if (isActive && dbSong?.cover instanceof Blob) {
+					newUri = URL.createObjectURL(dbSong.cover);
+					setCover(newUri);
+				}
+			});
+		} else {
+			setCover("");
+		}
+
+		return () => {
+			isActive = false;
+			if (newUri) {
+				URL.revokeObjectURL(newUri);
+			}
+		};
+	}, [song]);
+
+	const name =
+		song?.songName ??
+		(songData.type === "local" ? songData.filePath : "未知歌曲");
+	const artists = song?.songArtists ?? "未知艺术家";
 
 	return (
-		<div
-			className={classNames(className, styles.playlistSongItem)}
-			onDoubleClick={() => {
-				emitAudioThread("jumpToSong", {
-					songIndex: index,
-				});
-			}}
-			{...props}
-		>
-			<Avatar size="4" fallback={<div />} src={cover} />
-			<div className={styles.musicInfo}>
-				<div className={styles.name}>{name}</div>
-				<div className={styles.artists}>{artists}</div>
-			</div>
-			{playlistIndex === index && <PlayIcon />}
+		<div className={className} {...props}>
+			<button
+				type="button"
+				className={styles.playlistSongItem}
+				onDoubleClick={() => {
+					emitAudioThread("jumpToSong", {
+						songIndex: index,
+					});
+				}}
+				aria-label={`播放 ${name} - ${artists}`}
+			>
+				<Avatar size="4" fallback={<div />} src={cover} />
+				<div className={styles.musicInfo}>
+					<div className={styles.name}>{name}</div>
+					<div className={styles.artists}>{artists}</div>
+				</div>
+				{playlistIndex === index && <PlayIcon />}
+			</button>
 		</div>
 	);
 };
@@ -146,6 +143,7 @@ export const NowPlaylistCard: FC<FlexProps> = (props) => {
 				>
 					{rowVirtualizer.getVirtualItems().map((virtualItem) => {
 						const songData = playlist[virtualItem.index];
+						if (!songData) return null;
 						return (
 							<PlaylistSongItem
 								key={virtualItem.key}

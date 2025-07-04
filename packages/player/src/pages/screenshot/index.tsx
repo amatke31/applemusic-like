@@ -4,12 +4,12 @@ import { platform, version } from "@tauri-apps/plugin-os";
 import { StrictMode, useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import semverGt from "semver/functions/gt";
-import { isDarkThemeAtom } from "@applemusic-like-lyrics/states";
 import styles from "./index.module.css";
 import { useAtomValue } from "jotai";
 import "@radix-ui/themes/styles.css";
 import LosslessScreenshotTab from "./LosslessScreenshotTab";
 import RecordTab from "./RecordTab";
+import { isDarkThemeAtom } from "../../states/appAtoms";
 
 export const ScreenshotApp = () => {
 	const isDarkTheme = useAtomValue(isDarkThemeAtom);

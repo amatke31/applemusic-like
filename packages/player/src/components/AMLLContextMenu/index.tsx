@@ -13,8 +13,8 @@ import {
 	onPlayOrResumeAtom,
 	onRequestNextSongAtom,
 	onRequestPrevSongAtom,
-	recordPanelOpenedAtom,
-} from "@applemusic-like-lyrics/states";
+} from "@applemusic-like-lyrics/react-full";
+import { recordPanelOpenedAtom } from "../../states/appAtoms.ts";
 
 export const AMLLContextMenuContent: FC = () => {
 	const [hideLyricView, setHideLyricView] = useAtom(hideLyricViewAtom);

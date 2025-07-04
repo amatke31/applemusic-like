@@ -5,7 +5,7 @@ import { type ComponentType, type FC, Fragment, useMemo } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import { Trans, useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { loadedExtensionAtom } from "@applemusic-like-lyrics/states";
+import { loadedExtensionAtom } from "../../states/extensionsAtoms";
 
 const ErrorCallout: FC<
 	FallbackProps & {

@@ -12,11 +12,11 @@ import { type FC, useEffect, useMemo } from "react";
 import { Trans } from "react-i18next";
 import { Card, CardGroup } from "../../components/Card";
 import {
-	MusicContextMode,
-	musicContextModeAtom,
-	wsProtocolConnectedAddrsAtom,
 	wsProtocolListenAddrAtom,
-} from "@applemusic-like-lyrics/states";
+	wsProtocolConnectedAddrsAtom,
+	musicContextModeAtom,
+	MusicContextMode,
+} from "../../states/appAtoms";
 
 export const Component: FC = () => {
 	const [wsProtocolListenAddr, setWsProtocolListenAddr] = useAtom(

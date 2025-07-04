@@ -80,8 +80,9 @@ export const BouncingSlider: React.FC<SliderProps> = (props) => {
 
 				bounceSpring.update(delta);
 				heightSpring.update(delta);
-				outer.style.transform = `translateX(${bounceSpring.getCurrentPosition() / 100
-					}px)`;
+				outer.style.transform = `translateX(${
+					bounceSpring.getCurrentPosition() / 100
+				}px)`;
 				if (innerHeight <= 1000)
 					inner.style.height = `${heightSpring.getCurrentPosition() * 0.08}px`;
 				else inner.style.height = `${heightSpring.getCurrentPosition() / 10}px`;

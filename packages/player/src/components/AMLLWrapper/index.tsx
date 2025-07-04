@@ -1,13 +1,12 @@
-import { PrebuiltLyricPlayer } from "@applemusic-like-lyrics/react-full";
+import {
+	isLyricPageOpenedAtom,
+	musicIdAtom,
+	PrebuiltLyricPlayer,
+} from "@applemusic-like-lyrics/react-full";
 import { ContextMenu } from "@radix-ui/themes";
 import classnames from "classnames";
 import { useAtomValue } from "jotai";
 import { type FC, useLayoutEffect } from "react";
-
-import {
-	isLyricPageOpenedAtom,
-	musicIdAtom,
-} from "@applemusic-like-lyrics/states";
 
 import { AMLLContextMenuContent } from "../AMLLContextMenu/index.tsx";
 import { AudioQualityDialog } from "../AudioQualityDialog/index.tsx";

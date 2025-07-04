@@ -8,41 +8,6 @@ import {
 	parseTTML,
 	parseYrc,
 } from "@applemusic-like-lyrics/lyric";
-import {
-	AudioQualityType,
-	fftDataAtom,
-	hideLyricViewAtom,
-	isLyricPageOpenedAtom,
-	lowFreqVolumeAtom,
-	musicAlbumNameAtom,
-	musicArtistsAtom,
-	musicCoverAtom,
-	musicCoverIsVideoAtom,
-	musicDurationAtom,
-	musicLyricLinesAtom,
-	musicNameAtom,
-	musicPlayingAtom,
-	musicPlayingPositionAtom,
-	musicQualityTagAtom,
-	musicVolumeAtom,
-	onChangeVolumeAtom,
-	onClickControlThumbAtom,
-	onClickLeftFunctionButtonAtom,
-	onClickRightFunctionButtonAtom,
-	onLyricLineClickAtom,
-	onPlayOrResumeAtom,
-	onRequestNextSongAtom,
-	onRequestOpenMenuAtom,
-	onRequestPrevSongAtom,
-	onSeekPositionAtom,
-	advanceLyricDynamicLyricTimeAtom,
-	currentPlaylistAtom,
-	currentPlaylistMusicIndexAtom,
-	musicIdAtom,
-	type MusicQualityState,
-	musicQualityAtom,
-	fftDataRangeAtom,
-} from "@applemusic-like-lyrics/states";
 import chalk from "chalk";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useAtomValue, useSetAtom, useStore } from "jotai";
@@ -56,7 +21,44 @@ import {
 	emitAudioThread,
 	emitAudioThreadRet,
 	listenAudioThreadEvent,
+	type SongData,
 } from "../../utils/player.ts";
+import md5 from "md5";
+import {
+	fftDataRangeAtom,
+	fftDataAtom,
+	lowFreqVolumeAtom,
+	type MusicQualityState,
+	musicQualityAtom,
+	musicQualityTagAtom,
+	AudioQualityType,
+	musicIdAtom,
+	musicLyricLinesAtom,
+	hideLyricViewAtom,
+	onRequestNextSongAtom,
+	onRequestPrevSongAtom,
+	onPlayOrResumeAtom,
+	onClickControlThumbAtom,
+	isLyricPageOpenedAtom,
+	onSeekPositionAtom,
+	onLyricLineClickAtom,
+	onChangeVolumeAtom,
+	onRequestOpenMenuAtom,
+	onClickLeftFunctionButtonAtom,
+	onClickRightFunctionButtonAtom,
+	musicNameAtom,
+	musicAlbumNameAtom,
+	musicArtistsAtom,
+	musicPlayingPositionAtom,
+	musicDurationAtom,
+	musicCoverAtom,
+	musicCoverIsVideoAtom,
+	currentPlaylistAtom,
+	currentPlaylistMusicIndexAtom,
+	musicPlayingAtom,
+	musicVolumeAtom,
+} from "@applemusic-like-lyrics/react-full";
+import { advanceLyricDynamicLyricTimeAtom } from "../../states/appAtoms.ts";
 
 export const FFTToLowPassContext: FC = () => {
 	const store = useStore();
@@ -168,7 +170,7 @@ function pairLyric(line: LyricLine, lines: CoreLyricLine[], key: TransLine) {
 			.trim(),
 		original: v,
 	}));
-	let nearestLine: PairedLine | undefined = undefined;
+	let nearestLine: PairedLine | undefined;
 	for (const coreLine of processed) {
 		if (coreLine.lineText.length > 0) {
 			if (coreLine.startTime === line.words[0].startTime) {
@@ -682,6 +684,34 @@ export const LocalMusicContext: FC = () => {
 				sampleFormat: quality.sampleFormat ?? "unknown",
 			});
 		};
+		const processAndSetPlaylist = async (playlistData: SongData[]) => {
+			if (!playlistData || playlistData.length === 0) {
+				store.set(currentPlaylistAtom, []);
+				return;
+			}
+
+			const fullPlaylistPromises = playlistData.map(
+				async (songData): Promise<SongData> => {
+					if (songData.type === "local") {
+						const songId = md5(songData.filePath);
+						const songInfoFromDb = await db.songs.get(songId);
+
+						if (songInfoFromDb) {
+							return {
+								type: "custom",
+								id: songInfoFromDb.id,
+								songJsonData: JSON.stringify(songInfoFromDb),
+								origOrder: songData.origOrder,
+							};
+						}
+					}
+					return songData;
+				},
+			);
+
+			const fullPlaylist: SongData[] = await Promise.all(fullPlaylistPromises);
+			store.set(currentPlaylistAtom, fullPlaylist);
+		};
 		const unlistenPromise = listenAudioThreadEvent((evt) => {
 			const evtData = evt.payload.data;
 			switch (evtData?.type) {
@@ -719,7 +749,9 @@ export const LocalMusicContext: FC = () => {
 					syncMusicId(evtData.data.musicId);
 					syncMusicQuality(evtData.data.quality);
 					syncMusicInfo(evtData.data.musicInfo);
-					store.set(currentPlaylistAtom, evtData.data.playlist);
+
+					processAndSetPlaylist(evtData.data.playlist);
+
 					store.set(
 						currentPlaylistMusicIndexAtom,
 						evtData.data.currentPlayIndex,
@@ -727,7 +759,8 @@ export const LocalMusicContext: FC = () => {
 					break;
 				}
 				case "playListChanged": {
-					store.set(currentPlaylistAtom, evtData.data.playlist);
+					processAndSetPlaylist(evtData.data.playlist);
+
 					store.set(
 						currentPlaylistMusicIndexAtom,
 						evtData.data.currentPlayIndex,
@@ -765,6 +798,18 @@ export const LocalMusicContext: FC = () => {
 		emitAudioThreadRet("syncStatus");
 		return () => {
 			unlistenPromise.then((unlisten) => unlisten());
+
+			const doNothing = toEmit(() => {});
+			store.set(onRequestNextSongAtom, doNothing);
+			store.set(onRequestPrevSongAtom, doNothing);
+			store.set(onPlayOrResumeAtom, doNothing);
+			store.set(onClickControlThumbAtom, doNothing);
+			store.set(onSeekPositionAtom, doNothing);
+			store.set(onLyricLineClickAtom, doNothing);
+			store.set(onChangeVolumeAtom, doNothing);
+			store.set(onRequestOpenMenuAtom, doNothing);
+			store.set(onClickLeftFunctionButtonAtom, doNothing);
+			store.set(onClickRightFunctionButtonAtom, doNothing);
 		};
 	}, [store, t]);
 

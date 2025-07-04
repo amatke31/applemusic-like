@@ -1,14 +1,11 @@
 import { atom } from "jotai";
 import { invoke } from "@tauri-apps/api/core";
-
+import { darkModeAtom, DarkMode, autoDarkModeAtom } from "./appAtoms";
 import {
-	autoDarkModeAtom,
-	darkModeAtom,
-	DarkMode,
+	smtcShuffleStateAtom,
 	smtcRepeatModeAtom,
 	RepeatMode,
-	smtcShuffleStateAtom,
-} from "@applemusic-like-lyrics/states";
+} from "./smtcAtoms";
 
 export const isDarkThemeAtom = atom(
 	(get) => {

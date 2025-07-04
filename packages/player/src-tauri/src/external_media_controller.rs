@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use base64::{Engine, engine::general_purpose::STANDARD};
 use crossbeam_channel::Receiver;
 use serde::{Deserialize, Serialize};
 use smtc_suite::{
@@ -7,7 +8,7 @@ use smtc_suite::{
 };
 use std::thread;
 use tauri::{AppHandle, Emitter, Runtime};
-use tracing::{debug, error, info, warn};
+use tracing::{error, info, warn};
 
 /// 文本转换模式。
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
@@ -26,51 +27,20 @@ pub enum TextConversionMode {
 #[derive(Debug, Clone, Serialize)]
 #[serde(tag = "type", content = "data", rename_all = "camelCase")]
 pub enum SmtcEvent {
-    /// 曲目元数据已更新 (标题、艺术家、专辑、时长)。
-    TrackMetadata(TrackMetadata),
-    /// 封面数据已更新。通常伴随着 `TrackMetadata` 一起发送。
-    /// payload 为 `Option<Vec<u8>>`，前端需要进行 Base64 解码（如果需要显示图片）。
-    CoverData(Option<Vec<u8>>),
-    /// 播放状态已更新 (播放/暂停、进度、随机/重复模式)。
-    PlaybackStatus(PlaybackStatus),
-    /// 音量或静音状态已发生变化。
-    VolumeChanged(VolumeStatus),
-    /// 可用的媒体会话列表已更新。
+    /// 曲目信息已更新。负载是完整的 NowPlayingInfo 对象。
+    TrackChanged(FrontendNowPlayingInfo),
     SessionsChanged(Vec<SmtcSessionInfo>),
-    /// 之前选择的媒体会话已消失（例如，应用已关闭）。
+    /// 之前选择的媒体会话已消失。
     SelectedSessionVanished(String),
-    /// 接收到一个音频数据包（用于可视化）。
+    /// 接收到一个音频数据包。
     AudioData(Vec<u8>),
-    /// 报告一个来自 `smtc-suite` 的错误。
+    /// 报告一个错误。
     Error(String),
-}
-
-/// 音量状态的封装。
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct VolumeStatus {
-    pub volume: f32,
-    pub is_muted: bool,
-}
-
-/// 曲目元数据的封装。
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct TrackMetadata {
-    pub title: Option<String>,
-    pub artist: Option<String>,
-    pub album_title: Option<String>,
-    pub duration_ms: Option<u64>,
-}
-
-/// 播放状态的封装。
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct PlaybackStatus {
-    pub is_playing: bool,
-    pub position_ms: u64,
-    pub is_shuffle_active: bool,
-    pub repeat_mode: RepeatMode,
+    /// 音量或静音状态已发生变化。
+    VolumeChanged {
+        volume: f32,
+        is_muted: bool,
+    },
 }
 
 /// SMTC 会话信息的封装，用于在前端显示。
@@ -118,23 +88,47 @@ pub enum RepeatMode {
     All,
 }
 
-/// 用于在 `event_receiver_loop` 中缓存上一次发送的元数据。
-#[derive(Debug, Clone, Default, PartialEq)]
-pub struct CachedNowPlayingInfo {
+/// 专门用于发送给前端的 NowPlayingInfo DTO。
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FrontendNowPlayingInfo {
     pub title: Option<String>,
     pub artist: Option<String>,
     pub album_title: Option<String>,
     pub duration_ms: Option<u64>,
+    pub position_ms: Option<u64>,
+    pub is_playing: Option<bool>,
+    pub is_shuffle_active: Option<bool>,
+    pub repeat_mode: Option<RepeatMode>,
+    pub can_play: Option<bool>,
+    pub can_pause: Option<bool>,
+    pub can_skip_next: Option<bool>,
+    pub can_skip_previous: Option<bool>,
+    pub cover_data: Option<String>,
     pub cover_data_hash: Option<u64>,
 }
 
-impl From<&SmtcNowPlayingInfo> for CachedNowPlayingInfo {
-    fn from(info: &SmtcNowPlayingInfo) -> Self {
+/// 将后端库的结构转换为前端 DTO。
+impl From<SmtcNowPlayingInfo> for FrontendNowPlayingInfo {
+    fn from(info: SmtcNowPlayingInfo) -> Self {
         Self {
-            title: info.title.clone(),
-            artist: info.artist.clone(),
-            album_title: info.album_title.clone(),
+            title: info.title,
+            artist: info.artist,
+            album_title: info.album_title,
             duration_ms: info.duration_ms,
+            position_ms: info.position_ms,
+            is_playing: info.is_playing,
+            is_shuffle_active: info.is_shuffle_active,
+            repeat_mode: info.repeat_mode.map(|m| match m {
+                smtc_suite::RepeatMode::Off => RepeatMode::Off,
+                smtc_suite::RepeatMode::One => RepeatMode::One,
+                smtc_suite::RepeatMode::All => RepeatMode::All,
+            }),
+            can_play: info.can_play,
+            can_pause: info.can_pause,
+            can_skip_next: info.can_skip_next,
+            can_skip_previous: info.can_skip_previous,
+            cover_data: info.cover_data.map(|bytes| STANDARD.encode(bytes)),
             cover_data_hash: info.cover_data_hash,
         }
     }
@@ -297,93 +291,32 @@ pub fn start_listener<R: Runtime>(app_handle: AppHandle<R>) -> ExternalMediaCont
 
 /// 核心事件循环，运行在专用的后台线程中。
 fn event_receiver_loop<R: Runtime>(app_handle: AppHandle<R>, update_rx: Receiver<MediaUpdate>) {
-    let mut last_sent_info_cache = CachedNowPlayingInfo::default();
-
     for update in update_rx {
-        match update {
-            MediaUpdate::TrackChanged(new_info) => {
-                let new_info = parse_apple_music_field(new_info);
-                let current_info_cache = CachedNowPlayingInfo::from(&new_info);
-                if last_sent_info_cache != current_info_cache {
-                    debug!("检测到曲目信息更新，正在发送元数据和封面...");
-                    emit_track_metadata(&app_handle, &new_info);
-                    last_sent_info_cache = current_info_cache;
-                }
-                emit_playback_status(&app_handle, &new_info);
+        let event_to_emit = match update {
+            MediaUpdate::TrackChanged(info) | MediaUpdate::TrackChangedForced(info) => {
+                let dto = parse_apple_music_field(info.into());
+                SmtcEvent::TrackChanged(dto)
             }
-            MediaUpdate::TrackChangedForced(new_info) => {
-                let new_info = parse_apple_music_field(new_info);
-                emit_track_metadata(&app_handle, &new_info);
-                emit_playback_status(&app_handle, &new_info);
-                last_sent_info_cache = CachedNowPlayingInfo::from(&new_info);
-            }
+            MediaUpdate::SessionsChanged(sessions) => SmtcEvent::SessionsChanged(
+                sessions.into_iter().map(SmtcSessionInfo::from).collect(),
+            ),
+            MediaUpdate::AudioData(bytes) => SmtcEvent::AudioData(bytes),
+            MediaUpdate::Error(e) => SmtcEvent::Error(e),
             MediaUpdate::VolumeChanged {
                 volume, is_muted, ..
-            } => {
-                let payload = SmtcEvent::VolumeChanged(VolumeStatus { volume, is_muted });
-                let _ = app_handle.emit("smtc_update", payload);
-            }
-            MediaUpdate::SessionsChanged(sessions) => {
-                let payload = SmtcEvent::SessionsChanged(
-                    sessions.into_iter().map(SmtcSessionInfo::from).collect(),
-                );
-                let _ = app_handle.emit("smtc_update", payload);
-            }
-            MediaUpdate::SelectedSessionVanished(id) => {
-                let payload = SmtcEvent::SelectedSessionVanished(id);
-                let _ = app_handle.emit("smtc_update", payload);
-                last_sent_info_cache = CachedNowPlayingInfo::default();
-            }
-            MediaUpdate::AudioData(bytes) => {
-                let payload = SmtcEvent::AudioData(bytes);
-                let _ = app_handle.emit("smtc_update", payload);
-            }
-            MediaUpdate::Error(e) => {
-                let payload = SmtcEvent::Error(e);
-                let _ = app_handle.emit("smtc_update", payload);
-            }
+            } => SmtcEvent::VolumeChanged { volume, is_muted },
+            MediaUpdate::SelectedSessionVanished(id) => SmtcEvent::SelectedSessionVanished(id),
+        };
+
+        if let Err(e) = app_handle.emit("smtc_update", event_to_emit) {
+            warn!("向前端发送 smtc_update 事件失败: {}", e);
         }
     }
-
     info!("媒体事件通道已关闭，接收线程退出。");
 }
 
-/// 辅助函数，发送曲目元数据和封面。
-fn emit_track_metadata<R: Runtime>(app_handle: &AppHandle<R>, info: &SmtcNowPlayingInfo) {
-    let _ = app_handle.emit(
-        "smtc_update",
-        SmtcEvent::TrackMetadata(TrackMetadata {
-            title: info.title.clone(),
-            artist: info.artist.clone(),
-            album_title: info.album_title.clone(),
-            duration_ms: info.duration_ms,
-        }),
-    );
-    let _ = app_handle.emit("smtc_update", SmtcEvent::CoverData(info.cover_data.clone()));
-}
-
-/// 辅助函数，发送播放状态。
-fn emit_playback_status<R: Runtime>(app_handle: &AppHandle<R>, info: &SmtcNowPlayingInfo) {
-    let _ = app_handle.emit(
-        "smtc_update",
-        SmtcEvent::PlaybackStatus(PlaybackStatus {
-            is_playing: info.is_playing.unwrap_or(false),
-            position_ms: info.position_ms.unwrap_or(0),
-            is_shuffle_active: info.is_shuffle_active.unwrap_or(false),
-            repeat_mode: info
-                .repeat_mode
-                .map(|m| match m {
-                    smtc_suite::RepeatMode::Off => RepeatMode::Off,
-                    smtc_suite::RepeatMode::One => RepeatMode::One,
-                    smtc_suite::RepeatMode::All => RepeatMode::All,
-                })
-                .unwrap_or(RepeatMode::Off),
-        }),
-    );
-}
-
 /// 特殊的解析逻辑，用于处理 Apple Music 的元数据。
-fn parse_apple_music_field(mut info: SmtcNowPlayingInfo) -> SmtcNowPlayingInfo {
+fn parse_apple_music_field(mut info: FrontendNowPlayingInfo) -> FrontendNowPlayingInfo {
     if let Some(original_artist_field) = info.artist.take() {
         if let Some((artist, album)) = original_artist_field.split_once(" — ") {
             info.artist = Some(artist.trim().to_string());

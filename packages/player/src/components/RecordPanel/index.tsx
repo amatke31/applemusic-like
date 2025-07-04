@@ -2,11 +2,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import styles from "./index.module.css";
 import { useLayoutEffect, useRef, useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
-import { isLyricPageOpenedAtom } from "@applemusic-like-lyrics/states";
 import { CameraIcon, Cross1Icon, StopIcon } from "@radix-ui/react-icons";
-import { recordPanelOpenedAtom } from "@applemusic-like-lyrics/states";
 import { toast } from "react-toastify";
 import save from "save-file";
+import { isLyricPageOpenedAtom } from "@applemusic-like-lyrics/react-full";
+import { recordPanelOpenedAtom } from "../../states/appAtoms";
 
 const PreviewVideo = (props: { mediaStream: MediaStream }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);

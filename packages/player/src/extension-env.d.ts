@@ -3,25 +3,32 @@ import type { i18n } from "i18next";
 import type { Atom, createStore } from "jotai";
 import type { ComponentType } from "react";
 import type { db } from "./dexie.ts";
-import type * as playerStates from "@applemusic-like-lyrics/states";
+import type * as appAtoms from "../../player/src/states/appAtoms";
+import type * as smtcAtoms from "../../player/src/states/smtcAtoms";
+import type * as extensionsAtoms from "../../player/src/states/extensionsAtoms";
 
 export type * as RadixTheme from "@radix-ui/themes";
 export type * as Jotai from "jotai";
 export type * as React from "react";
 export type * as ReactDOM from "react-dom";
 
-type PlayerStatesExports = typeof playerStates;
-type AMLLStatesExports = typeof amllStates;
+type PlayerStatesModule = typeof appAtoms &
+	typeof smtcAtoms &
+	typeof extensionsAtoms;
+
+type AMLLStatesModule = typeof amllStates;
+
 type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
 
 declare type PlayerStates = OmitNever<{
-	[K in keyof PlayerStatesExports]: PlayerStatesExports[K] extends Atom<unknown>
-		? PlayerStatesExports[K]
+	[K in keyof PlayerStatesModule]: PlayerStatesModule[K] extends Atom<unknown>
+		? PlayerStatesModule[K]
 		: never;
 }>;
+
 declare type AMLLStates = OmitNever<{
-	[K in keyof AMLLStatesExports]: AMLLStatesExports[K] extends Atom<unknown>
-		? AMLLStatesExports[K]
+	[K in keyof AMLLStatesModule]: AMLLStatesModule[K] extends Atom<unknown>
+		? AMLLStatesModule[K]
 		: never;
 }>;
 

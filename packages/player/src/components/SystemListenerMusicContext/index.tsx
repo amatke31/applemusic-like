@@ -1,125 +1,114 @@
-import { type FC, useEffect } from "react";
-
+import { FFTPlayer } from "@applemusic-like-lyrics/fft";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { useAtomValue, useSetAtom, useStore } from "jotai";
+import { type FC, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { FFTToLowPassContext } from "../LocalMusicContext/index.tsx";
+import { useWsLyrics } from "../../../hooks/useWsLyrics.ts";
 import {
-	musicAlbumNameAtom,
-	musicArtistsAtom,
-	musicCoverAtom,
-	musicCoverIsVideoAtom,
-	musicDurationAtom,
-	musicIdAtom,
-	musicLyricLinesAtom,
-	musicNameAtom,
-	musicPlayingAtom,
-	musicPlayingPositionAtom,
-	onChangeVolumeAtom,
-	onClickControlThumbAtom,
-	onClickLeftFunctionButtonAtom,
-	onClickRightFunctionButtonAtom,
-	onLyricLineClickAtom,
+	isLyricPageOpenedAtom,
 	onPlayOrResumeAtom,
+	musicPlayingAtom,
 	onRequestNextSongAtom,
-	onRequestOpenMenuAtom,
 	onRequestPrevSongAtom,
+	onChangeVolumeAtom,
 	onSeekPositionAtom,
+	onLyricLineClickAtom,
+	onClickControlThumbAtom,
+	onRequestOpenMenuAtom,
+	fftDataAtom,
+	musicNameAtom,
+	musicArtistsAtom,
+	musicAlbumNameAtom,
+	musicDurationAtom,
+	musicPlayingPositionAtom,
+	musicCoverAtom,
+	musicVolumeAtom,
+	fftDataRangeAtom,
+} from "@applemusic-like-lyrics/react-full";
+import {
+	musicContextModeAtom,
+	enableWsLyricsInSmtcModeAtom,
+	MusicContextMode,
+} from "../../states/appAtoms.ts";
+import {
 	RepeatMode,
-	smtcRepeatModeAtom,
 	smtcSessionsAtom,
 	smtcShuffleStateAtom,
-	smtcTextConversionModeAtom,
-	smtcTrackIdAtom,
-	musicVolumeAtom,
-	isLyricPageOpenedAtom,
-} from "@applemusic-like-lyrics/states";
-import { FFTPlayer } from "@applemusic-like-lyrics/fft";
-import { fftDataAtom } from "@applemusic-like-lyrics/states";
+	smtcRepeatModeAtom,
+	smtcCanPlayAtom,
+	smtcCanPauseAtom,
+	smtcCanSkipNextAtom,
+	smtcCanSkipPreviousAtom,
+} from "../../states/smtcAtoms.ts";
+
 type SmtcEvent =
 	| {
-			type: "trackMetadata";
+			type: "trackChanged";
 			data: {
 				title: string | null;
 				artist: string | null;
 				albumTitle: string | null;
 				durationMs: number | null;
+				positionMs: number | null;
+				isPlaying: boolean | null;
+				isShuffleActive: boolean | null;
+				repeatMode: RepeatMode | null;
+				canPlay: boolean | null;
+				canPause: boolean | null;
+				canSkipNext: boolean | null;
+				canSkipPrevious: boolean | null;
+				coverData: string | null;
+				coverDataHash: number | null;
 			};
 	  }
-	| { type: "coverData"; data: number[] | null }
-	| {
-			type: "playbackStatus";
-			data: {
-				isPlaying: boolean;
-				positionMs: number;
-				isShuffleActive: boolean;
-				repeatMode: RepeatMode;
-			};
-	  }
-	| { type: "volumeChanged"; data: { volume: number; isMuted: boolean } }
 	| {
 			type: "sessionsChanged";
 			data: { sessionId: string; displayName: string }[];
 	  }
 	| { type: "selectedSessionVanished"; data: string }
 	| { type: "error"; data: string }
-	| { type: "audioData"; data: number[] };
+	| { type: "audioData"; data: number[] }
+	| { type: "volumeChanged"; data: { volume: number; isMuted: boolean } };
 
 export const SystemListenerMusicContext: FC = () => {
 	const store = useStore();
 	const { t } = useTranslation();
-	const setMusicId = useSetAtom(musicIdAtom);
-	const setSmtcTrackId = useSetAtom(smtcTrackIdAtom);
 	const setSmtcSessions = useSetAtom(smtcSessionsAtom);
-	const setSmtcShuffle = useSetAtom(smtcShuffleStateAtom);
-	const setSmtcRepeat = useSetAtom(smtcRepeatModeAtom);
-	const textConversionMode = useAtomValue(smtcTextConversionModeAtom);
+	const musicContextMode = useAtomValue(musicContextModeAtom);
+	const isWsLyricsEnabled = useAtomValue(enableWsLyricsInSmtcModeAtom);
 	const setIsLyricPageOpened = useSetAtom(isLyricPageOpenedAtom);
 
-	useEffect(() => {
-		invoke("control_external_media", {
-			payload: {
-				type: "setTextConversion",
-				mode: textConversionMode,
-			},
-		}).catch(console.error);
-	}, [textConversionMode]);
+	const fftPlayer = useRef<FFTPlayer | undefined>(undefined);
+	const fftDataRange = useAtomValue(fftDataRangeAtom);
 
 	useEffect(() => {
-		console.log("[SystemListenerMusicContext] 组件已挂载。");
-		const fftPlayer = new FFTPlayer();
-		const fftResult = new Float32Array(64);
+		const fft = new FFTPlayer();
+		fft.setFreqRange(fftDataRange[0], fftDataRange[1]);
+		fftPlayer.current = fft;
+		const result = new Float32Array(64);
 		let animationFrameId: number;
 
 		const onFFTFrame = () => {
-			fftPlayer.read(fftResult);
-			store.set(fftDataAtom, [...fftResult]);
+			fftPlayer.current?.read(result);
+			store.set(fftDataAtom, [...result]);
 			animationFrameId = requestAnimationFrame(onFFTFrame);
 		};
 		animationFrameId = requestAnimationFrame(onFFTFrame);
 
-		const initialUpdateTimeout = setTimeout(() => {
-			console.log("[SystemListenerMusicContext] 正在请求初始状态更新...");
-			invoke("request_smtc_update").catch((err) => {
-				console.error("请求初始 SMTC 状态失败：", err);
-			});
-		}, 100);
-
-		const toEmit = <T,>(onEmit: T) => ({ onEmit });
-
-		const startVisualization = async () => {
-			await invoke("control_external_media", {
-				payload: { type: "stopAudioVisualization" },
-			});
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			await invoke("control_external_media", {
-				payload: { type: "startAudioVisualization" },
-			});
+		return () => {
+			cancelAnimationFrame(animationFrameId);
+			fftPlayer.current?.free();
+			fftPlayer.current = undefined;
 		};
+	}, [fftDataRange, store]);
 
-		startVisualization().catch(console.error);
+	useWsLyrics(isWsLyricsEnabled);
+
+	useEffect(() => {
+		const toEmit = <T,>(onEmit: T) => ({ onEmit });
 
 		store.set(
 			onPlayOrResumeAtom,
@@ -139,7 +128,17 @@ export const SystemListenerMusicContext: FC = () => {
 		store.set(
 			onRequestPrevSongAtom,
 			toEmit(() => {
-				invoke("control_external_media", { payload: { type: "skipPrevious" } });
+				invoke("control_external_media", {
+					payload: { type: "skipPrevious" },
+				});
+			}),
+		);
+		store.set(
+			onChangeVolumeAtom,
+			toEmit((volume: number) => {
+				invoke("control_external_media", {
+					payload: { type: "setVolume", volume },
+				});
 			}),
 		);
 		store.set(
@@ -153,6 +152,7 @@ export const SystemListenerMusicContext: FC = () => {
 				});
 			}),
 		);
+
 		store.set(
 			onLyricLineClickAtom,
 			toEmit((evt) => {
@@ -165,231 +165,142 @@ export const SystemListenerMusicContext: FC = () => {
 			}),
 		);
 		store.set(
-			onChangeVolumeAtom,
-			toEmit((volume: number) => {
-				invoke("control_external_media", {
-					payload: {
-						type: "setVolume",
-						volume: volume,
-					},
-				}).catch((err) => console.error("设置音量失败:", err));
-			}),
-		);
-
-		store.set(
 			onClickControlThumbAtom,
 			toEmit(() => {
-				store.set(isLyricPageOpenedAtom, false);
+				setIsLyricPageOpened(false);
 			}),
 		);
-
-		store.set(
-			onRequestOpenMenuAtom,
-			toEmit(() => {}),
-		);
-		store.set(
-			onClickLeftFunctionButtonAtom,
-			toEmit(() => {
-				store.set(isLyricPageOpenedAtom, false);
-			}),
-		);
-		store.set(
-			onClickRightFunctionButtonAtom,
-			toEmit(() => {
-				store.set(isLyricPageOpenedAtom, false);
-			}),
-		);
-
-		const unlistenPromise = listen<SmtcEvent>("smtc_update", (event) => {
-			const { type, data } = event.payload;
-
-			switch (type) {
-				case "trackMetadata": {
-					const newTrackId = `${data.title}-${data.artist}-${data.albumTitle}`;
-					const oldTrackId = store.get(smtcTrackIdAtom);
-
-					console.log(
-						`[SystemListener] TrackMetadata 更新。新 ID: ${newTrackId}, 旧 ID: ${oldTrackId}`,
-					);
-
-					if (newTrackId !== oldTrackId) {
-						setSmtcTrackId(newTrackId);
-						setMusicId(newTrackId);
-						store.set(musicPlayingPositionAtom, 0);
-						store.set(musicLyricLinesAtom, []);
-					}
-
-					store.set(musicNameAtom, data.title ?? "未知曲目");
-					store.set(musicAlbumNameAtom, data.albumTitle ?? "");
-					store.set(
-						musicArtistsAtom,
-						(data.artist ?? "未知艺术家").split(/[/,]/).map((v) => ({
-							id: v.trim(),
-							name: v.trim(),
-						})),
-					);
-					store.set(musicDurationAtom, data.durationMs ?? 0);
-					break;
-				}
-
-				case "coverData":
-					if (data && data.length > 0) {
-						const imgBlob = new Blob([new Uint8Array(data)], {
-							type: "image/png",
-						});
-						const newUrl = URL.createObjectURL(imgBlob);
-						try {
-							const oldUrl = store.get(musicCoverAtom);
-							if (oldUrl.startsWith("blob:")) URL.revokeObjectURL(oldUrl);
-						} catch (e) {}
-						store.set(musicCoverAtom, newUrl);
-						store.set(musicCoverIsVideoAtom, false);
-					} else {
-						store.set(
-							musicCoverAtom,
-							"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
-						);
-					}
-					break;
-
-				case "playbackStatus": {
-					store.set(musicPlayingAtom, data.isPlaying);
-					store.set(musicPlayingPositionAtom, data.positionMs);
-					setSmtcShuffle(data.isShuffleActive);
-					setSmtcRepeat(data.repeatMode);
-					break;
-				}
-
-				case "volumeChanged": {
-					const newVolume = data.isMuted ? 0 : data.volume;
-					store.set(musicVolumeAtom, newVolume);
-					break;
-				}
-
-				case "sessionsChanged": {
-					console.log(`[SystemListener] 收到会话列表更新:`, data);
-					setSmtcSessions(data);
-					break;
-				}
-
-				case "selectedSessionVanished":
-					toast.warn(t("amll.systemListener.sessionVanished"));
-					store.set(musicPlayingAtom, false);
-					setSmtcSessions([]);
-					break;
-
-				case "error":
-					console.error(`[SystemListener] 错误：${data}`);
-					toast.error(t("amll.systemListener.error", { error: data }));
-					break;
-
-				case "audioData": {
-					if (fftPlayer) {
-						fftPlayer.pushDataI16(
-							48000,
-							2,
-							new Int16Array(new Uint8Array(data).buffer),
-						);
-					}
-					break;
-				}
-
-				default:
-					const unhandled: never = type;
-					console.warn(`[SystemListener] 收到未处理的事件类型：'${unhandled}'`);
-			}
-		});
 
 		return () => {
-			clearTimeout(initialUpdateTimeout);
-			unlistenPromise.then((unlisten) => unlisten());
+			const doNothing = toEmit(() => {});
+			store.set(onPlayOrResumeAtom, doNothing);
+			store.set(onRequestNextSongAtom, doNothing);
+			store.set(onRequestPrevSongAtom, doNothing);
+			store.set(onSeekPositionAtom, doNothing);
+			store.set(onLyricLineClickAtom, doNothing);
+			store.set(onChangeVolumeAtom, doNothing);
+			store.set(onClickControlThumbAtom, doNothing);
+			store.set(onRequestOpenMenuAtom, doNothing);
+		};
+	}, [store, setIsLyricPageOpened]);
 
-			cancelAnimationFrame(animationFrameId);
+	useEffect(() => {
+		if (musicContextMode !== MusicContextMode.SystemListener) {
+			return;
+		}
 
-			invoke("control_external_media", {
-				payload: { type: "stopAudioVisualization" },
-			}).catch(console.error);
+		let unlistenFunction: (() => void) | null = null;
 
-			if (fftPlayer) {
-				fftPlayer.free();
+		const setupAsync = async () => {
+			try {
+				const unlisten = await listen<SmtcEvent>("smtc_update", (event) => {
+					const { type, data } = event.payload;
+					switch (type) {
+						case "trackChanged": {
+							const newTrackInfo = data;
+
+							store.set(musicNameAtom, newTrackInfo.title ?? "未知曲目");
+							store.set(musicArtistsAtom, [
+								{ name: newTrackInfo.artist ?? "未知艺术家", id: "unknown" },
+							]);
+							store.set(musicAlbumNameAtom, newTrackInfo.albumTitle ?? "");
+							store.set(musicDurationAtom, newTrackInfo.durationMs ?? 0);
+							store.set(musicPlayingPositionAtom, newTrackInfo.positionMs ?? 0);
+							store.set(musicPlayingAtom, newTrackInfo.isPlaying ?? false);
+							store.set(
+								smtcShuffleStateAtom,
+								newTrackInfo.isShuffleActive ?? false,
+							);
+							store.set(
+								smtcRepeatModeAtom,
+								newTrackInfo.repeatMode ?? RepeatMode.Off,
+							);
+							store.set(smtcCanPlayAtom, newTrackInfo.canPlay ?? false);
+							store.set(smtcCanPauseAtom, newTrackInfo.canPause ?? false);
+							store.set(smtcCanSkipNextAtom, newTrackInfo.canSkipNext ?? false);
+							store.set(
+								smtcCanSkipPreviousAtom,
+								newTrackInfo.canSkipPrevious ?? false,
+							);
+
+							if (newTrackInfo.coverDataHash != null) {
+								if ("coverData" in newTrackInfo) {
+									if (newTrackInfo.coverData) {
+										store.set(
+											musicCoverAtom,
+											`data:image/png;base64,${newTrackInfo.coverData}`,
+										);
+									} else {
+										store.set(musicCoverAtom, "");
+									}
+								}
+							}
+							break;
+						}
+						case "volumeChanged": {
+							store.set(musicVolumeAtom, data.isMuted ? 0 : data.volume);
+							break;
+						}
+						case "sessionsChanged": {
+							setSmtcSessions(data);
+							break;
+						}
+						case "selectedSessionVanished":
+							toast.warn(t("amll.systemListener.sessionVanished"));
+							store.set(musicPlayingAtom, false);
+							setSmtcSessions([]);
+							break;
+						case "error":
+							toast.error(t("amll.systemListener.error", { error: data }));
+							break;
+						case "audioData": {
+							if (fftPlayer.current) {
+								fftPlayer.current.pushDataF32(
+									48000,
+									2,
+									new Float32Array(new Uint8Array(data).buffer),
+								);
+							}
+							break;
+						}
+					}
+				});
+
+				unlistenFunction = unlisten;
+
+				await invoke("request_smtc_update");
+
+				const savedSessionId = localStorage.getItem("saved_smtc_session_id");
+				if (savedSessionId) {
+					console.log(`恢复之前选择的会话: ${savedSessionId}`);
+					await invoke("control_external_media", {
+						payload: { type: "selectSession", session_id: savedSessionId },
+					}).catch((err) => {
+						console.warn(`恢复之前选择的会话 ${savedSessionId} 失败:`, err);
+					});
+				}
+
+				await invoke("control_external_media", {
+					payload: { type: "startAudioVisualization" },
+				});
+			} catch (error) {
+				console.error("设置监听器或请求初始状态时失败:", error);
+				toast.error("无法连接到后台服务。");
+			}
+		};
+
+		setupAsync();
+
+		return () => {
+			if (unlistenFunction) {
+				unlistenFunction();
 			}
 
-			store.set(fftDataAtom, []);
-			store.set(
-				onPlayOrResumeAtom,
-				toEmit(() => {}),
-			);
-			store.set(
-				onRequestNextSongAtom,
-				toEmit(() => {}),
-			);
-			store.set(
-				onRequestPrevSongAtom,
-				toEmit(() => {}),
-			);
-			store.set(
-				onSeekPositionAtom,
-				toEmit(() => {}),
-			);
-			store.set(
-				onLyricLineClickAtom,
-				toEmit(() => {}),
-			);
-			store.set(
-				onChangeVolumeAtom,
-				toEmit(() => {}),
-			);
-			store.set(
-				onClickControlThumbAtom,
-				toEmit(() => {}),
-			);
-			store.set(
-				onRequestOpenMenuAtom,
-				toEmit(() => {}),
-			);
-			store.set(
-				onClickLeftFunctionButtonAtom,
-				toEmit(() => {}),
-			);
-			store.set(
-				onClickRightFunctionButtonAtom,
-				toEmit(() => {}),
-			);
-
-			store.set(musicNameAtom, "");
-			store.set(musicAlbumNameAtom, "");
-			store.set(musicArtistsAtom, []);
-			store.set(musicPlayingAtom, false);
-			store.set(musicPlayingPositionAtom, 0);
-			store.set(musicDurationAtom, 0);
-			store.set(
-				musicCoverAtom,
-				"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
-			);
-			store.set(musicLyricLinesAtom, []);
-			setSmtcTrackId("");
-			setMusicId("");
-			setSmtcShuffle(false);
-			setSmtcRepeat(RepeatMode.Off);
 			invoke("control_external_media", {
 				payload: { type: "stopAudioVisualization" },
-			}).catch(console.error);
+			});
 		};
-	}, [
-		store,
-		t,
-		setMusicId,
-		setSmtcTrackId,
-		setSmtcSessions,
-		setSmtcShuffle,
-		setSmtcRepeat,
-		textConversionMode,
-		setIsLyricPageOpened,
-	]);
+	}, [musicContextMode, store, t, setSmtcSessions]);
 
-	return (
-		<>
-			<FFTToLowPassContext />
-		</>
-	);
+	return <FFTToLowPassContext />;
 };

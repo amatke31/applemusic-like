@@ -2,12 +2,11 @@ import { appDataDir, join } from "@tauri-apps/api/path";
 import { mkdir, readDir, readTextFile } from "@tauri-apps/plugin-fs";
 import { atom } from "jotai";
 import i18n from "../i18n.ts";
-
 import {
-	ExtensionLoadResult,
-	type ExtensionMetaState,
 	reloadExtensionMetaAtom,
-} from "@applemusic-like-lyrics/states";
+	type ExtensionMetaState,
+	ExtensionLoadResult,
+} from "./extensionsAtoms.ts";
 
 export const extensionDirAtom = atom(async () => {
 	const appDir = await appDataDir();

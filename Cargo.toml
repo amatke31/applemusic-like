@@ -1,15 +1,12 @@
 [workspace]
-resolver = "2"
+resolver = "3"
 members = [
     "./packages/lyric",
     "./packages/fft",
     "./packages/ws-protocol",
     "./packages/player-core",
 ]
-exclude = [
-    "./packages/player/src-tauri",
-    "./packages/skia-player",
-]
+exclude = ["./packages/player/src-tauri", "./packages/skia-player"]
 
 [profile.dev]
 opt-level = 1
@@ -23,4 +20,3 @@ opt-level = 3
 codegen-units = 1
 lto = true
 panic = "abort"
-
