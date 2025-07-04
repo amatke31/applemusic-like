@@ -26,10 +26,98 @@ function getMetadataValue(ttml: TTMLLyric, key: string) {
 	return result;
 }
 
-function isTTMLEntryMatch(
-	entry: TTMLDBLyricEntry,
-	patterns: (string | RegExp)[],
-) {
+function fuzzyMatch(text: string, pattern: string): boolean {
+	const normalize = (str: string) =>
+		str
+			.toLowerCase()
+			.replace(/[\/,\-–—()（）]/g, " ")
+			.replace(/\s+/g, " ")
+			.trim();
+
+	const normalizedText = normalize(text);
+	const normalizedPattern = normalize(pattern);
+
+	if (
+		normalizedText.includes(normalizedPattern) ||
+		normalizedPattern.includes(normalizedText)
+	) {
+		return true;
+	}
+
+	const textWords = new Set(normalizedText.split(" "));
+	const patternWords = normalizedPattern.split(" ");
+
+	const matchedWords = patternWords.filter(
+		(word) => word.length > 1 && textWords.has(word),
+	);
+	const matchRatio = matchedWords.length / patternWords.length;
+
+	if (matchRatio > 0.6) {
+		return true;
+	}
+
+	function longestCommonSubsequence(a: string, b: string) {
+		const matrix = Array(a.length + 1)
+			.fill(0)
+			.map(() => Array(b.length + 1).fill(0));
+
+		for (let i = 1; i <= a.length; i++) {
+			for (let j = 1; j <= b.length; j++) {
+				matrix[i][j] =
+					a[i - 1] === b[j - 1]
+						? matrix[i - 1][j - 1] + 1
+						: Math.max(matrix[i - 1][j], matrix[i][j - 1]);
+			}
+		}
+		return matrix[a.length][b.length];
+	}
+
+	const lcsLength = longestCommonSubsequence(
+		normalizedText.replace(/\s/g, ""),
+		normalizedPattern.replace(/\s/g, ""),
+	);
+
+	if (lcsLength / normalizedPattern.replace(/\s/g, "").length > 0.7) {
+		return true;
+	}
+
+	function getEditDistance(a: string, b: string) {
+		if (a.length === 0) return b.length;
+		if (b.length === 0) return a.length;
+
+		const matrix = [];
+		for (let i = 0; i <= b.length; i++) {
+			matrix[i] = [i];
+		}
+		for (let j = 0; j <= a.length; j++) {
+			matrix[0][j] = j;
+		}
+
+		for (let i = 1; i <= b.length; i++) {
+			for (let j = 1; j <= a.length; j++) {
+				matrix[i][j] =
+					b.charAt(i - 1) === a.charAt(j - 1)
+						? matrix[i - 1][j - 1]
+						: Math.min(
+								matrix[i - 1][j - 1] + 1,
+								matrix[i][j - 1] + 1,
+								matrix[i - 1][j] + 1,
+							);
+			}
+		}
+
+		return matrix[b.length][a.length];
+	}
+
+	const allowedDistance = Math.floor(normalizedPattern.length * 0.3);
+	if (getEditDistance(normalizedText, normalizedPattern) <= allowedDistance) {
+		return true;
+	}
+
+	return false;
+}
+
+function isTTMLEntryMatch(entry: TTMLDBLyricEntry, searchTerm: string) {
 	const result = {
 		name: entry.name,
 		raw: entry.raw,
@@ -38,30 +126,30 @@ function isTTMLEntryMatch(
 		matchedLinePreview: [] as string[],
 	};
 
-	for (const pattern of patterns) {
-		for (let i = 0; i < entry.content.lines.length; i++) {
-			const text = entry.content.lines[i].words.map((w) => w.word).join("");
-			const matched = text.toLowerCase().match(pattern);
-			if (matched) {
-				result.matchedLinePreview = entry.content.lines
-					.slice(i, i + 3)
-					.map((l) => l.words.map((w) => w.word).join(""));
-				break;
-			}
-		}
-		if (result.matchedLinePreview.length > 0) {
+	const matchTargets = [
+		result.name,
+		result.songName,
+		result.songArtists,
+		`${result.songName} ${result.songArtists}`,
+		`${result.songArtists} ${result.songName}`,
+		`${result.name} ${result.songArtists}`,
+		`${result.songArtists} ${result.name}`,
+		`${result.songName} (${result.songArtists})`,
+		`${result.songArtists} (${result.songName})`,
+	];
+
+	for (const target of matchTargets) {
+		if (fuzzyMatch(target, searchTerm)) {
 			return result;
 		}
-		if (result.songName.match(pattern)) {
-			return result;
-		}
-		if (`${result.songName} - ${result.songArtists}`.match(pattern)) {
-			return result;
-		}
-		if (`${result.songArtists} - ${result.songName}`.match(pattern)) {
-			return result;
-		}
-		if (result.songArtists.match(pattern)) {
+	}
+
+	for (let i = 0; i < entry.content.lines.length; i++) {
+		const text = entry.content.lines[i].words.map((w) => w.word).join(" ");
+		if (fuzzyMatch(text, searchTerm)) {
+			result.matchedLinePreview = entry.content.lines
+				.slice(i, i + 3)
+				.map((l) => l.words.map((w) => w.word).join(" "));
 			return result;
 		}
 	}
@@ -80,18 +168,14 @@ export const TTMLImportDialog: FC<{
 	const result = useLiveQuery(() => {
 		const words = searchWord.trim();
 		if (words.length > 0) {
-			let pattern: string | RegExp = words;
-			try {
-				pattern = new RegExp(words, "i");
-			} catch {}
 			return db.ttmlDB
 				.toCollection()
 				.reverse()
-				.filter((x) => !!isTTMLEntryMatch(x, [pattern]))
+				.filter((x) => !!isTTMLEntryMatch(x, words))
 				.limit(10)
 				.sortBy("name")
 				.then((x) =>
-					x.map((x) => isTTMLEntryMatch(x, [pattern])).filter((v) => !!v),
+					x.map((x) => isTTMLEntryMatch(x, words)).filter((v) => !!v),
 				);
 		}
 		return [];
