@@ -6,7 +6,7 @@ import {
 import { AppContainer } from "./components/AppContainer/index.tsx";
 import { NowPlayingBar } from "./components/NowPlayingBar/index.tsx";
 import ErrorPage from "./pages/error/index.tsx";
-import SettingsPage from "./pages/settings/index.tsx"
+import SettingsPage from "./pages/settings/index.tsx";
 
 export const router = createBrowserRouter(
 	createRoutesFromElements(
@@ -28,6 +28,11 @@ export const router = createBrowserRouter(
 				<Route
 					path="/all-playlists"
 					lazy={() => import("./pages/all-playlists/index.tsx")}
+					errorElement={<ErrorPage />}
+				/>
+				<Route
+					path="/artists"
+					lazy={() => import("./pages/artists/index.tsx")}
 					errorElement={<ErrorPage />}
 				/>
 				<Route

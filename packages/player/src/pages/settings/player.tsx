@@ -165,114 +165,116 @@ const LyricFontSetting: FC = () => {
 	}, [t]);
 
 	return (
-		<Card mt="2">
-			<Flex direction="row" align="center" gap="4">
-				<Flex direction="column" flexGrow="1">
-					<Text as="div">
-						<Trans i18nKey="page.settings.lyricFont.subtitle">
-							歌词字体设置
-						</Trans>
-					</Text>
-					<Text as="div" color="gray" size="2" className={styles.desc}>
-						<Trans i18nKey="page.settings.lyricFont.tip">
-							此设置仅设置歌词字体，不包含其他组件的字体
-						</Trans>
-					</Text>
+		<CardGroup>
+			<Card mt="2">
+				<Flex direction="row" align="center" gap="4">
+					<Flex direction="column" flexGrow="1">
+						<Text as="div">
+							<Trans i18nKey="page.settings.lyricFont.subtitle">
+								歌词字体设置
+							</Trans>
+						</Text>
+						<Text as="div" color="gray" size="2" className={styles.desc}>
+							<Trans i18nKey="page.settings.lyricFont.tip">
+								此设置仅设置歌词字体，不包含其他组件的字体
+							</Trans>
+						</Text>
+					</Flex>
 				</Flex>
-			</Flex>
-			<Flex direction="row" align="center" gap="4" my="2" wrap="wrap">
-				<Flex direction="column" flexGrow="1">
-					<Text as="div">
-						<Trans i18nKey="page.settings.lyricFont.fontFamily.label">
-							字体家族
-						</Trans>
-					</Text>
-					<Text as="div" color="gray" size="2" className={styles.desc}>
-						<Trans i18nKey="page.settings.lyricFont.fontFamily.description">
-							以逗号分隔的字体名称组合，等同于 CSS 的 font-family
-							属性，留空为默认
-						</Trans>
-					</Text>
+				<Flex direction="row" align="center" gap="4" my="2" wrap="wrap">
+					<Flex direction="column" flexGrow="1">
+						<Text as="div">
+							<Trans i18nKey="page.settings.lyricFont.fontFamily.label">
+								字体家族
+							</Trans>
+						</Text>
+						<Text as="div" color="gray" size="2" className={styles.desc}>
+							<Trans i18nKey="page.settings.lyricFont.fontFamily.description">
+								以逗号分隔的字体名称组合，等同于 CSS 的 font-family
+								属性，留空为默认
+							</Trans>
+						</Text>
+					</Flex>
+					<TextField.Root
+						value={fontFamily}
+						onChange={(e) => setFontFamily(e.currentTarget.value)}
+					/>
 				</Flex>
-				<TextField.Root
-					value={fontFamily}
-					onChange={(e) => setFontFamily(e.currentTarget.value)}
-				/>
-			</Flex>
-			<Flex direction="row" align="center" gap="4" my="2" wrap="wrap">
-				<Flex direction="column" flexGrow="1">
-					<Text as="div">
-						<Trans i18nKey="page.settings.lyricFont.fontWeight.label">
-							字体字重
-						</Trans>
-					</Text>
-					<Text as="div" color="gray" size="2" className={styles.desc}>
-						<Trans i18nKey="page.settings.lyricFont.fontWeight.description">
-							等同于 CSS 的 font-weight 属性，设置 0 为默认
-						</Trans>
-					</Text>
+				<Flex direction="row" align="center" gap="4" my="2" wrap="wrap">
+					<Flex direction="column" flexGrow="1">
+						<Text as="div">
+							<Trans i18nKey="page.settings.lyricFont.fontWeight.label">
+								字体字重
+							</Trans>
+						</Text>
+						<Text as="div" color="gray" size="2" className={styles.desc}>
+							<Trans i18nKey="page.settings.lyricFont.fontWeight.description">
+								等同于 CSS 的 font-weight 属性，设置 0 为默认
+							</Trans>
+						</Text>
+					</Flex>
+					<TextField.Root
+						value={fontWeight}
+						type="number"
+						min={0}
+						max={1000}
+						onChange={(e) => setFontWeight(e.currentTarget.valueAsNumber)}
+					/>
+					<Slider
+						value={[Number(fontWeight)]}
+						min={0}
+						max={1000}
+						style={{ maxWidth: "10em" }}
+						onValueChange={([value]) => setFontWeight(value)}
+					/>
 				</Flex>
-				<TextField.Root
-					value={fontWeight}
-					type="number"
-					min={0}
-					max={1000}
-					onChange={(e) => setFontWeight(e.currentTarget.valueAsNumber)}
-				/>
-				<Slider
-					value={[Number(fontWeight)]}
-					min={0}
-					max={1000}
-					style={{ maxWidth: "10em" }}
-					onValueChange={([value]) => setFontWeight(value)}
-				/>
-			</Flex>
-			<Flex direction="row" align="center" gap="4" my="2" wrap="wrap">
-				<Flex direction="column" flexGrow="1">
-					<Text as="div">
-						<Trans i18nKey="page.settings.lyricFont.letterSpacing.label">
-							字符间距
-						</Trans>
-					</Text>
-					<Text as="div" color="gray" size="2" className={styles.desc}>
-						<Trans i18nKey="page.settings.lyricFont.letterSpacing.description">
-							等同于 CSS 的 letter-spacing 属性，留空为默认
-						</Trans>
-					</Text>
+				<Flex direction="row" align="center" gap="4" my="2" wrap="wrap">
+					<Flex direction="column" flexGrow="1">
+						<Text as="div">
+							<Trans i18nKey="page.settings.lyricFont.letterSpacing.label">
+								字符间距
+							</Trans>
+						</Text>
+						<Text as="div" color="gray" size="2" className={styles.desc}>
+							<Trans i18nKey="page.settings.lyricFont.letterSpacing.description">
+								等同于 CSS 的 letter-spacing 属性，留空为默认
+							</Trans>
+						</Text>
+					</Flex>
+					<TextField.Root
+						value={letterSpacing}
+						onChange={(e) => setLetterSpacing(e.currentTarget.value)}
+					/>
 				</Flex>
-				<TextField.Root
-					value={letterSpacing}
-					onChange={(e) => setLetterSpacing(e.currentTarget.value)}
-				/>
-			</Flex>
-			<Flex direction="row" align="center" gap="4" my="2" wrap="wrap">
-				<Flex direction="column" flexGrow="1">
-					<Text as="div">
-						<Trans i18nKey="page.settings.lyricFont.fontPreview.label">
-							字体预览
-						</Trans>
-					</Text>
+				<Flex direction="row" align="center" gap="4" my="2" wrap="wrap">
+					<Flex direction="column" flexGrow="1">
+						<Text as="div">
+							<Trans i18nKey="page.settings.lyricFont.fontPreview.label">
+								字体预览
+							</Trans>
+						</Text>
+					</Flex>
+					<TextField.Root
+						value={preview}
+						onChange={(e) => setPreview(e.currentTarget.value)}
+					/>
 				</Flex>
-				<TextField.Root
-					value={preview}
-					onChange={(e) => setPreview(e.currentTarget.value)}
-				/>
-			</Flex>
-			<Box
-				style={{
-					fontFamily: fontFamily || undefined,
-					fontWeight: fontWeight || undefined,
-					letterSpacing: letterSpacing || undefined,
-					fontSize: "max(max(4.7vh, 3.2vw), 12px)",
-					textAlign: "center",
-				}}
-			>
-				{preview}
-				<Box style={{ fontSize: "max(0.5em, 10px)", opacity: "0.3" }}>
+				<Box
+					style={{
+						fontFamily: fontFamily || undefined,
+						fontWeight: fontWeight || undefined,
+						letterSpacing: letterSpacing || undefined,
+						fontSize: "max(max(4.7vh, 3.2vw), 12px)",
+						textAlign: "center",
+					}}
+				>
 					{preview}
+					<Box style={{ fontSize: "max(0.5em, 10px)", opacity: "0.3" }}>
+						{preview}
+					</Box>
 				</Box>
-			</Box>
-		</Card>
+			</Card>
+		</CardGroup>
 	);
 };
 
@@ -382,38 +384,46 @@ const GeneralSettings = () => {
 			<SubTitle>
 				<Trans i18nKey="page.settings.general.subtitle">常规</Trans>
 			</SubTitle>
-			<SettingEntry
-				label={t("page.settings.general.displayLanguage.label", "显示语言")}
-			>
-				<Select.Root value={i18n.language} onValueChange={i18n.changeLanguage}>
-					<Select.Trigger />
-					<Select.Content>
-						{supportedLanguagesMenu.map((item) => (
-							<Select.Item key={item.value} value={item.value}>
-								{item.label}
-							</Select.Item>
-						))}
-					</Select.Content>
-				</Select.Root>
-			</SettingEntry>
-			<SettingEntry
-				label={t("page.settings.general.theme.label", "界面主题")}
-				description={t(
-					"page.settings.general.theme.description",
-					"不太稳定，建议设置后重启以正确应用主题样式",
-				)}
-			>
-				<Select.Root value={mode} onValueChange={(v) => setMode(v as DarkMode)}>
-					<Select.Trigger />
-					<Select.Content>
-						{themeMenu.map((item) => (
-							<Select.Item key={item.value} value={item.value}>
-								{item.label}
-							</Select.Item>
-						))}
-					</Select.Content>
-				</Select.Root>
-			</SettingEntry>
+			<CardGroup>
+				<SettingEntry
+					label={t("page.settings.general.displayLanguage.label", "显示语言")}
+				>
+					<Select.Root
+						value={i18n.language}
+						onValueChange={i18n.changeLanguage}
+					>
+						<Select.Trigger />
+						<Select.Content>
+							{supportedLanguagesMenu.map((item) => (
+								<Select.Item key={item.value} value={item.value}>
+									{item.label}
+								</Select.Item>
+							))}
+						</Select.Content>
+					</Select.Root>
+				</SettingEntry>
+				<SettingEntry
+					label={t("page.settings.general.theme.label", "界面主题")}
+					description={t(
+						"page.settings.general.theme.description",
+						"不太稳定，建议设置后重启以正确应用主题样式",
+					)}
+				>
+					<Select.Root
+						value={mode}
+						onValueChange={(v) => setMode(v as DarkMode)}
+					>
+						<Select.Trigger />
+						<Select.Content>
+							{themeMenu.map((item) => (
+								<Select.Item key={item.value} value={item.value}>
+									{item.label}
+								</Select.Item>
+							))}
+						</Select.Content>
+					</Select.Root>
+				</SettingEntry>
+			</CardGroup>
 		</>
 	);
 };
@@ -425,31 +435,33 @@ const LyricContentSettings = () => {
 			<SubTitle>
 				<Trans i18nKey="page.settings.lyricContent.subtitle">歌词内容</Trans>
 			</SubTitle>
-			<SwitchSettings
-				label={t(
-					"page.settings.lyricContent.enableLyricTranslationLine",
-					"显示翻译歌词",
-				)}
-				configAtom={enableLyricTranslationLineAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.lyricContent.enableLyricRomanLine.label",
-					"显示音译歌词",
-				)}
-				configAtom={enableLyricRomanLineAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.lyricContent.enableLyricSwapTransRomanLine.label",
-					"启用音译歌词与翻译歌词互换",
-				)}
-				description={t(
-					"page.settings.lyricContent.enableLyricSwapTransRomanLine.description",
-					"仅上面两者启用后有效",
-				)}
-				configAtom={enableLyricSwapTransRomanLineAtom}
-			/>
+			<CardGroup>
+				<SwitchSettings
+					label={t(
+						"page.settings.lyricContent.enableLyricTranslationLine",
+						"显示翻译歌词",
+					)}
+					configAtom={enableLyricTranslationLineAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.lyricContent.enableLyricRomanLine.label",
+						"显示音译歌词",
+					)}
+					configAtom={enableLyricRomanLineAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.lyricContent.enableLyricSwapTransRomanLine.label",
+						"启用音译歌词与翻译歌词互换",
+					)}
+					description={t(
+						"page.settings.lyricContent.enableLyricSwapTransRomanLine.description",
+						"仅上面两者启用后有效",
+					)}
+					configAtom={enableLyricSwapTransRomanLineAtom}
+				/>
+			</CardGroup>
 		</>
 	);
 };
@@ -573,115 +585,123 @@ const LyricAppearanceSettings = () => {
 			<SubTitle>
 				<Trans i18nKey="page.settings.lyricAppearance.subtitle">歌词样式</Trans>
 			</SubTitle>
-			<SettingEntry
-				label={t(
-					"page.settings.lyricAppearance.lyricPlayerImplementation.label",
-					"歌词播放器实现",
-				)}
-				description={t(
-					"page.settings.lyricAppearance.lyricPlayerImplementation.description",
-					"目前有两个歌词播放实现\n- DOM：使用 DOM 元素实现，目前效果最全，但性能开销大\n- Canvas：使用 Canvas 实现，仍在开发中，性能优异，但是部分细节效果不足",
-				)}
-			>
-				<Select.Root
-					value={getLyricPlayerString(lyricPlayerImplValue)}
-					onValueChange={handleLyricPlayerChange}
+			<CardGroup>
+				<SettingEntry
+					label={t(
+						"page.settings.lyricAppearance.lyricPlayerImplementation.label",
+						"歌词播放器实现",
+					)}
+					description={t(
+						"page.settings.lyricAppearance.lyricPlayerImplementation.description",
+						"目前有两个歌词播放实现\n- DOM：使用 DOM 元素实现，目前效果最全，但性能开销大\n- Canvas：使用 Canvas 实现，仍在开发中，性能优异，但是部分细节效果不足",
+					)}
 				>
-					<Select.Trigger />
-					<Select.Content>
-						{lyricPlayerImplementationMenu.map((item) => (
-							<Select.Item key={item.value} value={item.value}>
-								{item.label}
-							</Select.Item>
-						))}
-					</Select.Content>
-				</Select.Root>
-			</SettingEntry>
+					<Select.Root
+						value={getLyricPlayerString(lyricPlayerImplValue)}
+						onValueChange={handleLyricPlayerChange}
+					>
+						<Select.Trigger />
+						<Select.Content>
+							{lyricPlayerImplementationMenu.map((item) => (
+								<Select.Item key={item.value} value={item.value}>
+									{item.label}
+								</Select.Item>
+							))}
+						</Select.Content>
+					</Select.Root>
+				</SettingEntry>
+			</CardGroup>
 			<LyricFontSetting />
-			<SettingEntry
-				label={t(
-					"page.settings.lyricAppearance.lyricFontSize.label",
-					"歌词字体大小",
-				)}
-				description={t(
-					"page.settings.lyricAppearance.lyricFontSize.descriptionResponsive",
-					"设置歌词的字体大小",
-				)}
-			>
-				<Select.Root
-					value={lyricSize}
-					onValueChange={(value) => setLyricSize(value as LyricSizePresetValue)}
+			<CardGroup>
+				<SettingEntry
+					label={t(
+						"page.settings.lyricAppearance.lyricFontSize.label",
+						"歌词字体大小",
+					)}
+					description={t(
+						"page.settings.lyricAppearance.lyricFontSize.descriptionResponsive",
+						"设置歌词的字体大小",
+					)}
 				>
-					<Select.Trigger />
-					<Select.Content>
-						{lyricSizeMenu.map((item) => (
-							<Select.Item key={item.value} value={item.value}>
-								{item.label}
-							</Select.Item>
-						))}
-					</Select.Content>
-				</Select.Root>
-			</SettingEntry>
-			<SwitchSettings
-				label={t(
-					"page.settings.lyricAppearance.enableLyricLineBlurEffect.label",
-					"启用歌词模糊效果",
-				)}
-				description={t(
-					"page.settings.lyricAppearance.enableLyricLineBlurEffect.description",
-					"对性能影响较高，如果遇到性能问题，可以尝试关闭此项。默认开启。",
-				)}
-				configAtom={enableLyricLineBlurEffectAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.lyricAppearance.enableLyricLineScaleEffect.label",
-					"启用歌词缩放效果",
-				)}
-				description={t(
-					"page.settings.lyricAppearance.enableLyricLineScaleEffect.description",
-					"对性能无影响，非当前播放歌词行会略微缩小。默认开启",
-				)}
-				configAtom={enableLyricLineScaleEffectAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.lyricAppearance.enableLyricLineSpringAnimation.label",
-					"启用歌词行弹簧动画效果",
-				)}
-				description={t(
-					"page.settings.lyricAppearance.enableLyricLineSpringAnimation.description",
-					"对性能影响较高，如果遇到性能问题，可以尝试关闭此项。默认开启。",
-				)}
-				configAtom={enableLyricLineSpringAnimationAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.lyricAppearance.advanceLyricDynamicLyricTime.label",
-					"提前歌词行时序",
-				)}
-				description={t(
-					"page.settings.lyricAppearance.advanceLyricDynamicLyricTime.description",
-					"即将原歌词行的初始时间时序提前，以便在歌词滚动结束后刚好开始播放（逐词）歌词效果。这个行为更加接近 Apple Music 的效果，但是大部分情况下会导致歌词行末尾的歌词尚未播放完成便被切换到下一行。",
-				)}
-				configAtom={advanceLyricDynamicLyricTimeAtom}
-			/>
-			<NumberSettings
-				placeholder="0.5"
-				type="number"
-				min="0"
-				max="10.0"
-				step="0.01"
-				label={t(
-					"page.settings.lyricAppearance.lyricWordFadeWidth.label",
-					"逐词渐变宽度",
-				)}
-				description={t(
-					"page.settings.lyricAppearance.lyricWordFadeWidth.description",
-					"调节逐词歌词时单词的渐变过渡宽度，单位为一个全角字的宽度，默认为 0.5。\n如果要模拟 Apple Music for Android 的效果，可以设置为 1。\n如果要模拟 Apple Music for iPad 的效果，可以设置为 0.5。\n如需关闭逐词歌词时单词的渐变过渡效果，可以设置为 0。",
-				)}
-				configAtom={lyricWordFadeWidthAtom}
-			/>
+					<Select.Root
+						value={lyricSize}
+						onValueChange={(value) =>
+							setLyricSize(value as LyricSizePresetValue)
+						}
+					>
+						<Select.Trigger />
+						<Select.Content>
+							{lyricSizeMenu.map((item) => (
+								<Select.Item key={item.value} value={item.value}>
+									{item.label}
+								</Select.Item>
+							))}
+						</Select.Content>
+					</Select.Root>
+				</SettingEntry>
+			</CardGroup>
+			<CardGroup>
+				<SwitchSettings
+					label={t(
+						"page.settings.lyricAppearance.enableLyricLineBlurEffect.label",
+						"启用歌词模糊效果",
+					)}
+					description={t(
+						"page.settings.lyricAppearance.enableLyricLineBlurEffect.description",
+						"对性能影响较高，如果遇到性能问题，可以尝试关闭此项。默认开启。",
+					)}
+					configAtom={enableLyricLineBlurEffectAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.lyricAppearance.enableLyricLineScaleEffect.label",
+						"启用歌词缩放效果",
+					)}
+					description={t(
+						"page.settings.lyricAppearance.enableLyricLineScaleEffect.description",
+						"对性能无影响，非当前播放歌词行会略微缩小。默认开启",
+					)}
+					configAtom={enableLyricLineScaleEffectAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.lyricAppearance.enableLyricLineSpringAnimation.label",
+						"启用歌词行弹簧动画效果",
+					)}
+					description={t(
+						"page.settings.lyricAppearance.enableLyricLineSpringAnimation.description",
+						"对性能影响较高，如果遇到性能问题，可以尝试关闭此项。默认开启。",
+					)}
+					configAtom={enableLyricLineSpringAnimationAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.lyricAppearance.advanceLyricDynamicLyricTime.label",
+						"提前歌词行时序",
+					)}
+					description={t(
+						"page.settings.lyricAppearance.advanceLyricDynamicLyricTime.description",
+						"即将原歌词行的初始时间时序提前，以便在歌词滚动结束后刚好开始播放（逐词）歌词效果。这个行为更加接近 Apple Music 的效果，但是大部分情况下会导致歌词行末尾的歌词尚未播放完成便被切换到下一行。",
+					)}
+					configAtom={advanceLyricDynamicLyricTimeAtom}
+				/>
+				<NumberSettings
+					placeholder="0.5"
+					type="number"
+					min="0"
+					max="10.0"
+					step="0.01"
+					label={t(
+						"page.settings.lyricAppearance.lyricWordFadeWidth.label",
+						"逐词渐变宽度",
+					)}
+					description={t(
+						"page.settings.lyricAppearance.lyricWordFadeWidth.description",
+						"调节逐词歌词时单词的渐变过渡宽度，单位为一个全角字的宽度，默认为 0.5。\n如果要模拟 Apple Music for Android 的效果，可以设置为 1。\n如果要模拟 Apple Music for iPad 的效果，可以设置为 0.5。\n如需关闭逐词歌词时单词的渐变过渡效果，可以设置为 0。",
+					)}
+					configAtom={lyricWordFadeWidthAtom}
+				/>
+			</CardGroup>
 		</>
 	);
 };
@@ -756,119 +776,129 @@ const MusicInfoAppearanceSettings = () => {
 					歌曲信息样式
 				</Trans>
 			</SubTitle>
-			<SwitchSettings
-				label={t(
-					"page.settings.musicInfoAppearance.showMusicName.label",
-					"显示歌曲名称",
-				)}
-				configAtom={showMusicNameAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.musicInfoAppearance.showMusicArtists.label",
-					"显示歌曲作者",
-				)}
-				configAtom={showMusicArtistsAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.musicInfoAppearance.showMusicAlbum.label",
-					"显示歌曲专辑名称",
-				)}
-				description={t(
-					"page.settings.musicInfoAppearance.showMusicAlbum.description",
-					"如果同时启用三个，布局上可能不太好看，请酌情调节。",
-				)}
-				configAtom={showMusicAlbumAtom}
-			/>
+			<CardGroup>
+				<SwitchSettings
+					label={t(
+						"page.settings.musicInfoAppearance.showMusicName.label",
+						"显示歌曲名称",
+					)}
+					configAtom={showMusicNameAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.musicInfoAppearance.showMusicArtists.label",
+						"显示歌曲作者",
+					)}
+					configAtom={showMusicArtistsAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.musicInfoAppearance.showMusicAlbum.label",
+						"显示歌曲专辑名称",
+					)}
+					description={t(
+						"page.settings.musicInfoAppearance.showMusicAlbum.description",
+						"如果同时启用三个，布局上可能不太好看，请酌情调节。",
+					)}
+					configAtom={showMusicAlbumAtom}
+				/>
+			</CardGroup>
 			<Box height="1em" />
-			<SwitchSettings
-				label={t(
-					"page.settings.musicInfoAppearance.showVolumeControl.label",
-					"显示音量控制条",
-				)}
-				configAtom={showVolumeControlAtom}
-			/>
-			<SwitchSettings
-				label={t(
-					"page.settings.musicInfoAppearance.showBottomControl.label",
-					"显示底部按钮组",
-				)}
-				description={t(
-					"page.settings.musicInfoAppearance.showBottomControl.description",
-					"在横向布局里是右下角的几个按钮，在竖向布局里是播放按钮下方的几个按钮",
-				)}
-				configAtom={showBottomControlAtom}
-			/>
+			<CardGroup>
+				<SwitchSettings
+					label={t(
+						"page.settings.musicInfoAppearance.showVolumeControl.label",
+						"显示音量控制条",
+					)}
+					configAtom={showVolumeControlAtom}
+				/>
+				<SwitchSettings
+					label={t(
+						"page.settings.musicInfoAppearance.showBottomControl.label",
+						"显示底部按钮组",
+					)}
+					description={t(
+						"page.settings.musicInfoAppearance.showBottomControl.description",
+						"在横向布局里是右下角的几个按钮，在竖向布局里是播放按钮下方的几个按钮",
+					)}
+					configAtom={showBottomControlAtom}
+				/>
+			</CardGroup>
 			<Box height="1em" />
-			<SettingEntry
-				label={t(
-					"page.settings.musicInfoAppearance.playerControlsType.label",
-					"播放控制组件类型",
-				)}
-				description={t(
-					"page.settings.musicInfoAppearance.playerControlsType.description",
-					"即歌曲信息下方的组件",
-				)}
-			>
-				<Select.Root
-					value={playerControlsType}
-					onValueChange={(v) => setPlayerControlsType(v as PlayerControlsType)}
+			<CardGroup>
+				<SettingEntry
+					label={t(
+						"page.settings.musicInfoAppearance.playerControlsType.label",
+						"播放控制组件类型",
+					)}
+					description={t(
+						"page.settings.musicInfoAppearance.playerControlsType.description",
+						"即歌曲信息下方的组件",
+					)}
 				>
-					<Select.Trigger />
-					<Select.Content>
-						{playerControlsTypeMenu.map((item) => (
-							<Select.Item key={item.value} value={item.value}>
-								{item.label}
-							</Select.Item>
-						))}
-					</Select.Content>
-				</Select.Root>
-			</SettingEntry>
+					<Select.Root
+						value={playerControlsType}
+						onValueChange={(v) =>
+							setPlayerControlsType(v as PlayerControlsType)
+						}
+					>
+						<Select.Trigger />
+						<Select.Content>
+							{playerControlsTypeMenu.map((item) => (
+								<Select.Item key={item.value} value={item.value}>
+									{item.label}
+								</Select.Item>
+							))}
+						</Select.Content>
+					</Select.Root>
+				</SettingEntry>
+			</CardGroup>
 			<Box height="1em" />
-			<SettingEntry
-				label={t(
-					"page.settings.musicInfoAppearance.verticalCoverLayout.label",
-					"垂直布局专辑图布局模式",
-				)}
-				description={t(
-					"page.settings.musicInfoAppearance.verticalCoverLayout.description",
-					"在隐藏歌词的情况下专辑图的布局方式：\n- 自动：根据专辑图是否为视频以使用沉浸布局\n- 强制默认布局：强制使用默认的专辑图布局\n- 强制沉浸布局：强制使用沉浸式的专辑图布局",
-				)}
-			>
-				<Select.Root
-					value={verticalCoverLayout}
-					onValueChange={(v) =>
-						setVerticalCoverLayout(v as VerticalCoverLayout)
-					}
+			<CardGroup>
+				<SettingEntry
+					label={t(
+						"page.settings.musicInfoAppearance.verticalCoverLayout.label",
+						"垂直布局专辑图布局模式",
+					)}
+					description={t(
+						"page.settings.musicInfoAppearance.verticalCoverLayout.description",
+						"在隐藏歌词的情况下专辑图的布局方式：\n- 自动：根据专辑图是否为视频以使用沉浸布局\n- 强制默认布局：强制使用默认的专辑图布局\n- 强制沉浸布局：强制使用沉浸式的专辑图布局",
+					)}
 				>
-					<Select.Trigger />
-					<Select.Content>
-						{verticalCoverLayoutMenu.map((item) => (
-							<Select.Item key={item.value} value={item.value}>
-								{item.label}
-							</Select.Item>
-						))}
-					</Select.Content>
-				</Select.Root>
-			</SettingEntry>
-			<SliderSettings
-				label={t(
-					"page.settings.musicInfoAppearance.fftDataRange.label",
-					"音频可视化频域范围",
-				)}
-				description={t(
-					"page.settings.musicInfoAppearance.fftDataRange.description",
-					"单位为赫兹（hz），此项会影响音频可视化和背景跳动效果的展示效果",
-				)}
-				configAtom={fftDataRangeAtom}
-				min={1}
-				max={22050}
-			>
-				<Text wrap="nowrap">
-					{fftDataRange[0]} Hz - {fftDataRange[1]} Hz
-				</Text>
-			</SliderSettings>
+					<Select.Root
+						value={verticalCoverLayout}
+						onValueChange={(v) =>
+							setVerticalCoverLayout(v as VerticalCoverLayout)
+						}
+					>
+						<Select.Trigger />
+						<Select.Content>
+							{verticalCoverLayoutMenu.map((item) => (
+								<Select.Item key={item.value} value={item.value}>
+									{item.label}
+								</Select.Item>
+							))}
+						</Select.Content>
+					</Select.Root>
+				</SettingEntry>
+				<SliderSettings
+					label={t(
+						"page.settings.musicInfoAppearance.fftDataRange.label",
+						"音频可视化频域范围",
+					)}
+					description={t(
+						"page.settings.musicInfoAppearance.fftDataRange.description",
+						"单位为赫兹（hz），此项会影响音频可视化和背景跳动效果的展示效果",
+					)}
+					configAtom={fftDataRangeAtom}
+					min={1}
+					max={22050}
+				>
+					<Text wrap="nowrap">
+						{fftDataRange[0]} Hz - {fftDataRange[1]} Hz
+					</Text>
+				</SliderSettings>
+			</CardGroup>
 		</>
 	);
 };
@@ -936,90 +966,94 @@ const LyricBackgroundSettings = () => {
 			<SubTitle>
 				<Trans i18nKey="page.settings.lyricBackground.subtitle">歌词背景</Trans>
 			</SubTitle>
-			<SettingEntry
-				label={t(
-					"page.settings.lyricBackground.backgroundRenderer.label",
-					"背景渲染器",
-				)}
-			>
-				<Select.Root
-					value={getBackgroundRendererString(backgroundRendererValue)}
-					onValueChange={handleBackgroundRendererChange}
-				>
-					<Select.Trigger />
-					<Select.Content>
-						{backgroundRendererMenu.map((item) => (
-							<Select.Item key={item.value} value={item.value}>
-								{item.label}
-							</Select.Item>
-						))}
-					</Select.Content>
-				</Select.Root>
-			</SettingEntry>
-
-			{getBackgroundRendererString(backgroundRendererValue) === "css-bg" ? (
+			<CardGroup>
 				<SettingEntry
 					label={t(
-						"page.settings.lyricBackground.lyricBackgroundColor.label",
-						"CSS 背景属性值",
-					)}
-					description={t(
-						"page.settings.lyricBackground.lyricBackgroundColor.description",
-						"等同于放入 background 样式的字符串值，默认为 #111111",
+						"page.settings.lyricBackground.backgroundRenderer.label",
+						"背景渲染器",
 					)}
 				>
-					<TextField.Root
-						value={cssBackgroundProperty}
-						onChange={(e) => setCssBackgroundProperty(e.currentTarget.value)}
-					/>
+					<Select.Root
+						value={getBackgroundRendererString(backgroundRendererValue)}
+						onValueChange={handleBackgroundRendererChange}
+					>
+						<Select.Trigger />
+						<Select.Content>
+							{backgroundRendererMenu.map((item) => (
+								<Select.Item key={item.value} value={item.value}>
+									{item.label}
+								</Select.Item>
+							))}
+						</Select.Content>
+					</Select.Root>
 				</SettingEntry>
-			) : (
-				<>
-					<NumberSettings
-						placeholder="60"
-						type="number"
-						min="1"
-						max="1000"
-						step="1"
+			</CardGroup>
+
+			<CardGroup>
+				{getBackgroundRendererString(backgroundRendererValue) === "css-bg" ? (
+					<SettingEntry
 						label={t(
-							"page.settings.lyricBackground.lyricBackgroundFPS.label",
-							"背景最高帧数",
+							"page.settings.lyricBackground.lyricBackgroundColor.label",
+							"CSS 背景属性值",
 						)}
 						description={t(
-							"page.settings.lyricBackground.lyricBackgroundFPS.description",
-							"对性能影响较高，但是实际开销不大，如果遇到性能问题，可以尝试降低此值。默认值为 60。",
+							"page.settings.lyricBackground.lyricBackgroundColor.description",
+							"等同于放入 background 样式的字符串值，默认为 #111111",
 						)}
-						configAtom={lyricBackgroundFPSAtom}
-					/>
-					<NumberSettings
-						placeholder="1.0"
-						type="number"
-						min="0.01"
-						max="10.0"
-						step="0.01"
-						label={t(
-							"page.settings.lyricBackground.lyricBackgroundRenderScale.label",
-							"背景渲染倍率",
-						)}
-						description={t(
-							"page.settings.lyricBackground.lyricBackgroundRenderScale.description",
-							"对性能影响较高，但是实际开销不大，如果遇到性能问题，可以尝试降低此值。默认值为 1 即每像素点渲染。",
-						)}
-						configAtom={lyricBackgroundRenderScaleAtom}
-					/>
-					<SwitchSettings
-						label={t(
-							"page.settings.lyricBackground.lyricBackgroundStaticMode.label",
-							"背景静态模式",
-						)}
-						description={t(
-							"page.settings.lyricBackground.lyricBackgroundStaticMode.description",
-							"让背景会在除了切换歌曲变换封面的情况下保持静止，如果遇到了性能问题，可以考虑开启此项。\n注意：启用此项会导致背景跳动效果失效。",
-						)}
-						configAtom={lyricBackgroundStaticModeAtom}
-					/>
-				</>
-			)}
+					>
+						<TextField.Root
+							value={cssBackgroundProperty}
+							onChange={(e) => setCssBackgroundProperty(e.currentTarget.value)}
+						/>
+					</SettingEntry>
+				) : (
+					<>
+						<NumberSettings
+							placeholder="60"
+							type="number"
+							min="1"
+							max="1000"
+							step="1"
+							label={t(
+								"page.settings.lyricBackground.lyricBackgroundFPS.label",
+								"背景最高帧数",
+							)}
+							description={t(
+								"page.settings.lyricBackground.lyricBackgroundFPS.description",
+								"对性能影响较高，但是实际开销不大，如果遇到性能问题，可以尝试降低此值。默认值为 60。",
+							)}
+							configAtom={lyricBackgroundFPSAtom}
+						/>
+						<NumberSettings
+							placeholder="1.0"
+							type="number"
+							min="0.01"
+							max="10.0"
+							step="0.01"
+							label={t(
+								"page.settings.lyricBackground.lyricBackgroundRenderScale.label",
+								"背景渲染倍率",
+							)}
+							description={t(
+								"page.settings.lyricBackground.lyricBackgroundRenderScale.description",
+								"对性能影响较高，但是实际开销不大，如果遇到性能问题，可以尝试降低此值。默认值为 1 即每像素点渲染。",
+							)}
+							configAtom={lyricBackgroundRenderScaleAtom}
+						/>
+						<SwitchSettings
+							label={t(
+								"page.settings.lyricBackground.lyricBackgroundStaticMode.label",
+								"背景静态模式",
+							)}
+							description={t(
+								"page.settings.lyricBackground.lyricBackgroundStaticMode.description",
+								"让背景会在除了切换歌曲变换封面的情况下保持静止，如果遇到了性能问题，可以考虑开启此项。\n注意：启用此项会导致背景跳动效果失效。",
+							)}
+							configAtom={lyricBackgroundStaticModeAtom}
+						/>
+					</>
+				)}
+			</CardGroup>
 		</>
 	);
 };
