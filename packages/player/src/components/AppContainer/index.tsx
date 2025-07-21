@@ -64,10 +64,26 @@ export const AppContainer: FC<
 		{
 			label: t("header.library.label"),
 			items: [
-				{ label: t("header.library.recentlyAdded"), icon: <ClockIcon />, to: "/recently-added" },
-				{ label: t("header.library.artists"), icon: <MicroPhoneIcon />, to: "/artists" },
-				{ label: t("header.library.albums"), icon: <SquareStackIcon />, to: "/albums" },
-				{ label: t("header.library.songs"), icon: <MusicNoteIcon />, to: "/songs" },
+				{
+					label: t("header.library.recentlyAdded"),
+					icon: <ClockIcon />,
+					to: "/recently-added",
+				},
+				{
+					label: t("header.library.artists"),
+					icon: <MicroPhoneIcon />,
+					to: "/artists",
+				},
+				{
+					label: t("header.library.albums"),
+					icon: <SquareStackIcon />,
+					to: "/albums",
+				},
+				{
+					label: t("header.library.songs"),
+					icon: <MusicNoteIcon />,
+					to: "/songs",
+				},
 			],
 		},
 		{
@@ -78,7 +94,11 @@ export const AppContainer: FC<
 					icon: <SquareGrid3x3Icon />,
 					to: "/all-playlists",
 				},
-				{ label: t("header.playlists.favouriteSongs"), icon: <StarSquareIcon />, to: "/like" },
+				{
+					label: t("header.playlists.favouriteSongs"),
+					icon: <StarSquareIcon />,
+					to: "/like",
+				},
 			],
 		},
 	];
@@ -89,7 +109,9 @@ export const AppContainer: FC<
 			items: [...list.items],
 		}));
 		if (playlists?.length) {
-			const playlistNav = lists.find((l) => l.label === "播放列表");
+			const playlistNav = lists.find(
+				(l) => l.label === t("header.playlists.label"),
+			);
 			if (playlistNav) {
 				playlistNav.items.push(
 					...playlists.map((pl) => ({
