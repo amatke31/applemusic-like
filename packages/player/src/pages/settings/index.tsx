@@ -10,7 +10,16 @@ import {
 	TextAlignJustifyIcon,
 	HamburgerMenuIcon,
 } from "@radix-ui/react-icons";
-import { Box, Button, Dialog, Flex, Heading, Separator, Text, Tooltip } from "@radix-ui/themes";
+import {
+	Box,
+	Button,
+	Dialog,
+	Flex,
+	Heading,
+	Separator,
+	Text,
+	Tooltip,
+} from "@radix-ui/themes";
 import { platform } from "@tauri-apps/plugin-os";
 import { atom, useAtom, useAtomValue } from "jotai";
 import {
@@ -72,7 +81,9 @@ const SidebarButton: FC<{
 	);
 };
 
-const SidebarContent: FC<{ onNavigate: (pageId: string) => void }> = ({ onNavigate }) => {
+const SidebarContent: FC<{ onNavigate: (pageId: string) => void }> = ({
+	onNavigate,
+}) => {
 	const os = usePlatform();
 	const [currentPage] = useAtom(currentPageAtom);
 	const loadedExtensions = useAtomValue(loadedExtensionsWithSettingsAtom);
@@ -153,7 +164,13 @@ const SidebarContent: FC<{ onNavigate: (pageId: string) => void }> = ({ onNaviga
 				return (
 					<SidebarButton
 						key={`extension.${id}`}
-						icon={<img src={String(extension.context.extensionMeta.icon)} width="20" height="20" />}
+						icon={
+							<img
+								src={String(extension.context.extensionMeta.icon)}
+								width="20"
+								height="20"
+							/>
+						}
 						label={i18n.getFixedT(null, id as any)("name", id)}
 						isActive={currentPage === `extension.${id}`}
 						onClick={() => onNavigate(`extension.${id}`)}
@@ -167,7 +184,7 @@ const SidebarContent: FC<{ onNavigate: (pageId: string) => void }> = ({ onNaviga
 export const Component: FC = () => {
 	const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
 	const loadedExtensions = useAtomValue(loadedExtensionsWithSettingsAtom);
-	const { t } = useTranslation();
+	const { i18n, t } = useTranslation();
 	const os = usePlatform();
 
 	const buttonContainerRef = useRef<HTMLDivElement>(null);
@@ -310,41 +327,7 @@ export const Component: FC = () => {
 							}}
 						>
 							<Flex direction="column" gap="1">
-								{playerSettingsPages.map((page) => (
-									<SidebarButton
-										key={`player.${page.id}`}
-										icon={page.icon}
-										label={page.label}
-										isActive={currentPage === `player.${page.id}`}
-										onClick={() => setCurrentPage(`player.${page.id}`)}
-									/>
-								))}
-								<Separator my="2" size="4" />
-								<SidebarButton
-									key="extension.management"
-									icon={<Component1Icon width={20} height={20} />}
-									label={t("settings.extension.tab", "扩展程序管理")}
-									isActive={currentPage === "extension.management"}
-									onClick={() => setCurrentPage("extension.management")}
-								/>
-								{loadedExtensions.map((extension) => {
-									const id = extension.extensionMeta.id;
-									return (
-										<SidebarButton
-											key={`extension.${id}`}
-											icon={
-												<img
-													src={String(extension.context.extensionMeta.icon)}
-													width="20"
-													height="20"
-												/>
-											}
-											label={i18n.getFixedT(null, id as any)("name", id)}
-											isActive={currentPage === `extension.${id}`}
-											onClick={() => setCurrentPage(`extension.${id}`)}
-										/>
-									);
-								})}
+								<SidebarContent onNavigate={handleNavigate} />
 							</Flex>
 						</Box>
 
