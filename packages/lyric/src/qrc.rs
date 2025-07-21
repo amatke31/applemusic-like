@@ -7,7 +7,8 @@ use std::fmt::Write;
 use std::{borrow::Cow, str::FromStr};
 
 use nom::{
-    IResult, bytes::complete::*, character::complete::line_ending, combinator::opt, multi::many0,
+    IResult, Parser, bytes::complete::*, character::complete::line_ending, combinator::opt,
+    multi::many0,
 };
 
 fn process_time<'a>(
@@ -81,7 +82,7 @@ fn test_word() {
 }
 
 pub fn parse_words(src: &str) -> IResult<&str, Vec<LyricWord<'_>>> {
-    let (src, words) = many0(parse_word)(src)?;
+    let (src, words) = many0(parse_word).parse(src)?;
     Ok((src, words))
 }
 
@@ -89,7 +90,7 @@ pub fn parse_line(src: &str) -> IResult<&str, LyricLine<'_>> {
     let (src, _) = parse_time(src)?;
     match is_not("\r\n")(src) {
         Ok((src, line)) => {
-            let (src, _) = opt(line_ending)(src)?;
+            let (src, _) = opt(line_ending).parse(src)?;
             let (_, words) = parse_words(line)?;
             Ok((
                 src,

@@ -8,8 +8,9 @@ import {
 	MixerHorizontalIcon,
 	QuestionMarkCircledIcon,
 	TextAlignJustifyIcon,
+	HamburgerMenuIcon,
 } from "@radix-ui/react-icons";
-import { Box, Button, Flex, Separator, Text, Tooltip } from "@radix-ui/themes";
+import { Box, Button, Dialog, Flex, Heading, Separator, Text, Tooltip } from "@radix-ui/themes";
 import { platform } from "@tauri-apps/plugin-os";
 import { atom, useAtom, useAtomValue } from "jotai";
 import {
@@ -19,6 +20,7 @@ import {
 	useEffect,
 	useMemo,
 	useState,
+	useRef,
 } from "react";
 import { useTranslation } from "react-i18next";
 import { ExtensionTab } from "./extension.tsx";
@@ -70,9 +72,9 @@ const SidebarButton: FC<{
 	);
 };
 
-export const Component: FC = () => {
+const SidebarContent: FC<{ onNavigate: (pageId: string) => void }> = ({ onNavigate }) => {
 	const os = usePlatform();
-	const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
+	const [currentPage] = useAtom(currentPageAtom);
 	const loadedExtensions = useAtomValue(loadedExtensionsWithSettingsAtom);
 	const { t, i18n } = useTranslation();
 
@@ -126,6 +128,95 @@ export const Component: FC = () => {
 
 		return pages;
 	}, [os, t]);
+
+	return (
+		<Flex direction="column" gap="1" width="100%">
+			{playerSettingsPages.map((page) => (
+				<SidebarButton
+					key={`player.${page.id}`}
+					icon={page.icon}
+					label={page.label}
+					isActive={currentPage === `player.${page.id}`}
+					onClick={() => onNavigate(`player.${page.id}`)}
+				/>
+			))}
+			<Separator my="2" size="4" />
+			<SidebarButton
+				key="extension.management"
+				icon={<Component1Icon width={20} height={20} />}
+				label={t("settings.extension.tab", "扩展程序管理")}
+				isActive={currentPage === "extension.management"}
+				onClick={() => onNavigate("extension.management")}
+			/>
+			{loadedExtensions.map((extension) => {
+				const id = extension.extensionMeta.id;
+				return (
+					<SidebarButton
+						key={`extension.${id}`}
+						icon={<img src={String(extension.context.extensionMeta.icon)} width="20" height="20" />}
+						label={i18n.getFixedT(null, id as any)("name", id)}
+						isActive={currentPage === `extension.${id}`}
+						onClick={() => onNavigate(`extension.${id}`)}
+					/>
+				);
+			})}
+		</Flex>
+	);
+};
+
+export const Component: FC = () => {
+	const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
+	const loadedExtensions = useAtomValue(loadedExtensionsWithSettingsAtom);
+	const { t } = useTranslation();
+	const os = usePlatform();
+
+	const buttonContainerRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const titlebar = document.getElementById("system-titlebar");
+		const btnContainer = buttonContainerRef.current;
+
+		if (titlebar && btnContainer) {
+			const observer = new ResizeObserver(() => {
+				const width = btnContainer.getBoundingClientRect().width;
+
+				titlebar.style.left = `${width}px`;
+
+				titlebar.style.width = `calc(100% - ${width}px)`;
+			});
+
+			observer.observe(btnContainer);
+
+			return () => {
+				observer.disconnect();
+				if (titlebar) {
+					titlebar.style.left = "0";
+					titlebar.style.width = "100%";
+				}
+			};
+		}
+	}, []);
+
+	useEffect(() => {
+		const handleResize = () => {
+			if (window.innerWidth > 600) {
+				setMenuOpen(false);
+			}
+		};
+
+		window.addEventListener("resize", handleResize);
+
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, []);
+
+	const [isMenuOpen, setMenuOpen] = useState(false);
+
+	const handleNavigate = (pageId: string) => {
+		setCurrentPage(pageId);
+		setMenuOpen(false);
+	};
 
 	const renderContent = () => {
 		if (currentPage.startsWith("player.")) {

@@ -212,10 +212,10 @@ fn test_write_ttml() {
     const TEST_TTML: &str = include_str!("../../test/test.ttml");
     let ttml = super::parse_ttml(TEST_TTML.as_bytes()).unwrap();
     let ttml_str = stringify_ttml(&ttml).unwrap();
-    println!("ttml_str: {}", ttml_str);
+    println!("ttml_str: {ttml_str}");
     let ttml = super::parse_ttml(ttml_str.as_bytes()).unwrap();
     let new_ttml_str = stringify_ttml(&ttml).unwrap();
-    println!("new_ttml_str: {}", new_ttml_str);
+    println!("new_ttml_str: {new_ttml_str}");
     assert_eq!(ttml_str, new_ttml_str);
 }
 

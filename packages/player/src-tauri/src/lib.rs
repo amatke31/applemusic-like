@@ -1,15 +1,18 @@
 use crate::server::AMLLWebSocketServer;
 use amll_player_core::AudioInfo;
+use anyhow::Context;
+use anyhow::anyhow;
+use rodio::OutputStream;
 use serde::*;
 use serde_json::Value;
+use std::fs::File;
 use std::net::SocketAddr;
-use symphonia::core::io::{MediaSourceStream, MediaSourceStreamOptions};
+use symphonia::core::io::MediaSourceStream;
 use tauri::ipc::Channel;
 use tauri::{
     AppHandle, Manager, PhysicalSize, Runtime, Size, State, WebviewWindowBuilder,
     utils::config::WindowEffectsConfig, window::Effect,
 };
-use tauri_plugin_fs::OpenOptions;
 use tokio::sync::RwLock;
 use tracing::*;
 
@@ -41,9 +44,7 @@ async fn ws_close_connection(ws: AMLLWebSocketServerState<'_>) -> Result<(), Str
 }
 
 #[tauri::command]
-async fn ws_get_connections(
-    ws: AMLLWebSocketServerState<'_>,
-) -> Result<Vec<SocketAddr>, String> {
+async fn ws_get_connections(ws: AMLLWebSocketServerState<'_>) -> Result<Vec<SocketAddr>, String> {
     let server_guard = ws.read().await;
     let connections = server_guard.get_connections().await;
     Ok(connections)
@@ -95,7 +96,11 @@ impl From<AudioInfo> for MusicInfo {
             name: v.name,
             artist: v.artist,
             album: v.album,
-            lyric_format: if v.lyric.is_empty() { "".into() } else { "lrc".into() },
+            lyric_format: if v.lyric.is_empty() {
+                "".into()
+            } else {
+                "lrc".into()
+            },
             lyric: v.lyric,
             comment: v.comment,
             cover: v.cover.unwrap_or_default(),
@@ -109,52 +114,55 @@ async fn read_local_music_metadata(
     file_path: tauri_plugin_fs::FilePath,
     fs: State<'_, tauri_plugin_fs::Fs<tauri::Wry>>,
 ) -> Result<MusicInfo, String> {
-    let mut opt = OpenOptions::new();
-    opt.read(true);
-    let file = fs
-        .open(file_path.clone(), opt)
-        .map_err(|e| format!("文件打开失败 {e}"))?;
-    let result = tokio::task::spawn_blocking(move || -> Result<MusicInfo, String> {
-        let probe = symphonia::default::get_probe();
-        let mut format_result = probe
-            .format(
-                &Default::default(),
-                MediaSourceStream::new(Box::new(file), MediaSourceStreamOptions::default()),
-                &Default::default(),
-                &Default::default(),
-            )
-            .map_err(|e| e.to_string())?;
+    let path_clone = file_path
+        .as_path()
+        .context("Invalid file path")
+        .map_err(|e| e.to_string())?
+        .to_path_buf();
 
-        Ok(amll_player_core::utils::read_audio_info(&mut format_result).into())
-    })
-    .await;
+    let audio_info = tokio::task::spawn_blocking(move || -> anyhow::Result<AudioInfo> {
+        let src = File::open(&path_clone)
+            .with_context(|| format!("无法打开文件: {}", path_clone.display()))?;
+        let mss = MediaSourceStream::new(Box::new(src), Default::default());
 
-    const LYRIC_FILE_EXTENSIONS: &[&str] = &["ttml", "lys", "yrc", "qrc", "eslrc", "lrc"];
-
-    match result {
-        Ok(Ok(mut result)) => {
-            if !result.lyric.is_empty() {
-                result.lyric_format = "lrc".into();
+        match symphonia::default::get_probe().format(
+            &Default::default(),
+            mss,
+            &Default::default(),
+            &Default::default(),
+        ) {
+            Ok(mut probed) => Ok(amll_player_core::utils::read_audio_info(&mut probed)),
+            Err(err) => {
+                tracing::error!("读取文件 {} 失败: {}", path_clone.display(), err);
+                Err(anyhow!("Probe failed: {}", err))
             }
-            if let Some(file_path) = file_path.as_path() {
-                for ext in LYRIC_FILE_EXTENSIONS {
-                    let lyric_file_path = file_path.with_extension(ext);
-                    if lyric_file_path.exists() {
-                        if let Ok(lyric) = fs.read_to_string(&lyric_file_path) {
-                            result.lyric_format = ext.to_string();
-                            result.lyric = lyric;
-                            break;
-                        } else {
-                            warn!("歌词文件存在但读取失败: {}", lyric_file_path.display());
-                        }
+        }
+    })
+    .await
+    .map_err(|e| e.to_string())?
+    .map_err(|e| e.to_string())?;
+
+    let mut music_info: MusicInfo = audio_info.into();
+
+    if let Some(file_path_ref) = file_path.as_path() {
+        if music_info.lyric.is_empty() {
+            const LYRIC_FILE_EXTENSIONS: &[&str] = &["ttml", "lys", "yrc", "qrc", "eslrc", "lrc"];
+            for ext in LYRIC_FILE_EXTENSIONS {
+                let lyric_file_path = file_path_ref.with_extension(ext);
+                if lyric_file_path.exists() {
+                    if let Ok(lyric) = fs.read_to_string(&lyric_file_path) {
+                        music_info.lyric_format = ext.to_string();
+                        music_info.lyric = lyric;
+                        break;
+                    } else {
+                        warn!("歌词文件存在但读取失败: {}", lyric_file_path.display());
                     }
                 }
             }
-            Ok(result)
         }
-        Ok(Err(e)) => Err(e),
-        Err(e) => Err(e.to_string()),
     }
+
+    Ok(music_info)
 }
 
 async fn create_common_win<'a>(
@@ -178,16 +186,34 @@ async fn create_common_win<'a>(
         })
         .theme(None)
         .title({
-            #[cfg(target_os = "macos")] { "" }
-            #[cfg(not(target_os = "macos"))] { "AMLL Player" }
+            #[cfg(target_os = "macos")]
+            {
+                ""
+            }
+            #[cfg(not(target_os = "macos"))]
+            {
+                "AMLL Player"
+            }
         })
         .visible({
-            #[cfg(target_os = "macos")] { true }
-            #[cfg(not(target_os = "macos"))] { false }
+            #[cfg(target_os = "macos")]
+            {
+                true
+            }
+            #[cfg(not(target_os = "macos"))]
+            {
+                false
+            }
         })
         .decorations({
-            #[cfg(target_os = "macos")] { true }
-            #[cfg(not(target_os = "macos"))] { false }
+            #[cfg(target_os = "macos")]
+            {
+                true
+            }
+            #[cfg(not(target_os = "macos"))]
+            {
+                false
+            }
         });
 
     #[cfg(target_os = "macos")]
@@ -199,7 +225,8 @@ async fn create_common_win<'a>(
 async fn recreate_window(app: &AppHandle, label: &str, path: Option<&str>) {
     info!("Recreating window: {}", label);
     if let Some(win) = app.get_webview_window(label) {
-        #[cfg(desktop)] {
+        #[cfg(desktop)]
+        {
             let _ = win.show();
             let _ = win.set_focus();
         }
@@ -223,7 +250,8 @@ async fn recreate_window(app: &AppHandle, label: &str, path: Option<&str>) {
 
     let win = win.build().expect("can't show original window");
 
-    #[cfg(desktop)] {
+    #[cfg(desktop)]
+    {
         let _ = win.set_focus();
         if let Ok(orig_size) = win.inner_size() {
             let _ = win.set_size(Size::Physical(PhysicalSize::new(0, 0)));
@@ -240,7 +268,8 @@ async fn open_screenshot_window(app: AppHandle) {
 }
 
 fn init_logging() {
-    #[cfg(not(debug_assertions))] {
+    #[cfg(not(debug_assertions))]
+    {
         let log_file = std::fs::File::create("amll-player.log");
         if let Ok(log_file) = log_file {
             tracing_subscriber::fmt()
@@ -295,7 +324,8 @@ pub fn run() {
     #[cfg(not(mobile))]
     let builder = builder.plugin(tauri_plugin_updater::Builder::new().pubkey(pubkey).build());
 
-    #[cfg(mobile)] {
+    #[cfg(mobile)]
+    {
         context
             .config_mut()
             .app
@@ -328,9 +358,19 @@ pub fn run() {
             reset_window_theme,
         ])
         .setup(|app| {
+            info!("正在初始化音频输出流...");
+            let (_stream, stream_handle) =
+                OutputStream::try_default().expect("无法创建默认的音频输出流");
+
+            app.manage(stream_handle);
+
+            std::mem::forget(_stream);
+            info!("音频输出流初始化成功。");
+
             player::init_local_player(app.handle().clone());
 
-            #[cfg(target_os = "windows")] {
+            #[cfg(target_os = "windows")]
+            {
                 info!("正在初始化外部媒体控制器...");
                 let controller_state =
                     external_media_controller::start_listener(app.handle().clone());
@@ -344,7 +384,8 @@ pub fn run() {
             app.manage::<AMLLWebSocketServerWrapper>(RwLock::new(AMLLWebSocketServer::new(
                 app.handle().clone(),
             )));
-            #[cfg(not(mobile))] {
+            #[cfg(not(mobile))]
+            {
                 tauri::async_runtime::block_on(recreate_window(app.handle(), "main", None));
             }
             Ok(())

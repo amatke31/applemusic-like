@@ -1,9 +1,16 @@
-use amll_player_core::*;
-use tauri::{Emitter, Manager, Runtime};
+use std::sync::LazyLock;
+
+use amll_player_core::AudioThreadEventMessage;
+use amll_player_core::AudioThreadMessage;
+use amll_player_core::{AudioPlayer, AudioPlayerConfig, AudioPlayerHandle};
+use rodio::OutputStreamHandle;
+use tauri::{AppHandle, Emitter, Manager, Runtime};
 use tokio::sync::RwLock;
+use tracing::error;
 use tracing::warn;
 
-static PLAYER_HANDLER: RwLock<Option<AudioPlayerHandle>> = RwLock::const_new(None);
+pub static PLAYER_HANDLER: LazyLock<RwLock<Option<AudioPlayerHandle>>> =
+    LazyLock::new(|| RwLock::new(None));
 
 #[tauri::command]
 pub async fn local_player_send_msg(msg: AudioThreadEventMessage<AudioThreadMessage>) {
@@ -14,45 +21,23 @@ pub async fn local_player_send_msg(msg: AudioThreadEventMessage<AudioThreadMessa
     }
 }
 
-async fn local_player_main<R: Runtime>(manager: impl Manager<R> + Clone + Send + Sync + 'static) {
-    let mut player = AudioPlayer::new(AudioPlayerConfig {});
+pub fn init_local_player<R: Runtime>(app: AppHandle<R>) {
+    tauri::async_runtime::spawn(async move {
+        local_player_main(app).await;
+    });
+}
+
+async fn local_player_main<R: Runtime>(app: AppHandle<R>) {
+    let handle = app.state::<OutputStreamHandle>().inner().clone();
+    let player = AudioPlayer::new(AudioPlayerConfig {}, handle);
     let handler = player.handler();
     PLAYER_HANDLER.write().await.replace(handler);
-
-    #[cfg(mobile)]
-    let manager_clone = manager.clone();
-    #[cfg(mobile)]
-    player.set_custom_local_song_loader(Box::new(move |path| {
-        use std::str::FromStr;
-        use tauri_plugin_fs::FsExt;
-        use tauri_plugin_fs::OpenOptions;
-        let manager_clone = manager_clone.clone();
-        Box::new(async move {
-            let fs = manager_clone.fs();
-            let mut opt = OpenOptions::new();
-            opt.read(true);
-            let file_path = tauri_plugin_fs::FilePath::from_str(&path)?;
-            let file = fs.open(file_path, opt)?;
-            Ok(file)
-        })
-    }));
-
-    // async_std::net::TcpStream::connect(addrs)
-
-    // async_tungstenite::client_async(request, stream)
-
+    let app_clone = app.clone();
     player
         .run(move |evt| {
-            let app = manager.app_handle();
-            if let Err(err) = app.emit("audio_player_msg", evt) {
-                warn!("failed to emit audio_player_msg: {:?}", err);
+            if let Err(err) = app_clone.emit("plugin:player-core-event", &evt) {
+                error!("发送事件时出错: {err:?}");
             }
         })
         .await;
-}
-
-pub fn init_local_player<R: Runtime>(emitter: impl Manager<R> + Clone + Send + Sync + 'static) {
-    tauri::async_runtime::spawn(async move {
-        local_player_main(emitter).await;
-    });
 }

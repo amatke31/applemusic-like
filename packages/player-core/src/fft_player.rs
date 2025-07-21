@@ -16,7 +16,7 @@ pub struct FFTPlayer {
     pcm_queue: VecDeque<f32>,
     fft_duration: usize,
     resampler: Option<FastFixedOutResampler<f32>>,
-    freq_range: Cell<(f32, f32)>,
+    freq_range: (f32, f32),
 }
 
 // numpy.interp()
@@ -64,7 +64,7 @@ impl FFTPlayer {
             pcm_queue: VecDeque::with_capacity(4096),
             fft_duration: 0,
             resampler: None,
-            freq_range: (80.0, 2000.0).into(),
+            freq_range: (80.0, 2000.0),
         }
     }
 
@@ -76,8 +76,8 @@ impl FFTPlayer {
         self.pcm_queue.clear();
     }
 
-    pub fn set_freq_range(&self, start_freq: f32, end_freq: f32) {
-        self.freq_range.set((start_freq, end_freq));
+    pub fn set_freq_range(&mut self, start_freq: f32, end_freq: f32) {
+        self.freq_range = (start_freq, end_freq);
     }
 
     pub fn read(&mut self, buf: &mut [f32]) -> bool {
@@ -86,7 +86,7 @@ impl FFTPlayer {
             return false;
         }
 
-        let (start_freq, end_freq) = self.freq_range.get();
+        let (start_freq, end_freq) = self.freq_range;
 
         let mut fft_buf = [0.0; 2048];
         self.pcm_queue

@@ -32,16 +32,16 @@ export interface AudioInfo {
 
 export type SongData =
 	| {
-			type: "local";
-			filePath: string;
-			origOrder: number;
-	  }
+		type: "local";
+		filePath: string;
+		origOrder: number;
+	}
 	| {
-			type: "custom";
-			id: string;
-			songJsonData: string;
-			origOrder: number;
-	  };
+		type: "custom";
+		id: string;
+		songJsonData: string;
+		origOrder: number;
+	};
 
 export type AudioThreadMessageMap = {
 	resumeAudio: {};
@@ -88,85 +88,102 @@ export type AudioThreadMessage =
 
 export type AudioThreadEvent =
 	| {
-			type: "playPosition";
-			data: { position: number };
-	  }
+		type: "playPosition";
+		data: { position: number };
+	}
 	| {
-			type: "loadProgress";
-			data: { position: number };
-	  }
+		type: "loadProgress";
+		data: { position: number };
+	}
 	| {
-			type: "loadAudio";
-			data: {
-				musicId: string;
-				musicInfo: AudioInfo;
-				quality: AudioQuality;
-				currentPlayIndex: number;
-			};
-	  }
+		type: "loadAudio";
+		data: {
+			musicId: string;
+			musicInfo: AudioInfo;
+			quality: AudioQuality;
+			currentPlayIndex: number;
+		};
+	}
 	| {
-			type: "loadingAudio";
-			data: { musicId: string; currentPlayIndex: number };
-	  }
+		type: "loadingAudio";
+		data: { musicId: string; currentPlayIndex: number };
+	}
 	| {
-			type: "syncStatus";
-			data: {
-				musicId: string;
-				musicInfo: AudioInfo;
-				isPlaying: boolean;
-				duration: number;
-				position: number;
-				volume: number;
-				loadPosition: number;
-				playlist: SongData[];
-				currentPlayIndex: number;
-				playlistInited: boolean;
-				quality: AudioQuality;
-			};
-	  }
+		type: "syncStatus";
+		data: {
+			musicId: string;
+			musicInfo: AudioInfo;
+			isPlaying: boolean;
+			duration: number;
+			position: number;
+			volume: number;
+			loadPosition: number;
+			playlist: SongData[];
+			currentPlayIndex: number;
+			playlistInited: boolean;
+			quality: AudioQuality;
+		};
+	}
 	| {
-			type: "playListChanged";
-			data: {
-				playlist: SongData[];
-				currentPlayIndex: number;
-			};
-	  }
+		type: "playListChanged";
+		data: {
+			playlist: SongData[];
+			currentPlayIndex: number;
+		};
+	}
 	| {
-			type: "playStatus";
-			data: { isPlaying: boolean };
-	  }
+		type: "playStatus";
+		data: { isPlaying: boolean };
+	}
 	| {
-			type: "setDuration";
-			data: { duration: number };
-	  }
+		type: "setDuration";
+		data: { duration: number };
+	}
 	| {
-			type: "loadError";
-			data: { error: string };
-	  }
+		type: "loadError";
+		data: { error: string };
+	}
 	| {
-			type: "volumeChanged";
-			data: { volume: number };
-	  }
+		type: "volumeChanged";
+		data: { volume: number };
+	}
 	| {
-			type: "fftData";
-			data: { data: number[] };
-	  };
+		type: "fftData";
+		data: { data: number[] };
+	};
 
 const msgTasks = new Map<string, (value: unknown) => void>();
+const eventListeners = new Set<EventCallback<AudioThreadEventMessage<any>>>();
 
-async function initAudioThread() {
+let isInitialized = false;
+
+export async function initAudioThread() {
+	if (isInitialized) {
+		return;
+	}
+	isInitialized = true;
+
 	console.log(
 		chalk.bgHex("#FF7700").hex("#FFFFFF")(" BACKEND  "),
 		"后台线程连接初始化中",
 	);
+
 	await listen<AudioThreadEventMessage<AudioThreadEvent>>(
-		"audio_player_msg",
+		"plugin:player-core-event",
 		(evt) => {
 			const resolve = msgTasks.get(evt.payload.callbackId);
 			if (resolve) {
 				msgTasks.delete(evt.payload.callbackId);
 				resolve(evt.payload.data);
 			}
+
+			eventListeners.forEach((listener) => {
+				try {
+					listener(evt);
+				} catch (e) {
+					console.error("Error in audio event listener callback:", e);
+				}
+			});
 		},
 	);
 	console.log(
@@ -175,11 +192,16 @@ async function initAudioThread() {
 	);
 }
 
-initAudioThread();
-
 export const listenAudioThreadEvent = (
 	handler: EventCallback<AudioThreadEventMessage<AudioThreadEvent>>,
-) => listen("audio_player_msg", handler);
+): Promise<() => void> => {
+	eventListeners.add(handler);
+	const unlisten = () => {
+		eventListeners.delete(handler);
+	};
+	return Promise.resolve(unlisten);
+};
+
 
 export async function readLocalMusicMetadata(filePath: string): Promise<{
 	name: string;

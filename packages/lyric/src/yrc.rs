@@ -6,7 +6,7 @@ use crate::{LyricLine, LyricWord, utils::process_lyrics};
 use std::fmt::Write;
 use std::{borrow::Cow, str::FromStr};
 
-use nom::{IResult, character::complete::line_ending};
+use nom::{IResult, Parser, character::complete::line_ending};
 use nom::{bytes::complete::*, combinator::opt, multi::many0, sequence::pair};
 
 fn process_time<'a>(
@@ -58,7 +58,8 @@ pub fn parse_words(src: &str) -> IResult<&str, Vec<LyricWord<'_>>> {
     let (src, words) = many0(pair(
         parse_word_time,
         take_till(|x| x == '(' || x == '\n' || x == '\r'),
-    ))(src)?;
+    ))
+    .parse(src)?;
     let words = words
         .into_iter()
         .map(|x| LyricWord {
@@ -74,7 +75,7 @@ pub fn parse_line(src: &str) -> IResult<&str, LyricLine<'_>> {
     let (src, _) = parse_time(src)?;
     match is_not("\r\n")(src) {
         Ok((src, line)) => {
-            let (src, _) = opt(line_ending)(src)?;
+            let (src, _) = opt(line_ending).parse(src)?;
             let (_, words) = parse_words(line)?;
             Ok((
                 src,

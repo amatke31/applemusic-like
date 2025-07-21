@@ -20,6 +20,7 @@ import {
 	type AudioQuality,
 	emitAudioThread,
 	emitAudioThreadRet,
+	initAudioThread,
 	listenAudioThreadEvent,
 	type SongData,
 } from "../../utils/player.ts";
@@ -180,7 +181,7 @@ function pairLyric(line: LyricLine, lines: CoreLyricLine[], key: TransLine) {
 			if (
 				nearestLine &&
 				Math.abs(nearestLine.startTime - line.words[0].startTime) >
-					Math.abs(coreLine.startTime - line.words[0].startTime)
+				Math.abs(coreLine.startTime - line.words[0].startTime)
 			) {
 				nearestLine = coreLine;
 			} else if (nearestLine === undefined) {
@@ -527,15 +528,115 @@ export const LocalMusicContext: FC = () => {
 	const store = useStore();
 	const { t } = useTranslation();
 
+	const syncMusicInfo = async (data: any) => {
+		if (!data || !data.musicInfo) {
+			console.error("[syncMusicInfo] Invalid data, aborting.");
+			return;
+		}
+
+		const musicId = data.musicId.startsWith("local:")
+			? data.musicId.substring(6)
+			: data.musicId;
+
+		try {
+			store.set(musicIdAtom, musicId);
+
+			const songFromDb = await db.songs.get(musicId);
+
+			if (songFromDb) {
+				store.set(musicNameAtom, songFromDb.songName);
+				store.set(musicAlbumNameAtom, songFromDb.songAlbum);
+				store.set(
+					musicArtistsAtom,
+					songFromDb.songArtists.split("/").map((v) => ({
+						id: v.trim(),
+						name: v.trim(),
+					})),
+				);
+
+				const oldUrl = store.get(musicCoverAtom);
+				if (oldUrl?.startsWith("blob:")) {
+					URL.revokeObjectURL(oldUrl);
+				}
+				const imgUrl = URL.createObjectURL(songFromDb.cover);
+				store.set(musicCoverAtom, imgUrl);
+				store.set(musicCoverIsVideoAtom, songFromDb.cover.type.startsWith("video"));
+			} else {
+				store.set(musicNameAtom, data.musicInfo.name);
+				store.set(musicAlbumNameAtom, data.musicInfo.album);
+				store.set(
+					musicArtistsAtom,
+					data.musicInfo.artist.split("/").map((v: string) => ({
+						id: v.trim(),
+						name: v.trim(),
+					})),
+				);
+
+				const oldUrl = store.get(musicCoverAtom);
+				if (oldUrl?.startsWith("blob:")) {
+					URL.revokeObjectURL(oldUrl);
+				}
+
+				if (data.musicInfo.cover && data.musicInfo.cover.length > 0) {
+					const blob = new Blob([new Uint8Array(data.musicInfo.cover)], {
+						type: data.musicInfo.coverMediaType || "image/jpeg",
+					});
+					const url = URL.createObjectURL(blob);
+					store.set(musicCoverAtom, url);
+					store.set(musicCoverIsVideoAtom, false);
+				} else {
+					store.set(
+						musicCoverAtom,
+						"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
+					);
+					store.set(musicCoverIsVideoAtom, false);
+				}
+			}
+			store.set(musicDurationAtom, (data.duration * 1000) | 0);
+		} catch (error) {
+			console.error("[syncMusicInfo] An error occurred during state update:", error);
+		}
+	};
+
+	const processAndSetPlaylist = async (playlistData: SongData[]) => {
+		if (!playlistData || playlistData.length === 0) {
+			store.set(currentPlaylistAtom, []);
+			return;
+		}
+
+		const fullPlaylistPromises = playlistData.map(
+			async (songData): Promise<SongData> => {
+				if (songData.type === "local") {
+					const songId = md5(songData.filePath);
+					const songInfoFromDb = await db.songs.get(songId);
+
+					if (songInfoFromDb) {
+						return {
+							type: "custom",
+							id: songInfoFromDb.id,
+							songJsonData: JSON.stringify(songInfoFromDb),
+							origOrder: songData.origOrder,
+						};
+					}
+				}
+				return songData;
+			},
+		);
+
+		const fullPlaylist: SongData[] = await Promise.all(fullPlaylistPromises);
+		store.set(currentPlaylistAtom, fullPlaylist);
+	};
+
 	useEffect(() => {
+		initAudioThread();
+
 		const toEmitThread = (type: Parameters<typeof emitAudioThread>[0]) => ({
 			onEmit() {
 				emitAudioThread(type);
 			},
 		});
-		const toEmit = <T,>(onEmit: T) => ({
-			onEmit,
-		});
+		const toEmit = <T,>(onEmit: T) => ({ onEmit });
+
 		store.set(onRequestNextSongAtom, toEmitThread("nextSong"));
 		store.set(onRequestPrevSongAtom, toEmitThread("prevSong"));
 		store.set(onPlayOrResumeAtom, toEmitThread("resumeOrPauseAudio"));
@@ -593,190 +694,40 @@ export const LocalMusicContext: FC = () => {
 				);
 			}),
 		);
-		const syncMusicInfo = (
-			musicInfo: AudioInfo,
-			musicId = store.get(musicIdAtom),
-		) => {
-			store.set(musicNameAtom, musicInfo.name);
-			store.set(musicAlbumNameAtom, musicInfo.album);
-			store.set(
-				musicArtistsAtom,
-				musicInfo.artist.split("/").map((v) => ({
-					id: v.trim(),
-					name: v.trim(),
-				})),
-			);
-			store.set(musicPlayingPositionAtom, (musicInfo.position * 1000) | 0);
-			store.set(musicDurationAtom, (musicInfo.duration * 1000) | 0);
 
-			db.songs.get(musicId).then((song) => {
-				if (song) {
-					store.set(musicNameAtom, song.songName);
-					store.set(musicAlbumNameAtom, song.songAlbum);
-					store.set(
-						musicArtistsAtom,
-						song.songArtists.split("/").map((v) => ({
-							id: v.trim(),
-							name: v.trim(),
-						})),
-					);
-
-					const imgUrl = URL.createObjectURL(song.cover);
-					try {
-						const oldUrl = store.get(musicCoverAtom);
-						if (oldUrl.startsWith("blob:")) {
-							URL.revokeObjectURL(oldUrl);
-						}
-					} catch (e) {
-						console.warn(e);
-					}
-					store.set(musicCoverAtom, imgUrl);
-					store.set(musicCoverIsVideoAtom, song.cover.type.startsWith("video"));
-				} else if (musicInfo.cover) {
-					const imgBlob = new Blob([new Uint8Array(musicInfo.cover)], {
-						type: "image",
-					});
-					const imgUrl = URL.createObjectURL(imgBlob);
-					try {
-						const oldUrl = store.get(musicCoverAtom);
-						if (oldUrl.startsWith("blob:")) {
-							URL.revokeObjectURL(oldUrl);
-						}
-					} catch (e) {
-						console.warn(e);
-					}
-					store.set(musicCoverAtom, imgUrl);
-					store.set(musicCoverIsVideoAtom, false);
-				} else {
-					store.set(
-						musicCoverAtom,
-						"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
-					);
-					store.set(musicCoverIsVideoAtom, false);
-				}
-			});
-		};
-		const syncMusicId = (musicId: string) => {
-			if (musicId.startsWith("local:")) {
-				store.set(musicIdAtom, musicId.substring(6));
-			} else {
-				store.set(musicIdAtom, musicId);
-			}
-		};
-		const syncMusicQuality = (quality: AudioQuality) => {
-			let result = AudioQualityType.None;
-			const LOSSLESS_CODECS = new Set(["flac", "alac"]);
-			const codec = quality.codec ?? "unknown";
-			if (LOSSLESS_CODECS.has(codec) || codec.startsWith("pcm_")) {
-				result = AudioQualityType.Lossless;
-				if ((quality.sampleRate || 0) > 48000) {
-					result = AudioQualityType.HiResLossless;
-				}
-			}
-			if ((quality.channels || 0) > 2) {
-				result = AudioQualityType.DolbyAtmos;
-			}
-			store.set(musicQualityAtom, {
-				type: result,
-				codec: quality.codec ?? "unknown",
-				channels: quality.channels ?? Number.NaN,
-				sampleRate: quality.sampleRate ?? Number.NaN,
-				sampleFormat: quality.sampleFormat ?? "unknown",
-			});
-		};
-		const processAndSetPlaylist = async (playlistData: SongData[]) => {
-			if (!playlistData || playlistData.length === 0) {
-				store.set(currentPlaylistAtom, []);
-				return;
-			}
-
-			const fullPlaylistPromises = playlistData.map(
-				async (songData): Promise<SongData> => {
-					if (songData.type === "local") {
-						const songId = md5(songData.filePath);
-						const songInfoFromDb = await db.songs.get(songId);
-
-						if (songInfoFromDb) {
-							return {
-								type: "custom",
-								id: songInfoFromDb.id,
-								songJsonData: JSON.stringify(songInfoFromDb),
-								origOrder: songData.origOrder,
-							};
-						}
-					}
-					return songData;
-				},
-			);
-
-			const fullPlaylist: SongData[] = await Promise.all(fullPlaylistPromises);
-			store.set(currentPlaylistAtom, fullPlaylist);
-		};
-		const unlistenPromise = listenAudioThreadEvent((evt) => {
+		const unlistenPromise = listenAudioThreadEvent(async (evt) => {
 			const evtData = evt.payload.data;
 			switch (evtData?.type) {
 				case "playPosition": {
-					store.set(
-						musicPlayingPositionAtom,
-						(evtData.data.position * 1000) | 0,
-					);
+					store.set(musicPlayingPositionAtom, (evtData.data.position * 1000) | 0);
 					break;
 				}
-				case "loadProgress": {
-					break;
-				}
-				case "loadAudio": {
-					syncMusicId(evtData.data.musicId);
-					syncMusicQuality(evtData.data.quality);
-					syncMusicInfo(evtData.data.musicInfo);
-					store.set(
-						currentPlaylistMusicIndexAtom,
-						evtData.data.currentPlayIndex,
-					);
-					break;
-				}
-				case "loadingAudio": {
-					syncMusicId(evtData.data.musicId);
-					store.set(
-						currentPlaylistMusicIndexAtom,
-						evtData.data.currentPlayIndex,
-					);
-					break;
-				}
+
 				case "syncStatus": {
-					store.set(musicPlayingAtom, evtData.data.isPlaying);
-					store.set(musicVolumeAtom, evtData.data.volume);
-					syncMusicId(evtData.data.musicId);
-					syncMusicQuality(evtData.data.quality);
-					syncMusicInfo(evtData.data.musicInfo);
+					const status = evtData.data;
+					store.set(musicPlayingAtom, status.isPlaying);
+					store.set(musicVolumeAtom, status.volume);
+					store.set(currentPlaylistMusicIndexAtom, status.currentPlayIndex);
 
-					processAndSetPlaylist(evtData.data.playlist);
+					if (status.quality) {
+						const newQualityState = processAudioQuality(status.quality);
+						store.set(musicQualityAtom, newQualityState);
+					}
 
-					store.set(
-						currentPlaylistMusicIndexAtom,
-						evtData.data.currentPlayIndex,
-					);
-					break;
-				}
-				case "playListChanged": {
-					processAndSetPlaylist(evtData.data.playlist);
+					await processAndSetPlaylist(status.playlist);
 
-					store.set(
-						currentPlaylistMusicIndexAtom,
-						evtData.data.currentPlayIndex,
-					);
+					const currentMusicId = store.get(musicIdAtom);
+					const newMusicId = status.musicId.startsWith("local:") ? status.musicId.substring(6) : status.musicId;
+					if (newMusicId && newMusicId !== currentMusicId) {
+						await syncMusicInfo(status);
+					}
+
+					store.set(musicDurationAtom, (status.duration * 1000) | 0);
+					store.set(musicPlayingPositionAtom, (status.position * 1000) | 0);
 					break;
 				}
-				case "playStatus": {
-					store.set(musicPlayingAtom, evtData.data.isPlaying);
-					break;
-				}
-				case "setDuration": {
-					store.set(musicDurationAtom, evtData.data.duration);
-					break;
-				}
+
 				case "loadError": {
-					// toast.error(`播放后端加载音频失败\n${evtData.data.error}`, {});
 					toast.error(
 						t("amll.loadAudioError", "播放后端加载音频失败\n{error}", {
 							error: evtData.data.error,
@@ -785,10 +736,12 @@ export const LocalMusicContext: FC = () => {
 					);
 					break;
 				}
+
 				case "volumeChanged": {
 					store.set(musicVolumeAtom, evtData.data.volume);
 					break;
 				}
+
 				case "fftData": {
 					store.set(fftDataAtom, evtData.data.data);
 					break;
@@ -796,10 +749,11 @@ export const LocalMusicContext: FC = () => {
 			}
 		});
 		emitAudioThreadRet("syncStatus");
+
 		return () => {
 			unlistenPromise.then((unlisten) => unlisten());
 
-			const doNothing = toEmit(() => {});
+			const doNothing = toEmit(() => { });
 			store.set(onRequestNextSongAtom, doNothing);
 			store.set(onRequestPrevSongAtom, doNothing);
 			store.set(onPlayOrResumeAtom, doNothing);
@@ -821,3 +775,44 @@ export const LocalMusicContext: FC = () => {
 		</>
 	);
 };
+
+function processAudioQuality(quality: AudioQuality | undefined): MusicQualityState {
+	const definiteQuality = {
+		sampleRate: quality?.sampleRate ?? 0,
+		bitsPerCodedSample: quality?.bitsPerCodedSample ?? 0,
+		bitsPerSample: quality?.bitsPerSample ?? 0,
+		channels: quality?.channels ?? 0,
+		sampleFormat: quality?.sampleFormat ?? 'unknown',
+		codec: quality?.codec ?? 'unknown'
+	};
+
+	if (definiteQuality.codec === 'unknown') {
+		return {
+			...definiteQuality,
+			type: AudioQualityType.None
+		};
+	}
+
+	const isLosslessCodec = ['flac', 'alac', 'ape', 'wav', 'aiff'].includes(definiteQuality.codec.toLowerCase());
+
+	if (isLosslessCodec) {
+		const sampleRate = definiteQuality.sampleRate;
+		const bitsPerSample = definiteQuality.bitsPerSample;
+
+		if (sampleRate > 44100 || bitsPerSample > 16) {
+			return {
+				...definiteQuality,
+				type: AudioQualityType.HiResLossless
+			};
+		}
+		return {
+			...definiteQuality,
+			type: AudioQualityType.Lossless
+		};
+	}
+
+	return {
+		...definiteQuality,
+		type: AudioQualityType.None
+	};
+}

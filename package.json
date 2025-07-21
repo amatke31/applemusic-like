@@ -11,7 +11,7 @@
   "scripts": {
     "build:libs": "lerna run build --scope \"*/react-full\" --scope \"*/vue\" --scope \"*/lyric\" --scope \"*/ws-protocol\""
   },
-  "packageManager": "pnpm@10.12.4",
+  "packageManager": "pnpm@10.13.1",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@applemusic-like-lyrics/lyric",

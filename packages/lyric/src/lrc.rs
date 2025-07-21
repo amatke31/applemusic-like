@@ -6,7 +6,7 @@ use crate::{LyricLine, LyricWord, utils::process_lyrics};
 use std::fmt::Write;
 use std::{borrow::Cow, str::FromStr};
 
-use nom::{IResult, character::complete::line_ending};
+use nom::{IResult, Parser, character::complete::line_ending};
 use nom::{bytes::complete::*, combinator::opt, multi::many1};
 
 #[inline]
@@ -71,10 +71,10 @@ fn time_test() {
 
 #[inline]
 pub fn parse_line(src: &str) -> IResult<&str, Vec<LyricLine<'_>>> {
-    let (src, times) = many1(parse_time)(src)?;
+    let (src, times) = many1(parse_time).parse(src)?;
     match is_not("\r\n")(src) {
         Ok((src, line)) => {
-            let (src, _) = opt(line_ending)(src)?;
+            let (src, _) = opt(line_ending).parse(src)?;
             Ok((
                 src,
                 times
@@ -267,7 +267,7 @@ pub fn stringify_lrc_js(lrc: JsValue) -> String {
 
 #[test]
 fn lrc_max_num() {
-    dbg!(parse_line("[999:99.999]Test"));
+    let _ = dbg!(parse_line("[999:99.999]Test"));
 }
 
 #[test]

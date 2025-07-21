@@ -11,8 +11,8 @@ mod media_state;
 mod output;
 mod player;
 mod resampler;
+mod symphonia_decoder;
 pub mod utils;
-
 pub use player::*;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]

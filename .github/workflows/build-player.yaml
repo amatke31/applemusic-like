@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - full-refractor
+      - dev
   workflow_dispatch:
 
 concurrency:
@@ -187,9 +188,11 @@ jobs:
         env:
           CARGO_NDK_ANDROID_PLATFORM: 26
         run: |
+          sccache --show-stats
           export NDK_HOME=$ANDROID_NDK_HOME
           export JAVA_HOME=$JAVA_HOME_17_X64
           pnpm -F player tauri android build --split-per-abi
+          sccache --show-stats
       - name: 上传产物到 Action Artifact
         uses: actions/upload-artifact@v4
         with:

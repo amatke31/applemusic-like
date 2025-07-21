@@ -111,7 +111,7 @@ const NumberSettings: FC<
 	{ configAtom: WritableAtom<number, [any], void> } & React.ComponentProps<
 		typeof SettingEntry
 	> &
-		Omit<React.ComponentProps<typeof TextField.Root>, "value" | "onChange">
+	Omit<React.ComponentProps<typeof TextField.Root>, "value" | "onChange">
 > = ({ label, description, configAtom, ...props }) => {
 	const [value, setValue] = useAtom(configAtom);
 	return (
@@ -130,7 +130,7 @@ const SwitchSettings: FC<
 	{ configAtom: WritableAtom<boolean, [any], void> } & React.ComponentProps<
 		typeof SettingEntry
 	> &
-		Omit<SwitchProps, "value" | "onChange">
+	Omit<SwitchProps, "value" | "onChange">
 > = ({ label, description, configAtom }) => {
 	const [value, setValue] = useAtom(configAtom);
 	return (
@@ -1298,6 +1298,13 @@ const SmtcSettings = () => {
 
 	const handleTextConversionChange = (value: TextConversionMode) => {
 		setTextConversion(value);
+
+		if (value && value !== TextConversionMode.Off) {
+			localStorage.setItem("saved_smtc_text_conversion_mode", value);
+		} else {
+			localStorage.removeItem("saved_smtc_text_conversion_mode");
+		}
+
 		invoke("control_external_media", {
 			payload: { type: "setTextConversion", mode: value },
 		}).catch((err) => {

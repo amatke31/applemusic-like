@@ -189,9 +189,12 @@ pub fn parse_ttml<'a>(data: impl BufRead) -> std::result::Result<TTMLLyric<'a>, 
                                 }
                             }
                             if let Some(k) = key {
-                                if let Ok(Event::Text(text_event)) = reader.read_event_into(&mut Vec::new()) {
-                                    if let Ok(unescaped_text) = text_event.unescape() {
-                                        itunes_translations.insert(k, unescaped_text.into_owned().into_bytes());
+                                if let Ok(Event::Text(text_event)) =
+                                    reader.read_event_into(&mut Vec::new())
+                                {
+                                    if let Ok(unescaped_text) = text_event.decode() {
+                                        itunes_translations
+                                            .insert(k, unescaped_text.into_owned().into_bytes());
                                     }
                                 }
                             }
@@ -307,7 +310,7 @@ pub fn parse_ttml<'a>(data: impl BufRead) -> std::result::Result<TTMLLyric<'a>, 
                         if let CurrentStatus::InDiv = status {
                             status = CurrentStatus::InP;
                             let mut new_line = LyricLine::default();
-                            
+
                             // 在配置行信息时，检查是否有 itunes:key 并查找翻译
                             let mut itunes_key: Option<Vec<u8>> = None;
                             for a in e.attributes().flatten() {
@@ -516,12 +519,8 @@ pub fn parse_ttml<'a>(data: impl BufRead) -> std::result::Result<TTMLLyric<'a>, 
                             status = CurrentStatus::InP;
                             // TODO: 尽可能借用而不克隆
                             // 只有在没有 Apple Music 样式翻译时才使用内嵌翻译
-                            let current_line = result
-                                .lines
-                                .iter_mut()
-                                .rev()
-                                .find(|x| !x.is_bg)
-                                .unwrap();
+                            let current_line =
+                                result.lines.iter_mut().rev().find(|x| !x.is_bg).unwrap();
 
                             if current_line.translated_lyric.is_empty() {
                                 current_line.translated_lyric = str_buf.clone().into();
@@ -574,7 +573,7 @@ pub fn parse_ttml<'a>(data: impl BufRead) -> std::result::Result<TTMLLyric<'a>, 
                 //     status
                 // );
             }
-            Ok(Event::Text(e)) => match e.unescape() {
+            Ok(Event::Text(e)) => match e.decode() {
                 Ok(txt) => {
                     // println!("  text: {:?}", txt);
                     match status {
@@ -615,7 +614,12 @@ pub fn parse_ttml<'a>(data: impl BufRead) -> std::result::Result<TTMLLyric<'a>, 
                         _ => {}
                     }
                 }
-                Err(err) => return Err(TTMLError::XmlError(read_len, err)),
+                Err(err) => {
+                    return Err(TTMLError::XmlError(
+                        read_len,
+                        quick_xml::Error::Encoding(err),
+                    ));
+                }
             },
             Err(err) => return Err(TTMLError::XmlError(read_len, err)),
             _ => (),
@@ -668,9 +672,9 @@ fn test_ttml() {
     let t = t.elapsed();
     match r {
         Ok(ttml) => {
-            println!("ttml: {:#?}", ttml);
+            println!("ttml: {ttml:#?}");
             let lys = crate::lys::stringify_lys(&ttml.lines);
-            println!("lys:\n{}", lys);
+            println!("lys:\n{lys}");
         }
         Err(e) => {
             // output line number and column number
@@ -684,10 +688,10 @@ fn test_ttml() {
             }
         }
     }
-    println!("ttml: {:?}", t);
+    println!("ttml: {t:?}");
 }
 
-use nom::{bytes::complete::*, combinator::*, sequence::tuple, *};
+use nom::{bytes::complete::*, combinator::*, *};
 use std::str::FromStr;
 
 use super::TTMLLyric;
@@ -705,7 +709,7 @@ pub fn parse_minutes_or_seconds(input: &[u8]) -> IResult<&[u8], u64> {
 }
 
 pub fn parse_fraction(input: &[u8]) -> IResult<&[u8], u64> {
-    let (input, _) = tag(b".")(input)?;
+    let (input, _) = tag(b".".as_slice()).parse(input)?;
     let (input, result) = take_while1(|x: u8| x.is_dec_digit())(input)?;
     let frac_str = std::str::from_utf8(result).unwrap();
     let result = match frac_str.len() {
@@ -721,15 +725,16 @@ pub fn parse_fraction(input: &[u8]) -> IResult<&[u8], u64> {
 // HH:MM:SS.MS
 // or MM:SS.MS
 pub fn parse_timestamp(input: &[u8]) -> IResult<&[u8], u64> {
-    match tuple((
+    match (
         parse_hour,
-        tag(b":"),
+        tag(b":".as_slice()),
         parse_minutes_or_seconds,
-        tag(b":"),
+        tag(b":".as_slice()),
         parse_minutes_or_seconds,
         opt(parse_fraction),
         eof,
-    ))(input)
+    )
+        .parse(input)
     {
         Ok((input, result)) => {
             let time = result.0 * 60 * 60 * 1000 + result.2 * 60 * 1000 + result.4 * 1000;
@@ -740,13 +745,14 @@ pub fn parse_timestamp(input: &[u8]) -> IResult<&[u8], u64> {
                 Ok((input, time))
             }
         }
-        Err(_) => match tuple((
+        Err(_) => match (
             parse_minutes_or_seconds,
-            tag(b":"),
+            tag(b":".as_slice()),
             parse_minutes_or_seconds,
             opt(parse_fraction),
             eof,
-        ))(input)
+        )
+            .parse(input)
         {
             Ok((input, result)) => {
                 let time = result.0 * 60 * 1000 + result.2 * 1000;
@@ -756,7 +762,7 @@ pub fn parse_timestamp(input: &[u8]) -> IResult<&[u8], u64> {
                     Ok((input, time))
                 }
             }
-            Err(_) => match tuple((parse_minutes_or_seconds, opt(parse_fraction), eof))(input) {
+            Err(_) => match (parse_minutes_or_seconds, opt(parse_fraction), eof).parse(input) {
                 Ok((input, result)) => {
                     let time = result.0 * 1000;
                     if let Some(frac) = result.1 {

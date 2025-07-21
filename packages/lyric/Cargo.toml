@@ -1,6 +1,6 @@
 [package]
 name = "amll-lyric"
-version = "0.2.4"
+version = "0.3.0"
 authors = ["SteveXMH <39523898+Steve-xmh@users.noreply.github.com>"]
 edition = "2024"
 repository = "https://github.com/Steve-xmh/applemusic-like-lyrics"
@@ -19,16 +19,17 @@ qrc = ["dep:nom"]
 lys = ["dep:nom"]
 eslrc = ["dep:nom", "lrc"]
 ttml = ["dep:quick-xml", "dep:thiserror", "dep:nom"]
-eqrc = ["dep:miniz_oxide", "dep:cc"]
+eqrc = ["dep:miniz_oxide"]
 serde = ["dep:serde"]
 
 [dependencies]
-nom = { version = "7.1", optional = true }
-serde = { version = "1.0", features = ["derive"], optional = true }
+nom = { version = "^8.0", optional = true }
+serde = { version = "^1.0", features = ["derive"], optional = true }
 cipher = { version = "0.4", optional = true }
-miniz_oxide = { version = "0.7", optional = true }
-quick-xml = { version = "0.31", optional = true }
-thiserror = { version = "1", optional = true }
+miniz_oxide = { version = "^0.8", optional = true }
+quick-xml = { version = "^0.38", optional = true }
+thiserror = { version = "^2", optional = true }
+# rayon = { version = "^1.7", optional = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = { version = "0.2" }
@@ -37,8 +38,5 @@ console_error_panic_hook = { version = "0.1", optional = true }
 wee_alloc = { version = "0.4", optional = true }
 js-sys = { version = "0.3", optional = true }
 
-[build-dependencies]
-cc = { version = "1.0", optional = true }
-
 [package.metadata.wasm-pack.profile.release]
-wasm-opt = false
+wasm-opt = true
