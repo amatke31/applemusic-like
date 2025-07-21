@@ -36,7 +36,7 @@ impl MediaStateManagerBackend for MediaStateManagerMacOSBackend {
         let (sender, receiver) = tokio::sync::mpsc::unbounded_channel();
         let np_info_ctr = unsafe { MPNowPlayingInfoCenter::defaultCenter() };
         let cmd_ctr = unsafe { MPRemoteCommandCenter::sharedCommandCenter() };
-        let mut dict: Id<NSMutableDictionary<NSString, AnyObject>> = NSMutableDictionary::new();
+        let dict: Retained<NSMutableDictionary<NSString, AnyObject>> = NSMutableDictionary::new();
         unsafe {
             dict.setValue_forKey(
                 Some(&NSNumber::new_usize(MPMediaType::Music.0)),
@@ -204,9 +204,9 @@ impl MediaStateManagerBackend for MediaStateManagerMacOSBackend {
         let img = NSImage::alloc();
         let img = NSImage::initWithData(img, &cover_data).context("initWithData")?;
         let img_size = unsafe { img.size() };
-        let img = NonNull::new(Id::into_raw(img)).unwrap();
+        let img = NonNull::new(Retained::into_raw(img)).unwrap();
         let artwork = MPMediaItemArtwork::alloc();
-        let req_handler = block2::RcBlock::new(move |_: CGSize| img);
+        let req_handler = block2::RcBlock::new(move |_: NSSize| img);
         let artwork = unsafe {
             MPMediaItemArtwork::initWithBoundsSize_requestHandler(artwork, img_size, &req_handler)
         };

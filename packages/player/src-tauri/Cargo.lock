@@ -71,10 +71,7 @@ dependencies = [
  "anyhow",
  "anyhow-tauri",
  "base64 0.22.1",
-<<<<<<< HEAD
-=======
  "claxon",
->>>>>>> upstream/full-refractor
  "cpal 0.16.0",
  "crossbeam-channel",
  "dashmap",
@@ -82,12 +79,9 @@ dependencies = [
  "futures",
  "objc2 0.6.1",
  "objc2-avf-audio",
-<<<<<<< HEAD
-=======
  "quick-xml",
  "regex",
  "rodio",
->>>>>>> upstream/full-refractor
  "serde",
  "serde_json",
  "smtc-suite",
@@ -120,40 +114,30 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "arrayvec",
- "block2 0.5.1",
+ "block2 0.6.1",
  "concat-string",
-<<<<<<< HEAD
  "cpal 0.15.3",
-=======
- "cpal 0.16.0",
->>>>>>> upstream/full-refractor
  "dispatch",
  "easer",
  "ffmpeg-next",
  "futures",
  "md5",
  "mpris-server",
- "objc2 0.5.2",
- "objc2-app-kit 0.2.2",
- "objc2-foundation 0.2.2",
+ "objc2 0.6.1",
+ "objc2-app-kit",
+ "objc2-foundation 0.3.1",
  "objc2-media-player",
  "once_cell",
  "rb",
  "ringbuf",
-<<<<<<< HEAD
-=======
  "rodio",
->>>>>>> upstream/full-refractor
  "rubato 0.15.0",
  "segmap",
  "serde",
  "serde_json",
  "spectrum-analyzer",
  "symphonia",
-<<<<<<< HEAD
-=======
  "symphonia-core",
->>>>>>> upstream/full-refractor
  "tauri",
  "tempfile",
  "tokio",
@@ -2064,7 +2048,7 @@ dependencies = [
  "crossbeam-channel",
  "keyboard-types",
  "objc2 0.6.1",
- "objc2-app-kit 0.3.1",
+ "objc2-app-kit",
  "once_cell",
  "serde",
  "thiserror 2.0.12",
@@ -2977,7 +2961,7 @@ dependencies = [
  "gtk",
  "keyboard-types",
  "objc2 0.6.1",
- "objc2-app-kit 0.3.1",
+ "objc2-app-kit",
  "objc2-core-foundation",
  "objc2-foundation 0.3.1",
  "once_cell",
@@ -3189,22 +3173,6 @@ dependencies = [
 
 [[package]]
 name = "objc2-app-kit"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e4e89ad9e3d7d297152b17d39ed92cd50ca8063a89a9fa569046d41568891eff"
-dependencies = [
- "bitflags 2.9.1",
- "block2 0.5.1",
- "libc",
- "objc2 0.5.2",
- "objc2-core-data 0.2.2",
- "objc2-core-image 0.2.2",
- "objc2-foundation 0.2.2",
- "objc2-quartz-core 0.2.2",
-]
-
-[[package]]
-name = "objc2-app-kit"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e6f29f568bec459b0ddff777cec4fe3fd8666d82d5a40ebd0ff7e66134f89bcc"
@@ -3214,10 +3182,10 @@ dependencies = [
  "libc",
  "objc2 0.6.1",
  "objc2-cloud-kit",
- "objc2-core-data 0.3.1",
+ "objc2-core-data",
  "objc2-core-foundation",
  "objc2-core-graphics",
- "objc2-core-image 0.3.1",
+ "objc2-core-image",
  "objc2-foundation 0.3.1",
  "objc2-quartz-core 0.3.1",
 ]
@@ -3239,16 +3207,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "objc2-avf-audio"
+name = "objc2-av-foundation"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bfc1d11521c211a7ebe17739fc806719da41f56c6b3f949d9861b459188ce910"
+checksum = "2e085a2e16c61dadbad7a808fc9d5b5f8472b1b825b53d529c9f64ccac78e722"
 dependencies = [
  "bitflags 2.9.1",
- "block2 0.6.1",
  "objc2 0.6.1",
- "objc2-audio-toolbox",
- "objc2-core-audio-types",
  "objc2-foundation 0.3.1",
 ]
 
@@ -3301,18 +3266,6 @@ dependencies = [
 
 [[package]]
 name = "objc2-core-data"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "617fbf49e071c178c0b24c080767db52958f716d9eabdf0890523aeae54773ef"
-dependencies = [
- "bitflags 2.9.1",
- "block2 0.5.1",
- "objc2 0.5.2",
- "objc2-foundation 0.2.2",
-]
-
-[[package]]
-name = "objc2-core-data"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "291fbbf7d29287518e8686417cf7239c74700fd4b607623140a7d4a3c834329d"
@@ -3344,18 +3297,6 @@ dependencies = [
  "objc2 0.6.1",
  "objc2-core-foundation",
  "objc2-io-surface",
-]
-
-[[package]]
-name = "objc2-core-image"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "55260963a527c99f1819c4f8e3b47fe04f9650694ef348ffd2227e8196d34c80"
-dependencies = [
- "block2 0.5.1",
- "objc2 0.5.2",
- "objc2-foundation 0.2.2",
- "objc2-metal",
 ]
 
 [[package]]
@@ -3421,15 +3362,17 @@ dependencies = [
 
 [[package]]
 name = "objc2-media-player"
-version = "0.2.2"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aeee7e398f352d50d8016c73969878942efb422030884a744180a2d2b8b341de"
+checksum = "e5fb6217df3aef0b6ffc5890e9f90adf6ca818810b68158d43ba922b77543e25"
 dependencies = [
  "bitflags 2.9.1",
- "block2 0.5.1",
- "objc2 0.5.2",
- "objc2-app-kit 0.2.2",
- "objc2-foundation 0.2.2",
+ "block2 0.6.1",
+ "objc2 0.6.1",
+ "objc2-app-kit",
+ "objc2-av-foundation",
+ "objc2-core-foundation",
+ "objc2-foundation 0.3.1",
 ]
 
 [[package]]
@@ -3452,7 +3395,7 @@ checksum = "26bb88504b5a050dbba515d2414607bf5e57dd56b107bc5f0351197a3e7bdc5d"
 dependencies = [
  "bitflags 2.9.1",
  "objc2 0.6.1",
- "objc2-app-kit 0.3.1",
+ "objc2-app-kit",
  "objc2-foundation 0.3.1",
 ]
 
@@ -3501,7 +3444,7 @@ dependencies = [
  "bitflags 2.9.1",
  "block2 0.6.1",
  "objc2 0.6.1",
- "objc2-app-kit 0.3.1",
+ "objc2-app-kit",
  "objc2-core-foundation",
  "objc2-foundation 0.3.1",
 ]
@@ -3539,8 +3482,6 @@ dependencies = [
 ]
 
 [[package]]
-<<<<<<< HEAD
-=======
 name = "ogg"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3550,7 +3491,6 @@ dependencies = [
 ]
 
 [[package]]
->>>>>>> upstream/full-refractor
 name = "once_cell"
 version = "1.21.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4091,25 +4031,6 @@ dependencies = [
 [[package]]
 name = "psl-types"
 version = "2.0.11"
-<<<<<<< HEAD
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33cb294fe86a74cbcf50d4445b37da762029549ebeea341421c7c70370f86cac"
-
-[[package]]
-name = "publicsuffix"
-version = "2.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f42ea446cab60335f76979ec15e12619a2165b5ae2c12166bef27d283a9fadf"
-dependencies = [
- "idna",
- "psl-types",
-]
-
-[[package]]
-name = "quick-xml"
-version = "0.37.5"
-=======
->>>>>>> upstream/full-refractor
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "33cb294fe86a74cbcf50d4445b37da762029549ebeea341421c7c70370f86cac"
 
@@ -4478,7 +4399,7 @@ dependencies = [
  "js-sys",
  "log",
  "objc2 0.6.1",
- "objc2-app-kit 0.3.1",
+ "objc2-app-kit",
  "objc2-core-foundation",
  "objc2-foundation 0.3.1",
  "raw-window-handle",
@@ -4512,8 +4433,6 @@ dependencies = [
 ]
 
 [[package]]
-<<<<<<< HEAD
-=======
 name = "rodio"
 version = "0.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4527,7 +4446,6 @@ dependencies = [
 ]
 
 [[package]]
->>>>>>> upstream/full-refractor
 name = "rubato"
 version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4703,15 +4621,9 @@ dependencies = [
 
 [[package]]
 name = "schemars"
-<<<<<<< HEAD
-version = "1.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1375ba8ef45a6f15d83fa8748f1079428295d403d6ea991d09ab100155fbc06d"
-=======
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "82d20c4491bc164fa2f6c5d44565947a52ad80b9505d8e36f8d54c27c739fcd0"
->>>>>>> upstream/full-refractor
 dependencies = [
  "dyn-clone",
  "ref-cast",
@@ -4888,11 +4800,7 @@ dependencies = [
  "indexmap 1.9.3",
  "indexmap 2.10.0",
  "schemars 0.9.0",
-<<<<<<< HEAD
- "schemars 1.0.3",
-=======
  "schemars 1.0.4",
->>>>>>> upstream/full-refractor
  "serde",
  "serde_derive",
  "serde_json",
@@ -5532,7 +5440,7 @@ dependencies = [
  "ndk-context",
  "ndk-sys 0.6.0+11769913",
  "objc2 0.6.1",
- "objc2-app-kit 0.3.1",
+ "objc2-app-kit",
  "objc2-foundation 0.3.1",
  "once_cell",
  "parking_lot",
@@ -5597,7 +5505,7 @@ dependencies = [
  "mime",
  "muda",
  "objc2 0.6.1",
- "objc2-app-kit 0.3.1",
+ "objc2-app-kit",
  "objc2-foundation 0.3.1",
  "objc2-ui-kit",
  "percent-encoding",
@@ -5792,7 +5700,7 @@ checksum = "ecee219f11cdac713ab32959db5d0cceec4810ba4f4458da992292ecf9660321"
 dependencies = [
  "dunce",
  "glob",
- "objc2-app-kit 0.3.1",
+ "objc2-app-kit",
  "objc2-foundation 0.3.1",
  "open",
  "schemars 0.8.22",
@@ -5910,7 +5818,7 @@ dependencies = [
  "jni",
  "log",
  "objc2 0.6.1",
- "objc2-app-kit 0.3.1",
+ "objc2-app-kit",
  "objc2-foundation 0.3.1",
  "once_cell",
  "percent-encoding",
@@ -6106,15 +6014,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-<<<<<<< HEAD
-version = "1.46.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1140bb80481756a8cbe10541f37433b459c5aa1e727b4c020fbfebdc25bf3ec4"
-=======
 version = "1.46.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0cc3a2344dafbe23a245241fe8b09735b521110d30fcefbbd5feb1797ca35d17"
->>>>>>> upstream/full-refractor
 dependencies = [
  "backtrace",
  "bytes",
@@ -6378,7 +6280,7 @@ dependencies = [
  "libappindicator",
  "muda",
  "objc2 0.6.1",
- "objc2-app-kit 0.3.1",
+ "objc2-app-kit",
  "objc2-core-foundation",
  "objc2-core-graphics",
  "objc2-foundation 0.3.1",
@@ -6875,7 +6777,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d9bec5a31f3f9362f2258fd0e9c9dd61a9ca432e7306cc78c444258f0dce9a9c"
 dependencies = [
  "objc2 0.6.1",
- "objc2-app-kit 0.3.1",
+ "objc2-app-kit",
  "objc2-core-foundation",
  "objc2-foundation 0.3.1",
  "raw-window-handle",
@@ -7450,7 +7352,7 @@ dependencies = [
  "libc",
  "ndk 0.9.0",
  "objc2 0.6.1",
- "objc2-app-kit 0.3.1",
+ "objc2-app-kit",
  "objc2-core-foundation",
  "objc2-foundation 0.3.1",
  "objc2-ui-kit",
